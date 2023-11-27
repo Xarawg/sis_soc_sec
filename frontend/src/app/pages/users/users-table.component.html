@@ -1,0 +1,79 @@
+<div class="container">
+  <div class="segment">
+
+
+    <div class="example-container mat-elevation-z8">
+      <div class="example-header">
+
+        <mat-form-field>
+          <input matInput (keyup)="applyFilter($event)" placeholder="Поисковый запрос">
+        </mat-form-field>
+      </div>
+
+      <div>
+        <button mat-button (click)="createUser()">Создать пользователя</button>
+      </div>
+
+      <mat-table [dataSource]="dataSource" matSort>
+        <ng-container matColumnDef="login">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[0] }} </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{row.login}}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="role">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[1] }} </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ row.role }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="fio">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[2] }} </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{row.fio}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="organization">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[3] }} </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{row.organization}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="innOrganization">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[4] }} </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{row.innOrganization}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="addressOrganization">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[5] }} </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{row.addressOrganization}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[6] }} </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{row.email}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="phone">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[7] }} </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{row.phone}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="state">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[8] }} </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ states[row.state] }} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Действия </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <div>
+              <a (click)="lookAtUser(row)">Просмотр пользователя</a>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;">
+        </mat-row>
+      </mat-table>
+
+      <mat-paginator [pageSizeOptions]="[5, 10, 20, 50, 100]" showFirstLastButtons aria-label="Выберите страницу">
+      </mat-paginator>
+    </div>

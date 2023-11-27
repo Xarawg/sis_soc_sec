@@ -1,0 +1,50 @@
+<div class="container">
+  <div class="segment">
+
+
+    <div class="example-container mat-elevation-z8">
+      <div class="example-header">
+
+        <mat-form-field>
+          <input matInput (keyup)="applyFilter($event)" placeholder="Поисковый запрос">
+        </mat-form-field>
+      </div>
+
+      <div>
+        <button mat-button (click)="createOrder()">Создать заявку</button>
+      </div>
+
+      <mat-table [dataSource]="dataSource" matSort>
+
+        <ng-container matColumnDef="snils">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> СНИЛС </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{row.snils}}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="fio">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> ФИО </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{row.fio}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="date">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Дата заявки </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{row.date}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Дата заявки </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <div>
+              <a (click)="lookAtOrder(row)">Просмотр заявки</a>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;">
+        </mat-row>
+      </mat-table>
+
+      <mat-paginator [pageSizeOptions]="[5, 10, 20, 50, 100]" showFirstLastButtons aria-label="Выберите страницу">
+      </mat-paginator>
+    </div>

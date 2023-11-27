@@ -1,0 +1,91 @@
+<div mat-dialog-content [formGroup]="form">
+  <form ng-submit="submit()">
+    <h1 mat-dialog-title>Просмотр заявки</h1>
+
+    <mat-label>{{ orderColumnNames[0] }}</mat-label>
+    <mat-form-field class="example-full-width">
+      <input type="text"  matInput placeholder="{{order.idOrder}}" formControlName="idOrder">
+    </mat-form-field>
+
+    <mat-label>{{ orderColumnNames[1] }}</mat-label>
+    <mat-form-field class="example-full-width">
+      <input type="text" matInput placeholder="{{order.date}}" formControlName="date">
+    </mat-form-field>
+
+    <mat-label>{{ [orderColumnNames[2]] }}</mat-label>
+    <mat-form-field class="example-full-width">
+      <input type="text" matInput placeholder="{{getState(order.state)}}" formControlName="state">
+    </mat-form-field>
+
+    <mat-label>{{ orderColumnNames[3] }}</mat-label>
+    <mat-form-field class="example-full-width">
+      <input type="text" matInput placeholder="{{order.status}}" formControlName="status">
+    </mat-form-field>
+
+    <mat-label>{{ orderColumnNames[4] }}</mat-label>
+    <mat-form-field class="example-full-width">
+      <input type="text" matInput placeholder="{{order.snils}}" formControlName="snils">
+    </mat-form-field>
+
+    <mat-label>{{ orderColumnNames[5] }}</mat-label>
+    <mat-form-field class="example-full-width">
+      <input type="text" matInput placeholder="{{order.fio}}" formControlName="fio">
+    </mat-form-field>
+
+    <mat-label>{{ orderColumnNames[6] }}</mat-label>
+    <mat-form-field class="example-full-width">
+      <input type="text" matInput placeholder="{{order.contactData}}" formControlName="contactData">
+    </mat-form-field>
+
+    <mat-label>{{ orderColumnNames[7] }}</mat-label>
+    <mat-form-field class="example-full-width">
+      <input type="text" matInput placeholder="{{order.type}}" formControlName="type">
+    </mat-form-field>
+
+    <mat-label>{{ orderColumnNames[8] }}</mat-label>
+    <mat-form-field class="example-full-width">
+      <input type="text" matInput placeholder="{{order.body}}" formControlName="body">
+    </mat-form-field>
+
+    <mat-label>{{ orderColumnNames[9] }}</mat-label>
+    <mat-form-field class="example-full-width">
+      <!-- <input type="text" matInput placeholder="{{order.documents}}" formControlName="documents"> -->
+      <button mat-icon-button matPrefix (click)="f_input.click()">
+        <mat-icon>attach_file</mat-icon>
+      </button>
+      <input type="text" readonly matInput formControlName="documents" />
+      <input type="file" multiple hidden #f_input (change)="handleFileInputChange(f_input.files)" />
+
+    </mat-form-field>
+
+    <mat-label>{{ orderColumnNames[10] }}</mat-label>
+    <mat-form-field class="example-full-width">
+      <input type="text" matInput placeholder="{{order.supportMeasures}}" formControlName="supportMeasures">
+    </mat-form-field>
+
+    <div class="button">
+      <button (click)="submit()" mat-button>Применить изменения</button>
+    </div>
+  </form>
+
+  <div class="button" *ngIf="order.state == 0">
+    <button mat-raised-button (click)="saveOrder()">Сохранить заявку</button>
+  </div>
+
+  <div class="button" *ngIf="order.state == 0">
+    <button mat-raised-button (click)="sendOrder()">Отправить заявку</button>
+  </div>
+
+  <div class="button" *ngIf="order.state == 0 || order.state == 1">
+    <button mat-raised-button (click)="declineOrder()">Отменить заявку</button>
+  </div>
+
+  <div class="button" *ngIf="order.state != 0 && order.state != 1">
+    <button mat-raised-button (click)="doubleOrder()">Дублировать заявку</button>
+  </div>
+
+  <div mat-dialog-actions class="button">
+    <button mat-button mat-dialog-close>Вернуться</button>
+  </div>
+
+</div>
