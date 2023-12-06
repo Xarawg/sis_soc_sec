@@ -42,21 +42,5 @@ namespace Security_Service_AspNetCore.Services
         {
             throw new NotImplementedException();
         }
-
-        /// <summary>
-        /// Получение
-        /// </summary>
-        /// <returns>Список </returns>
-        /// <exception cref="Exception">Файлы не найдены</exception>
-        //public async Task<List<DataDTO>> GetWeatherDataAsync(GetWeatherDataModel model)
-        //{
-        //    var weatherData = await _userStore.GetWeatherDataAsync(model);
-        //    if (weatherData == null)
-        //    {
-        //        throw new Exception("не найден");
-        //    }
-        //    var result = _mapper.Map<IEnumerable<WeatherData>, List<WeatherDataDTO>>(weatherData);
-        //    return result;
-        //}
     }
 }

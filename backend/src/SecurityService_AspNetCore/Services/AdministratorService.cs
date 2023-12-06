@@ -3,6 +3,7 @@ using SecurityService_Core.Interfaces;
 using SecurityService_Core.Models.ControllerDTO.User;
 using SecurityService_Core.Models.ControllerDTO.Administrator;
 using SecurityService_Core.Models.DTO;
+using SecurityService_Core.Models.DB;
 
 namespace Security_Service_AspNetCore.Services
 {
@@ -42,23 +43,13 @@ namespace Security_Service_AspNetCore.Services
 
         public async Task<List<UserDTO>> GetUsersAsync()
         {
-            return new List<UserDTO>();
+            var users = await _administratorStore.GetUsersAsync();
+            if (users == null)
+            {
+                throw new Exception("Пользователи не найдены");
+            }
+            var result = _mapper.Map<IEnumerable<User>, IEnumerable<UserDTO>>(users).ToList();
+            return result;
         }
-
-        /// <summary>
-        /// Получение
-        /// </summary>
-        /// <returns>Список </returns>
-        /// <exception cref="Exception">Файлы не найдены</exception>
-        //public async Task<List<DataDTO>> GetWeatherDataAsync(GetWeatherDataModel model)
-        //{
-        //    var weatherData = await _administratorStore.GetWeatherDataAsync(model);
-        //    if (weatherData == null)
-        //    {
-        //        throw new Exception("не найден");
-        //    }
-        //    var result = _mapper.Map<IEnumerable<WeatherData>, List<WeatherDataDTO>>(weatherData);
-        //    return result;
-        //}
     }
 }

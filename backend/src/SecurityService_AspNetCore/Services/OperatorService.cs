@@ -8,6 +8,8 @@ using SecurityService_Core.Interfaces;
 using SecurityService_Core.Models.ControllerDTO.Administrator;
 using SecurityService_Core.Models.DTO;
 using SecurityService_Core.Models.ControllerDTO.Operator;
+using SecurityService_Core.Models.DB;
+using SecurityService_Core_Stores.Stores;
 
 namespace Security_Service_AspNetCore.Services
 {
@@ -29,10 +31,16 @@ namespace Security_Service_AspNetCore.Services
             _mapper = mapper;
             _operatorStore = operatorStore;
         }
-        
+
         public async Task<List<OrderDTO>> GetOrdersAsync()
         {
-            return new List<OrderDTO>();
+            var orders = await _operatorStore.GetOrdersAsync();
+            if (orders == null)
+            {
+                throw new Exception("Заявки не найдены");
+            }
+            var result = _mapper.Map<IEnumerable<Order>, IEnumerable<OrderDTO>>(orders).ToList();
+            return result;
         }
 
         public async Task<bool> CreateOrderAsync(OperatorOrderDTO model)
@@ -44,21 +52,5 @@ namespace Security_Service_AspNetCore.Services
         {
             return true;
         }
-
-        /// <summary>
-        /// Получение
-        /// </summary>
-        /// <returns>Список </returns>
-        /// <exception cref="Exception">Файлы не найдены</exception>
-        //public async Task<List<DataDTO>> GetWeatherDataAsync(GetWeatherDataModel model)
-        //{
-        //    var weatherData = await _operatorStore.GetWeatherDataAsync(model);
-        //    if (weatherData == null)
-        //    {
-        //        throw new Exception("не найден");
-        //    }
-        //    var result = _mapper.Map<IEnumerable<WeatherData>, List<WeatherDataDTO>>(weatherData);
-        //    return result;
-        //}
     }
 }

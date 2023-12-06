@@ -20,5 +20,7 @@ namespace SecurityService_Core_Stores.Stores
             Orders = customerContext.Set<Order>();
             Users = customerContext.Set<User>();
         }
+
+        public async Task<List<Order>> GetOrdersAsync() => await Orders.AsNoTracking().ToListAsync();
     }
 }
