@@ -45,7 +45,7 @@ namespace SecurityService_Core_Stores.Stores
             };
             await Orders.AddAsync(newOrder);
             await Docscans.AddRangeAsync(docs);
-
+            _customerContext.SaveChanges();
             return true;
         }
 
@@ -64,6 +64,7 @@ namespace SecurityService_Core_Stores.Stores
             order.Type = model.Type;
             order.SupportMeasures = model.SupportMeasures;
             Orders.Update(order);
+            _customerContext.SaveChanges();
 
             return true;
         }

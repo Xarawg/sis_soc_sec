@@ -52,7 +52,7 @@ namespace Security_Service_AspNetCore.Services
         {
             try
             {
-                var userName = userModel == null ? userModel.UserName : adminModel.UserName;
+                var userName = userModel != null ? userModel.UserName : adminModel.UserName;
                 var idUser = Guid.NewGuid();
 
                 // Проверка на существование пользователя с указанным логином

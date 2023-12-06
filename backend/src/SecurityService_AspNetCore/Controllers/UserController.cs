@@ -35,7 +35,7 @@ namespace Security_Service_AspNetCore.Controllers
         /// Регистрация пользователя через страницу регистрации на форме входа.
         /// </summary>
         /// <param name="model"></param>
-        /// <remarks>Для тестирования все регистрируются с одобренной учётной записью (статус 1)</remarks>
+        /// <remarks>Для тестирования все регистрируются с одобренной учётной записью под админкой </remarks>
         /// <returns>Результат регистрации</returns>
         [HttpPost]
         [AllowAnonymous]

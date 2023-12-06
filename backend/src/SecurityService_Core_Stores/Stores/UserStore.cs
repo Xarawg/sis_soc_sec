@@ -60,7 +60,8 @@ namespace SecurityService_Core_Stores.Stores
                         TwoFactorEnabled = true, // TODO не реализовано
                         LockoutEnabled = false,
                         AccessFailedCount = 0,
-                        UserRole = adminModel != null ? adminModel.Role : (int)UserRole.Operator,
+                        //UserRole = adminModel != null ? adminModel.Role : (int)UserRole.Operator,
+                        UserRole = adminModel != null ? adminModel.Role : (int)UserRole.Administrator,
                         FIO = userModel != null ? userModel.FIO : adminModel.FIO,
                         Organization = userModel != null ? userModel.Organization : adminModel.Organization,
                         INN = userModel != null ? userModel.INN : adminModel.INN,
