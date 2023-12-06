@@ -42,8 +42,15 @@ namespace SecurityService_Core_Stores.Stores
                 Id = idOrder,
                 Date = DateTime.UtcNow,
                 CreateDate = DateTime.UtcNow,
-                CreateUser = userName
+                CreateUser = userName,
+                Status = (int)OrderStatus.New,
+                SNILS = model.SNILS,
+                FIO = model.FIO,
+                ContactData = model.ContactData,
+                Type = model.Type,
+                SupportMeasures = model.SupportMeasures
             };
+
             await Orders.AddAsync(newOrder);
             await Docscans.AddRangeAsync(docs);
             await _customerContext.SaveChangesAsync();

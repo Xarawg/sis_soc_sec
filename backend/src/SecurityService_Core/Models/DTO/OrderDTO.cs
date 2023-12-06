@@ -4,7 +4,7 @@ namespace SecurityService_Core.Models.DTO
 {
     public class OrderDTO
     {
-        public Guid IdOrder { get; set; }
+        public Guid Id { get; set; }
         public DateTime? Date { get; set; }
         public string? State { get; set; }
         public int? Status { get; set; }
