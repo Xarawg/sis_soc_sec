@@ -66,7 +66,7 @@ namespace Security_Service_AspNetCore.Controllers
         /// Создать заявку оператором
         /// </summary>
         /// <param name="model"></param>
-        /// <returns>Создать заявку</returns>
+        /// <returns>Успешность действия</returns>
         [HttpPost]
         [Route("create-order")]
         public async Task<IResult> CreateOrder([FromForm] OperatorOrderInputModel model)
@@ -92,7 +92,7 @@ namespace Security_Service_AspNetCore.Controllers
         /// Изменить заявку оператором
         /// </summary>
         /// <param name="model"></param>
-        /// <returns>Изменить заявку</returns>
+        /// <returns>Успешность действия</returns>
         [HttpPost]
         [Route("change-order")]
         public async Task<IResult> ChangeOrder([FromBody] OperatorChangeOrderInputModel model)
@@ -106,6 +106,33 @@ namespace Security_Service_AspNetCore.Controllers
                 }
                 var result = await _operatorService.ChangeOrderAsync(model, GetUserName());
 
+                return Results.Json(Result<bool>.CreateSuccess(result), serializerOptions);
+            }
+            catch (Exception ex)
+            {
+                return Results.Json(Result<string>.CreateFailure(ex.Message), serializerOptions);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>Успешность действия</returns>
+        [HttpPost]
+        [Route("processing-order")]
+        public async Task<IResult> DoubleOrder([FromBody] OperatorProcessingOrderInputModel model)
+        {
+            try
+            {
+                var userStatus = (UserStatus?)await _userService.GetUserStatusByLoginAsync(GetUserName());
+                if (userStatus != UserStatus.Registered)
+                {
+                    throw new Exception("Учётная запись оператора не одобрена администратором!");
+                }
+                if (Enumerable.Range(0, 2).Contains(model.Action)) throw new Exception("Идентификатор действия находится в промежутке между 0 и 2.");
+                var result = await _operatorService.ProcessingOrderAsync(model, GetUserName());
+                
                 return Results.Json(Result<bool>.CreateSuccess(result), serializerOptions);
             }
             catch (Exception ex)

@@ -125,6 +125,9 @@ namespace SecurityService_Core_Stores.Migrations
                         .HasColumnType("text")
                         .HasColumnName("state");
 
+                    b.Property<int?>("Status")
+                        .HasColumnType("integer");
+
                     b.Property<string>("SupportMeasures")
                         .HasColumnType("text")
                         .HasColumnName("support_measures");

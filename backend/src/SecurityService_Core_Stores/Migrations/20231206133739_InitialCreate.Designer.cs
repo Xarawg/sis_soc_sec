@@ -12,7 +12,7 @@ using SecurityService_Core_Stores;
 namespace SecurityService_Core_Stores.Migrations
 {
     [DbContext(typeof(CustomerContext))]
-    [Migration("20231206123903_InitialCreate")]
+    [Migration("20231206133739_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -127,6 +127,9 @@ namespace SecurityService_Core_Stores.Migrations
                     b.Property<string>("State")
                         .HasColumnType("text")
                         .HasColumnName("state");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<string>("SupportMeasures")
                         .HasColumnType("text")

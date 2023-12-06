@@ -6,6 +6,7 @@ namespace SecurityService_Core.Models.DB
     {
         public DateTime? Date { get; set; }
         public string? State { get; set; }
+        public int? Status { get; set; }
         public string? SNILS { get; set; }
         public string? FIO { get; set; }
         public string? ContactData { get; set; }

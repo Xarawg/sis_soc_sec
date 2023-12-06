@@ -14,9 +14,6 @@ namespace SecurityService_Core_Stores.Migrations
             migrationBuilder.EnsureSchema(
                 name: "public");
 
-            migrationBuilder.Sql(
-            @"CREATE EXTENSION IF NOT EXISTS ""uuid-ossp"";");
-
             migrationBuilder.CreateTable(
                 name: "docscans",
                 schema: "public",
@@ -45,6 +42,7 @@ namespace SecurityService_Core_Stores.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "uuid_generate_v4()"),
                     date = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     state = table.Column<string>(type: "text", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: true),
                     snils = table.Column<string>(type: "text", nullable: true),
                     fio = table.Column<string>(type: "text", nullable: true),
                     contact_data = table.Column<string>(type: "text", nullable: true),

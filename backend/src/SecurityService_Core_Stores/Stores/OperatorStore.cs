@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SecurityService_Core.Interfaces;
 using SecurityService_Core.Models.ControllerDTO.Operator;
 using SecurityService_Core.Models.DB;
+using SecurityService_Core.Models.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace SecurityService_Core_Stores.Stores
@@ -45,7 +46,7 @@ namespace SecurityService_Core_Stores.Stores
             };
             await Orders.AddAsync(newOrder);
             await Docscans.AddRangeAsync(docs);
-            _customerContext.SaveChanges();
+            await _customerContext.SaveChangesAsync();
             return true;
         }
 
@@ -58,13 +59,81 @@ namespace SecurityService_Core_Stores.Stores
         public async Task<bool> ChangeOrderAsync(OperatorChangeOrderInputModel model, string userName)
         {
             var order = await Orders.Where(x => x.Id == model.Id).FirstOrDefaultAsync();
+            if (order == null) throw new Exception("Заявки не существует.");
             order.SNILS = model.SNILS;
             order.FIO = model.FIO;
             order.ContactData = model.ContactData;
             order.Type = model.Type;
             order.SupportMeasures = model.SupportMeasures;
             Orders.Update(order);
-            _customerContext.SaveChanges();
+            await _customerContext.SaveChangesAsync();
+
+            return true;
+        }
+
+        /// <summary>
+        /// Отправка заявки на обработку (зарегистрировать её)
+        /// </summary>
+        /// <param name="idOrder"></param>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        public async Task<bool> SendOrderAsync(Guid idOrder, string userName)
+        {
+            var order = await Orders.Where(x => x.Id == idOrder).FirstOrDefaultAsync();
+            if (order == null) throw new Exception("Заявки не существует.");
+            if ((OrderStatus)order.Status! != OrderStatus.New)
+                throw new Exception("Отменить можно только новую заявку.");
+
+            order.Status = 1;
+            order.ChangeDate = DateTime.UtcNow;
+            order.ChangeUser = userName;
+
+            Orders.Update(order);
+            await _customerContext.SaveChangesAsync();
+
+            return true;
+        }
+
+        /// <summary>
+        /// Отмена заявки
+        /// </summary>
+        /// <param name="idOrder"></param>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        public async Task<bool> DeclineOrderAsync(Guid idOrder, string userName)
+        {
+            var order = await Orders.Where(x => x.Id == idOrder).FirstOrDefaultAsync();
+            if (order == null) throw new Exception("Заявки не существует.");
+            if ((OrderStatus)order.Status! != OrderStatus.New
+                    && (OrderStatus)order.Status! != OrderStatus.Registered)
+                throw new Exception("Отменить можно только новую и зарегистрированную заявки.");
+
+            order.Status = -2;
+            order.ChangeDate = DateTime.UtcNow;
+            order.ChangeUser = userName;
+
+            Orders.Update(order);
+            await _customerContext.SaveChangesAsync();
+
+            return true;
+        }
+
+        /// <summary>
+        /// Дублирование заявки
+        /// </summary>
+        /// <param name="idOrder"></param>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        public async Task<bool> DoubleOrderAsync(Guid idOrder, string userName)
+        {
+            var order = await Orders.AsNoTracking().Where(x => x.Id == idOrder).FirstOrDefaultAsync();
+            if (order == null) throw new Exception("Заявки не существует.");
+            order.Id = idOrder;
+            order.CreateDate = DateTime.UtcNow;
+            order.CreateUser = userName;
+
+            await Orders.AddAsync(order);
+            await _customerContext.SaveChangesAsync();
 
             return true;
         }

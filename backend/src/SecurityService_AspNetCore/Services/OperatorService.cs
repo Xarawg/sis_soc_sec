@@ -10,6 +10,7 @@ using SecurityService_Core.Models.DTO;
 using SecurityService_Core.Models.ControllerDTO.Operator;
 using SecurityService_Core.Models.DB;
 using SecurityService_Core_Stores.Stores;
+using SecurityService_Core.Models.Enums;
 
 namespace Security_Service_AspNetCore.Services
 {
@@ -88,6 +89,30 @@ namespace Security_Service_AspNetCore.Services
             try
             {
                 return await _operatorStore.ChangeOrderAsync(model, userName);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+
+        public async Task<bool> ProcessingOrderAsync(OperatorProcessingOrderInputModel model, string userName)
+        {
+            try
+            {
+                switch ((OrderProcessingAction)model.Action)
+                {
+                    case OrderProcessingAction.Send:
+                        await _operatorStore.SendOrderAsync(model.Id, userName);
+                        break;
+                    case OrderProcessingAction.Decline:
+                        await _operatorStore.DeclineOrderAsync(model.Id, userName);
+                        break;
+                    case OrderProcessingAction.Double:
+                        await _operatorStore.DoubleOrderAsync(model.Id, userName);
+                        break;
+                }
+                return true;
             }
             catch (Exception ex)
             {
