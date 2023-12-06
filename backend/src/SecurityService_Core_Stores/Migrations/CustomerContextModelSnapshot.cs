@@ -65,6 +65,9 @@ namespace SecurityService_Core_Stores.Migrations
                         .HasColumnType("text")
                         .HasColumnName("file_name");
 
+                    b.Property<Guid>("IdOrder")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.ToTable("docscans", "public");
@@ -187,8 +190,8 @@ namespace SecurityService_Core_Stores.Migrations
                         .HasColumnType("text")
                         .HasColumnName("fio");
 
-                    b.Property<string>("INN")
-                        .HasColumnType("text")
+                    b.Property<int?>("INN")
+                        .HasColumnType("integer")
                         .HasColumnName("inn");
 
                     b.Property<bool>("LockoutEnabled")
@@ -203,8 +206,8 @@ namespace SecurityService_Core_Stores.Migrations
                         .HasColumnType("text")
                         .HasColumnName("organization");
 
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("text")
+                    b.Property<byte[]>("PasswordHash")
+                        .HasColumnType("bytea")
                         .HasColumnName("password_hash");
 
                     b.Property<string>("PhoneNumber")
@@ -240,6 +243,34 @@ namespace SecurityService_Core_Stores.Migrations
                     b.HasIndex("Status");
 
                     b.ToTable("users", "public");
+                });
+
+            modelBuilder.Entity("SecurityService_Core.Models.DB.UserHash", b =>
+                {
+                    b.Property<Guid>("IdUser")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<byte[]>("Hash")
+                        .HasColumnType("bytea")
+                        .HasColumnName("hash");
+
+                    b.Property<string>("Salt")
+                        .HasColumnType("text")
+                        .HasColumnName("salt");
+
+                    b.Property<int?>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("text")
+                        .HasColumnName("login");
+
+                    b.HasKey("IdUser");
+
+                    b.ToTable("user_hashes", "public");
                 });
 #pragma warning restore 612, 618
         }

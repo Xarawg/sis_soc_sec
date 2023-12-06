@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Security_Service_AspNetCore.Services;
 using SecurityService_AspNetCore.Configurations;
 using SecurityService_Core.Models.ControllerDTO.Operator;
 using SecurityService_Core.Models.DTO;
+using SecurityService_Core.Models.Enums;
 
 namespace Security_Service_AspNetCore.Controllers
 {
@@ -12,26 +14,31 @@ namespace Security_Service_AspNetCore.Controllers
     /// Контроллер обработки файлов и связанных сущностей
     /// </summary>
     [ApiController]
+    [Authorize]
     [Route("api/operator")]
     public class OperatorController : BaseController
     {
         private readonly ILogger<OperatorController> _logger;
         private readonly OperatorService _operatorService;
+        private readonly UserService _userService;
 
         /// <summary>
         /// Конструктор контроллера файлов
         /// </summary>
         /// <param name="logger"></param>
-        /// <param name="logService"></param>
         /// <param name="operatorService"></param>
-        public OperatorController(ILogger<OperatorController> logger, OperatorService operatorService)
+        public OperatorController(
+            ILogger<OperatorController> logger
+            , OperatorService operatorService
+            ,UserService userService)
         {
             _logger = logger;
             _operatorService = operatorService;
+            _userService = userService;
         }
 
         /// <summary>
-        /// 
+        /// Получить список заявок для оператора
         /// </summary>
         /// <returns>Список заявок</returns>
         [HttpGet]
@@ -40,6 +47,11 @@ namespace Security_Service_AspNetCore.Controllers
         {
             try
             {
+                var userStatus = (UserStatus?)await _userService.GetUserStatusByLoginAsync(GetUserName());
+                if (userStatus != UserStatus.Registered)
+                {
+                    throw new Exception("Учётная запись оператора не одобрена администратором!");
+                }
                 var result = await _operatorService.GetOrdersAsync();
 
                 return Results.Json(Result<List<OrderDTO>>.CreateSuccess(result), serializerOptions);
@@ -51,17 +63,22 @@ namespace Security_Service_AspNetCore.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Создать заявку оператором
         /// </summary>
         /// <param name="model"></param>
-        /// <returns></returns>
+        /// <returns>Создать заявку</returns>
         [HttpPost]
         [Route("create-order")]
-        public async Task<IResult> CreateOrder([FromBody] OperatorOrderDTO model)
+        public async Task<IResult> CreateOrder([FromForm] OperatorOrderInputModel model)
         {
             try
             {
-                var result = await _operatorService.CreateOrderAsync(model);
+                var userStatus = (UserStatus?)await _userService.GetUserStatusByLoginAsync(GetUserName());
+                if (userStatus != UserStatus.Registered)
+                {
+                    throw new Exception("Учётная запись оператора не одобрена администратором!");
+                }
+                var result = await _operatorService.CreateOrderAsync(model, GetUserName());
 
                 return Results.Json(Result<bool>.CreateSuccess(result), serializerOptions);
             }
@@ -72,17 +89,22 @@ namespace Security_Service_AspNetCore.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Изменить заявку оператором
         /// </summary>
         /// <param name="model"></param>
-        /// <returns></returns>
+        /// <returns>Изменить заявку</returns>
         [HttpPost]
         [Route("change-order")]
-        public async Task<IResult> ChangeOrder([FromBody] OperatorOrderDTO model)
+        public async Task<IResult> ChangeOrder([FromBody] OperatorChangeOrderInputModel model)
         {
             try
             {
-                var result = await _operatorService.ChangeOrderAsync(model);
+                var userStatus = (UserStatus?)await _userService.GetUserStatusByLoginAsync(GetUserName());
+                if (userStatus != UserStatus.Registered)
+                {
+                    throw new Exception("Учётная запись оператора не одобрена администратором!");
+                }
+                var result = await _operatorService.ChangeOrderAsync(model, GetUserName());
 
                 return Results.Json(Result<bool>.CreateSuccess(result), serializerOptions);
             }

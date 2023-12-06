@@ -26,12 +26,7 @@ namespace Security_Service_AspNetCore.Services
             _administratorStore = administratorStore;
         }
 
-        public async Task<bool> RegisterAsync(AdminRegistrationDTO model)
-        {
-            return true;
-        }
-
-        public async Task<bool> ChangeUserAsync(AdminRegistrationDTO model)
+        public async Task<bool> ChangeUserAsync(AdminRegistrationInputModel model)
         {
             return true;
         }
@@ -39,17 +34,6 @@ namespace Security_Service_AspNetCore.Services
         public async Task<AdminChangePasswordDTO> ChangePasswordAsync(AdminChangePasswordDTO model)
         {
             return new AdminChangePasswordDTO();
-        }
-
-        public async Task<List<UserDTO>> GetUsersAsync()
-        {
-            var users = await _administratorStore.GetUsersAsync();
-            if (users == null)
-            {
-                throw new Exception("Пользователи не найдены");
-            }
-            var result = _mapper.Map<IEnumerable<User>, IEnumerable<UserDTO>>(users).ToList();
-            return result;
         }
     }
 }

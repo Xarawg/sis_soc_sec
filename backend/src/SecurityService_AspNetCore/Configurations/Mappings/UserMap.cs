@@ -11,7 +11,7 @@ namespace SecurityService_AspNetCore.Configurations.Mappings
         public UserMap()
         {
             CreateMap<User, UserDTO>();
-            CreateMap<User, UserRegistrationDTO>();
+            CreateMap<User, UserRegistrationInputModel>();
         }
     }
 }

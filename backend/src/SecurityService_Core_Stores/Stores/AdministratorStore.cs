@@ -21,6 +21,5 @@ namespace SecurityService_Core_Stores.Stores
             Users = customerContext.Set<User>();
         }
 
-        public async Task<List<User>> GetUsersAsync() => await Users.AsNoTracking().ToListAsync();
     }
 }

@@ -4,6 +4,5 @@ namespace SecurityService_Core.Interfaces
 {
     public interface IAdministratorStore
     {
-        Task<List<User>> GetUsersAsync();
     }
 }

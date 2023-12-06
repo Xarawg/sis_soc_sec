@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Security_Service_AspNetCore.Services;
 using SecurityService_AspNetCore.Configurations;
+using SecurityService_AspNetCore.Services.Communication;
 using SecurityService_Core.Models.ControllerDTO.User;
 
 namespace Security_Service_AspNetCore.Controllers
@@ -11,6 +13,7 @@ namespace Security_Service_AspNetCore.Controllers
     /// Контроллер обработки файлов и связанных сущностей
     /// </summary>
     [ApiController]
+    [Authorize]
     [Route("api/user")]
     public class UserController : BaseController
     {
@@ -32,16 +35,23 @@ namespace Security_Service_AspNetCore.Controllers
         /// Регистрация пользователя через страницу регистрации на форме входа.
         /// </summary>
         /// <param name="model"></param>
+        /// <remarks>Для тестирования все регистрируются с одобренной учётной записью (статус 1)</remarks>
         /// <returns>Результат регистрации</returns>
         [HttpPost]
+        [AllowAnonymous]
         [Route("register")]
-        public async Task<IResult> Register([FromBody] UserRegistrationDTO model)
+        public async Task<IResult> Register([FromBody] UserRegistrationInputModel model)
         {
             try
             {
-                var result = await _userService.RegisterAsync(model);
-
-                return Results.Json(Result<bool>.CreateSuccess(result), serializerOptions);
+                if (model.INN.ToString().Length == 10 || model.INN.ToString().Length == 12)
+                {
+                    var result = await _userService.RegisterAsync(model);
+                    return Results.Json(Result<bool>.CreateSuccess(result), serializerOptions);
+                } else
+                {
+                    throw new Exception("ИНН у физических лиц составляет в длину 12 символов, у юридический - 10 символов.");
+                }
             }
             catch (Exception ex)
             {
@@ -50,40 +60,20 @@ namespace Security_Service_AspNetCore.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Аутентификация и получение токена
         /// </summary>
         /// <param name="model"></param>
-        /// <returns></returns>
+        /// <returns>Результат аутентификации</returns>
         [HttpPost]
-        [Route("change-password")]
-        public async Task<IResult> ChangePassword([FromBody] UserChangePasswordDTO model)
-        {
-            try
-            {
-                var result = await _userService.ChangePasswordAsync(model);
-
-                return Results.Json(Result<bool>.CreateSuccess(result), serializerOptions);
-            }
-            catch (Exception ex)
-            {
-                return Results.Json(Result<string>.CreateFailure(ex.Message), serializerOptions);
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        [HttpPost]
+        [AllowAnonymous]
         [Route("auth")]
-        public async Task<IResult> Auth([FromBody] UserAuthDTO model)
+        public async Task<IResult> Auth([FromBody] UserAuthInputModel model)
         {
             try
             {
                 var result = await _userService.AuthAsync(model);
 
-                return Results.Json(Result<bool>.CreateSuccess(result), serializerOptions);
+                return Results.Json(Result<TokenResponse>.CreateSuccess(result), serializerOptions);
             }
             catch (Exception ex)
             {

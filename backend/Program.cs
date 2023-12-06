@@ -1,5 +1,6 @@
 using Security_Service_AspNetCore;
 using SecurityService_AspNetCore.Configurations;
+using SecurityService_Core.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,10 +13,10 @@ var config = new ConfigurationBuilder()
 var options = new ProjectOptions();
 config.GetSection("Options").Bind(options);
 
-builder.Services.AddExtensions(options);
+var tokenOptions = new TokenOptions();
+config.GetSection("TokenOptions").Bind(tokenOptions);
 
-// Add services to the container.
-//builder.Services.AddControllers();
+builder.Services.AddExtensions(options, tokenOptions);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -23,6 +23,7 @@ namespace SecurityService_Core_Stores.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "uuid_generate_v4()"),
+                    IdOrder = table.Column<Guid>(type: "uuid", nullable: false),
                     file_name = table.Column<string>(type: "text", nullable: false),
                     file_ext = table.Column<string>(type: "text", nullable: false),
                     file_body = table.Column<byte[]>(type: "bytea", nullable: false),
@@ -61,6 +62,22 @@ namespace SecurityService_Core_Stores.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "user_hashes",
+                schema: "public",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    login = table.Column<string>(type: "text", nullable: true),
+                    hash = table.Column<byte[]>(type: "bytea", nullable: true),
+                    salt = table.Column<string>(type: "text", nullable: true),
+                    status = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_user_hashes", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "users",
                 schema: "public",
                 columns: table => new
@@ -69,7 +86,7 @@ namespace SecurityService_Core_Stores.Migrations
                     user_name = table.Column<string>(type: "text", nullable: true),
                     email = table.Column<string>(type: "text", nullable: true),
                     email_confirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    password_hash = table.Column<string>(type: "text", nullable: true),
+                    password_hash = table.Column<byte[]>(type: "bytea", nullable: true),
                     security_stamp = table.Column<string>(type: "text", nullable: true),
                     concurrency_stamp = table.Column<string>(type: "text", nullable: true),
                     phone_number = table.Column<string>(type: "text", nullable: true),
@@ -81,7 +98,7 @@ namespace SecurityService_Core_Stores.Migrations
                     user_role = table.Column<int>(type: "integer", nullable: true),
                     fio = table.Column<string>(type: "text", nullable: true),
                     organization = table.Column<string>(type: "text", nullable: true),
-                    inn = table.Column<string>(type: "text", nullable: true),
+                    inn = table.Column<int>(type: "integer", nullable: true),
                     address = table.Column<string>(type: "text", nullable: true),
                     status = table.Column<int>(type: "integer", nullable: true),
                     createuser = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
@@ -110,6 +127,10 @@ namespace SecurityService_Core_Stores.Migrations
 
             migrationBuilder.DropTable(
                 name: "orders",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "user_hashes",
                 schema: "public");
 
             migrationBuilder.DropTable(

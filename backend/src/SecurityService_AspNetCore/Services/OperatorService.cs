@@ -22,6 +22,11 @@ namespace Security_Service_AspNetCore.Services
         private readonly IOperatorStore _operatorStore;
 
         /// <summary>
+        /// 5 МБ ограничение загружаемого файла
+        /// </summary>
+        private const int FILE_SIZE_LIMIT = 5240000;
+
+        /// <summary>
         /// Конструктор сервиса файлов
         /// </summary>
         /// <param name="mapper"></param>
@@ -43,14 +48,83 @@ namespace Security_Service_AspNetCore.Services
             return result;
         }
 
-        public async Task<bool> CreateOrderAsync(OperatorOrderDTO model)
+        /// <summary>
+        /// Создание заявки
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<bool> CreateOrderAsync(OperatorOrderInputModel model, string userName)
         {
-            return true;
+            try
+            {
+                var idOrder = Guid.NewGuid();
+                List<Docscan> docs = new List<Docscan>();
+                foreach (var doc in model.Documents)
+                {
+                    // Получаем массив байт файла из IFormFile
+                    var data = await GetBytesAsync(doc);
+                    // Проверяем условия размера файла
+                    if (data.Length > FILE_SIZE_LIMIT) throw new Exception($"Превышен лимит размера 5 МБ у файла {doc.FileName}.");
+                    docs.Add(new Docscan()
+                    {
+                        Id = Guid.NewGuid(),
+                        IdOrder = idOrder,
+                        FileBody = data,
+                        FileName = MakeValidFileName(doc.FileName),
+                        FileExt = Path.GetExtension(doc.FileName)
+                    });
+                }
+                return await _operatorStore.CreateOrderAsync(idOrder, model, userName, docs);
+            } catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
         }
 
-        public async Task<bool> ChangeOrderAsync(OperatorOrderDTO model)
+        public async Task<bool> ChangeOrderAsync(OperatorChangeOrderInputModel model, string userName)
         {
-            return true;
+            try
+            {
+                return await _operatorStore.ChangeOrderAsync(model, userName);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
         }
+
+        #region Служебные методы
+
+        /// <summary>
+        /// Обезопасить название файла
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private static string MakeValidFileName(string? name)
+        {
+            string invalidChars = System.Text.RegularExpressions.Regex.Escape(new string(Path.GetInvalidFileNameChars()));
+            string invalidRegStr = string.Format(@"([{0}]*\.+$)|([{0}]+)", invalidChars);
+
+            return System.Text.RegularExpressions.Regex.Replace(name ?? string.Empty, invalidRegStr, "_");
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="formFile"></param>
+        /// <returns></returns>
+        private static async Task<byte[]> GetBytesAsync(IFormFile? formFile)
+        {
+            await using var memoryStream = new MemoryStream();
+            if (formFile != null)
+            {
+                await formFile.CopyToAsync(memoryStream);
+            }
+            return memoryStream.ToArray();
+        }
+        #endregion
+
     }
 }

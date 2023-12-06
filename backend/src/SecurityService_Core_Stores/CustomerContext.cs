@@ -21,6 +21,7 @@ namespace SecurityService_Core_Stores
             modelBuilder.ApplyConfiguration(new DocscanConfiguration());
             modelBuilder.ApplyConfiguration(new OrderConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new UserHashConfiguration());
 
             // исправление проблем с двойными кавычками
             //foreach (IMutableEntityType entity in modelBuilder.Model.GetEntityTypes())

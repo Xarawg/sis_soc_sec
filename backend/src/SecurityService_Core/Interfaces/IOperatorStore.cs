@@ -1,13 +1,12 @@
-﻿using SecurityService_Core.Models.DB;
+﻿using SecurityService_Core.Models.ControllerDTO.Operator;
+using SecurityService_Core.Models.DB;
 
 namespace SecurityService_Core.Interfaces
 {
     public interface IOperatorStore
     {
-        /// <summary>
-        /// Получение данных о погоде для изменения
-        /// </summary>
-        /// <returns>Список данных о погоде</returns>
         Task<List<Order>> GetOrdersAsync();
+        Task<bool> CreateOrderAsync(Guid idOrder, OperatorOrderInputModel model, string userName, List<Docscan> docs);
+        Task<bool> ChangeOrderAsync(OperatorChangeOrderInputModel model, string userName);
     }
 }

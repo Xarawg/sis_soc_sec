@@ -9,7 +9,7 @@
         public int? UserRole { get; set; }
         public string? FIO { get; set; }
         public string? Organization { get; set; }
-        public string? INN { get; set; }
+        public int? INN { get; set; }
         public string? Address { get; set; }
         public int? Status { get; set; }
     }
