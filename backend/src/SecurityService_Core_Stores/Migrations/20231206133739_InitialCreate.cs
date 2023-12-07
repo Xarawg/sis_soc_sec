@@ -14,6 +14,9 @@ namespace SecurityService_Core_Stores.Migrations
             migrationBuilder.EnsureSchema(
                 name: "public");
 
+            migrationBuilder.Sql(
+            @"CREATE EXTENSION IF NOT EXISTS ""uuid-ossp"";");
+
             migrationBuilder.CreateTable(
                 name: "docscans",
                 schema: "public",
