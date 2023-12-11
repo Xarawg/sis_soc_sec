@@ -43,9 +43,9 @@ namespace Security_Service_AspNetCore.Controllers
         /// Получить список заявок для оператора
         /// </summary>
         /// <returns>Список заявок</returns>
-        [HttpGet]
+        [HttpPost]
         [Route("get-orders")]
-        public async Task<IResult> GetOrders()
+        public async Task<IResult> GetOrders([FromBody] OperatorOrderGetModel model)
         {
             try
             {
@@ -55,7 +55,7 @@ namespace Security_Service_AspNetCore.Controllers
                 var userRole = (UserRole?)await _userService.GetUserRoleByLoginAsync(GetUserName());
                 if (userRole != UserRole.Operator && userRole != UserRole.SuperAdministrator) throw new Exception("Access denied");
 
-                var result = await _operatorService.GetOrdersAsync();
+                var result = await _operatorService.GetOrdersAsync(model);
 
                 return Results.Json(Result<List<OrderDTO>>.CreateSuccess(result), serializerOptions);
             }
@@ -71,7 +71,7 @@ namespace Security_Service_AspNetCore.Controllers
         /// <returns>Список заявок</returns>
         [HttpPost]
         [Route("get-order-document-by-id")]
-        public async Task<IResult> GetOrderDocumentsById()
+        public async Task<IResult> GetOrderDocumentsById([FromBody] OperatorGetDocscanModel model)
         {
             try
             {
@@ -81,9 +81,9 @@ namespace Security_Service_AspNetCore.Controllers
                 var userRole = (UserRole?)await _userService.GetUserRoleByLoginAsync(GetUserName());
                 if (userRole != UserRole.Operator && userRole != UserRole.SuperAdministrator) throw new Exception("Access denied");
 
-                var result = await _operatorService.GetOrdersAsync();
+                var result = await _operatorService.GetDocscanAsync(model.IdDoc);
 
-                return Results.Json(Result<List<OrderDTO>>.CreateSuccess(result), serializerOptions);
+                return Results.Json(result);
             }
             catch (Exception ex)
             {

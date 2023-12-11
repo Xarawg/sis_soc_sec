@@ -27,7 +27,21 @@ namespace SecurityService_Core_Stores.Stores
             Users = customerContext.Set<UserDB>();
         }
 
-        public async Task<List<OrderDB>> GetOrdersAsync() => await Orders.AsNoTracking().ToListAsync();
+        public async Task<List<OrderDB>> GetOrdersAsync(OperatorOrderGetModel model)
+        {
+            var orders = Orders.AsNoTracking().AsQueryable();
+            if (model.LimitOffset != null && model.LimitOffset != 0)
+            {
+                orders = orders.Skip((int)model.LimitOffset);
+            }
+            if (model.LimitRowCount != null && model.LimitRowCount != 0)
+            {
+                orders = orders.Take((int)model.LimitRowCount);
+            }
+            return await orders.ToListAsync();
+        }
+
+        public async Task<DocscanDB> GetDocscanAsync(Guid idDoc) => await Docscans.AsNoTracking().Where(x => x.Id == idDoc).FirstOrDefaultAsync();
         public async Task<List<DocscanDB>> GetDocscansAsync(Guid idOrder) => await Docscans.AsNoTracking().Where(x => x.IdOrder == idOrder).ToListAsync();
         public async Task<List<DocscanDB>> GetDocscanListAsync(List<Guid> idOrders)
         {

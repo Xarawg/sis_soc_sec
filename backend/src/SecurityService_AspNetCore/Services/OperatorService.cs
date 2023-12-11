@@ -38,9 +38,9 @@ namespace Security_Service_AspNetCore.Services
             _operatorStore = operatorStore;
         }
 
-        public async Task<List<OrderDTO>> GetOrdersAsync()
+        public async Task<List<OrderDTO>> GetOrdersAsync(OperatorOrderGetModel model)
         {
-            var orders = await _operatorStore.GetOrdersAsync();
+            var orders = await _operatorStore.GetOrdersAsync(model);
             var orderStatuses = await _operatorStore.GetOrderStatusesAsync();
             if (orders == null)
             {
@@ -57,6 +57,20 @@ namespace Security_Service_AspNetCore.Services
                 o.Documents = docs.Where(x => x.IdOrder == o.Id).ToList();
             });
             return result;
+        }
+
+        public async Task<DocscanDTO> GetDocscanAsync(Guid idDoc)
+        {
+            try
+            {
+                var doc = await _operatorStore.GetDocscanAsync(idDoc);
+                if (doc == null) throw new Exception("Документ не найден");
+                var result = _mapper.Map<DocscanDB, DocscanDTO>(doc);
+                return result;
+            } catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
         }
 
         /// <summary>
