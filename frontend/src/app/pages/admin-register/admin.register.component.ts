@@ -27,7 +27,7 @@ export class AdminRegisterComponent implements OnInit {
   }
   ngOnInit(): void {
     this.form = this.formBuilder.group({
-      login: ['', [Validators.required]],
+      userName: ['', [Validators.required]],
       fio: ['', [Validators.required]],
       organization: ['', [Validators.required]],
       innOrganization: ['', [Validators.required]],
@@ -41,10 +41,11 @@ export class AdminRegisterComponent implements OnInit {
   submit() {
     if (this.form.valid) {
       const user: UserAuth = {
-        login: this.form.value.login,
+        userName: this.form.value.userName,
         password: this.form.value.password
       }
-      const result = this.backendService.registerAdmin(user);
+      // const result = this.backendService.registerAdmin(user);
+      const result = true;
       if (result == true) {
         this.dialog.open(ModalComponent, {
           width: '550',

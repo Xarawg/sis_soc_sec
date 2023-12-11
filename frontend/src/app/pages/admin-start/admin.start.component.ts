@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { UserAuth } from 'src/app/interfaces/userAuth';
 import { ModalComponent } from 'src/app/modal/modal.component';
+import { AuthService } from 'src/app/services/auth.service';
 import { FakeBackendService } from 'src/app/services/fake-backend.service';
 
 @Component({
@@ -16,6 +17,7 @@ export class AdminStartComponent implements OnInit {
   form: FormGroup;
 
   constructor(private backendService: FakeBackendService,
+    private authService: AuthService,
     private router: Router,
     private dialog: MatDialog,
     private formBuilder: FormBuilder
@@ -24,17 +26,17 @@ export class AdminStartComponent implements OnInit {
   }
   ngOnInit(): void {
     this.form = this.formBuilder.group({
-      login: ['', [Validators.required]],
+      userName: ['', [Validators.required]],
       password: ['', [Validators.required]],
     });
   }
 
   submit() {
     const auth: UserAuth = {
-      login: this.form.value.login,
+      userName: this.form.value.userName,
       password: this.form.value.password
     }
-    const result = this.backendService.loginAdmin(auth);
+    const result = this.authService.login(auth);
     if (this.form.valid && result) {
       this.router.navigateByUrl('/users-table');
     }

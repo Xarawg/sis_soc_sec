@@ -9,10 +9,10 @@ import { ModalOpenOrderComponent } from 'src/app/modal-open-order/modal-open-ord
 import { FakeBackendService } from 'src/app/services/fake-backend.service';
 
 @Component({
-  selector: 'order-table',
+  selector: 'orders-table',
   changeDetection: ChangeDetectionStrategy.Default,
-  templateUrl: './order-table.component.html',
-  styleUrls: ['./order-table.component.scss']
+  templateUrl: './orders-table.component.html',
+  styleUrls: ['./orders-table.component.scss']
 })
 
 

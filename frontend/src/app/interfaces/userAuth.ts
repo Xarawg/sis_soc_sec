@@ -1,6 +1,6 @@
 export interface UserAuth {
     /** Имя пользователя */
-    login: string;
+    userName: string;
     /** Пароль пользователя */
     password: string;
 }

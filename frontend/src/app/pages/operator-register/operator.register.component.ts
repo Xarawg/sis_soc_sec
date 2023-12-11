@@ -41,7 +41,7 @@ export class OperatorRegisterComponent implements OnInit {
   submit() {
     if (this.form.valid) {
       const user: UserAuth = {
-        login: this.form.value.login,
+        userName: this.form.value.userName,
         password: this.form.value.password
       }
       const result = this.backendService.registerOperator(user);

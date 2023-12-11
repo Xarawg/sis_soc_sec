@@ -23,7 +23,7 @@ export class FakeBackendService {
 
   constructor(private authService: AuthService) { 
     const user: UserAuth = {
-      login: "test",
+      userName: "test",
       password: "test"
     };
     this.usersAuthData.push(user);
@@ -31,35 +31,35 @@ export class FakeBackendService {
     this.generateUserData();
   }
 
-  loginAdmin(authModel: UserAuth): boolean {
-    for (let i = 0; i < this.adminsAuthData.length; i ++) {
-      let user = this.adminsAuthData[i];
-      if (user.login === authModel.login && user.password === authModel.password) {
-        this.authService.isAdminAuthenticated.next(true);
-        return true;
-      }
-    };
-    return false;
-  }
+  // loginAdmin(authModel: UserAuth): boolean {
+  //   for (let i = 0; i < this.adminsAuthData.length; i ++) {
+  //     let user = this.adminsAuthData[i];
+  //     if (user.login === authModel.login && user.password === authModel.password) {
+  //       this.authService.isAdminAuthenticated.next(true);
+  //       return true;
+  //     }
+  //   };
+  //   return false;
+  // }
 
-  registerAdmin(registerModel: UserAuth): boolean {
-    if (registerModel) {
-      this.adminsAuthData.push(registerModel);
-      return true;
-    }
-    return false;
-  }
+  // registerAdmin(registerModel: UserAuth): boolean {
+  //   if (registerModel) {
+  //     this.adminsAuthData.push(registerModel);
+  //     return true;
+  //   }
+  //   return false;
+  // }
 
-  loginOperator(authModel: UserAuth): boolean {
-    for (let i = 0; i < this.usersAuthData.length; i ++) {
-      let user = this.usersAuthData[i];
-      if (user.login === authModel.login && user.password === authModel.password) {
-        this.authService.isAdminAuthenticated.next(true);
-        return true;
-      }
-    };
-    return false;
-  }
+  // loginOperator(authModel: UserAuth): boolean {
+  //   for (let i = 0; i < this.usersAuthData.length; i ++) {
+  //     let user = this.usersAuthData[i];
+  //     if (user.userName === authModel.userName && user.password === authModel.password) {
+  //       this.authService.isAdminAuthenticated.next(true);
+  //       return true;
+  //     }
+  //   };
+  //   return false;
+  // }
 
   registerOperator(registerModel: UserAuth): boolean {
     if (registerModel) {
