@@ -27,7 +27,7 @@ namespace SecurityService_Core.Security
         public AccessToken CreateAccessToken(UserDB user)
         {
             var refreshToken = BuildRefreshToken();
-            var accessToken = BuildAccessToken(user.Id, refreshToken, user.UserName!);
+            var accessToken = BuildAccessToken(user, refreshToken);
             _refreshTokens.Add(refreshToken);
 
             return accessToken;
@@ -63,7 +63,7 @@ namespace SecurityService_Core.Security
             return refreshToken;
         }
 
-        private AccessToken BuildAccessToken(Guid id, RefreshToken refreshToken, string login)
+        private AccessToken BuildAccessToken(UserDB user, RefreshToken refreshToken)
         {
             var tokenOptions = new TokenOptions();
             _configuration.GetSection("TokenOptions").Bind(tokenOptions);
@@ -72,8 +72,9 @@ namespace SecurityService_Core.Security
             //create a identity and add claims to the user which we want to log in
             ClaimsIdentity claimsIdentity = new ClaimsIdentity(new[]
             {
-                new Claim("Id", id.ToString(), ClaimValueTypes.String),
-                new Claim("Login", login, ClaimValueTypes.String),
+                new Claim("Id", user.Id.ToString(), ClaimValueTypes.String),
+                new Claim("UserName", user.UserName, ClaimValueTypes.String),
+                new Claim("Role", user.UserRole.ToString(), ClaimValueTypes.String),
                 new Claim("isAuthenticated", "true")
             }, "Custom");
             //create the jwt

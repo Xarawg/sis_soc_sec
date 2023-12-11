@@ -4,24 +4,20 @@ import { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/ro
 import { AuthService } from '../services/auth.service';
 
 @Injectable({ providedIn: 'root' })
-export class AuthGuard  {
+export class AuthGuard {
     constructor(
         private router: Router,
-        private authenticationService: AuthService
+        private authService: AuthService
     ) { }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        const user = this.authenticationService.userTokenValue;
-        console.log('user ', user)
-        if (user) {
-            // logged in so return true
-            console.log('user ', true)
-            return true;
+        const user = this.authService.userValue.value;
+        if(!!user && route.data['roles'].includes(user.role)) {
+            return true
+        } else {
+            console.log('navigate home')
+            this.router.navigate(['/home'], { queryParams: { returnUrl: state.url } });
+            return false;
         }
-
-        // not logged in so redirect to login page with the return url
-            console.log('user ', false)
-        this.router.navigate(['/home'], { queryParams: { returnUrl: state.url } });
-        return false;
     }
 }

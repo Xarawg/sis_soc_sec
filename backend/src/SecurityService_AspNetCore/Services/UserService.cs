@@ -190,6 +190,13 @@ namespace Security_Service_AspNetCore.Services
             return result;
         }
 
+        public async Task<int?> GetRoleAsync(string userName)
+        {
+            var user = await _userStore.GetUserByLoginAsync(userName);
+            if (user == null) throw new Exception("Пользователь не найден");
+            return user.UserRole;
+        }
+
         /// <summary>
         /// Получение роли пользователя по логину
         /// </summary>
@@ -408,7 +415,7 @@ namespace Security_Service_AspNetCore.Services
                 // Формирование токена
                 var token = _tokenHandler.CreateAccessToken(user);
 
-                return new TokenResponse(true, null, token);
+                return new TokenResponse(true, null, token, user.UserRole);
             }
             catch (Exception ex)
             {

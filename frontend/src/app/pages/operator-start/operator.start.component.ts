@@ -45,8 +45,9 @@ export class OperatorStartComponent implements OnInit {
     .subscribe({
         next: () => {
             // get return url from route parameters or default to '/'
-            const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-            this.router.navigate([returnUrl]);
+            // const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+            // console.log('navigate return /')
+            // this.router.navigate([returnUrl]);
         },
         error: error => {
             this.error = error;
