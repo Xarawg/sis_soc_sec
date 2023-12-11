@@ -27,6 +27,7 @@ namespace Security_Service_AspNetCore.Services
         public const int ITERATIONS = 100000;
         private readonly HashAlgorithmName HASH_ALGORITHM = HashAlgorithmName.SHA512;
 
+        public const int TEMPORARY_ACCESS_EXPIRATION_TIME = 30 * 60; // длительность временного доступа после сброса пароля
         public const int BLOCK_TIME = 15 * 60; // время блокировки
         public const int ATTEMPT_DATE = 180; // интервал между попытками ввода
         public const int ATTEMPT_COUNT = 5; // кол-во неудачных попыток
@@ -53,24 +54,96 @@ namespace Security_Service_AspNetCore.Services
             try
             {
                 var userName = userModel != null ? userModel.UserName : adminModel.UserName;
+                var userPassword = userModel != null ? userModel.Password : adminModel.Password;
                 var idUser = Guid.NewGuid();
 
                 // Проверка на существование пользователя с указанным логином
-                User? existingUser = await CheckUserByLoginAsync(userModel.UserName!);
-                if (existingUser != null)
-                {
-                    throw new Exception("Неудачная попытка регистрации. Такой пользователь уже зарегистрирован.");
-                };
+                UserDB? existingUser = await CheckUserByLoginAsync(userName);
+                if (existingUser != null) throw new Exception("Access denied."); // Неудачная попытка регистрации. Такой пользователь уже зарегистрирован.
 
                 string salt = GetSalt();
-                byte[] hash = GetHash(userModel.Password!, salt);
+                byte[] hash = GetHash(userPassword, salt);
 
                 // Проверка уникальности хэша, если хэш не уникален – генерируется уникальный.
-                (string, byte[]) tuple = await GenerateUniqHashAsync(userModel.Password!, salt, hash);
+                // БД спроектирована так, что хэш всегда уникален (Hash поле имеет статус Uniq),
+                // но подобный функционал всё равно требуется для соответствия требованиям безопасности.
+                (string, byte[]) tuple = await GenerateUniqHashAsync(userPassword, salt, hash);
                 salt = tuple.Item1;
                 hash = tuple.Item2;
 
                 await _userStore.InsertUserAsync(idUser, salt, hash, userName, userModel, adminModel);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+
+        public async Task<bool> ChangeUserAsync(AdminRegistrationInputModel model)
+        {
+            try
+            {
+                // Проверка на существование пользователя с указанным логином
+                UserDB? existingUser = await CheckUserByLoginAsync(model.UserName);
+                if (existingUser == null) throw new Exception("Access denied."); // Неудачная попытка изменения. Такого пользователя не существует.
+
+                existingUser = _mapper.Map<AdminRegistrationInputModel, UserDB>(model);
+                await _userStore.UpdateUserAsync(existingUser);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+
+        public async Task<bool> CreateTemporaryUserPasswordAsync(ChangePasswordDTO model)
+        {
+            try
+            {
+                // Проверка на существование пользователя с указанным логином
+                UserDB? existingUser = await CheckUserByLoginAsync(model.UserName);
+                if (existingUser == null) throw new Exception("Access denied."); // Неудачная попытка изменения. Такого пользователя не существует.
+
+                string salt = GetSalt();
+                byte[] hash = GetHash(model.Password, salt);
+
+                // Проверка уникальности хэша, если хэш не уникален – генерируется уникальный.
+                // БД спроектирована так, что хэш всегда уникален (Hash поле имеет статус Uniq),
+                // но подобный функционал всё равно требуется для соответствия требованиям безопасности.
+                (string, byte[]) tuple = await GenerateUniqHashAsync(model.Password, salt, hash);
+                salt = tuple.Item1;
+                hash = tuple.Item2;
+
+                await _userStore.CreateTemporaryUserPasswordAsync(model, salt, hash, TEMPORARY_ACCESS_EXPIRATION_TIME);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+        }
+
+        public async Task<bool> ChangePasswordAsync(ChangePasswordDTO model)
+        {
+            try
+            {
+                // Проверка на существование пользователя с указанным логином
+                UserDB? existingUser = await CheckUserByLoginAsync(model.UserName);
+                if (existingUser == null) throw new Exception("Access denied."); // Неудачная попытка изменения. Такого пользователя не существует.
+
+                string salt = GetSalt();
+                byte[] hash = GetHash(model.Password, salt);
+
+                // Проверка уникальности хэша, если хэш не уникален – генерируется уникальный.
+                // БД спроектирована так, что хэш всегда уникален (Hash поле имеет статус Uniq),
+                // но подобный функционал всё равно требуется для соответствия требованиям безопасности.
+                (string, byte[]) tuple = await GenerateUniqHashAsync(model.Password, salt, hash);
+                salt = tuple.Item1;
+                hash = tuple.Item2;
+
+                await _userStore.ChangePasswordAsync(model, salt, hash);
                 return true;
             }
             catch (Exception ex)
@@ -84,7 +157,7 @@ namespace Security_Service_AspNetCore.Services
             try
             {
                 var user = await CheckUserByLoginAsync(model.UserName);
-                if (user == null) throw new Exception("Пользователь не зарегистрирован.");
+                if (user == null) throw new Exception("Access denied."); // Пользователь не зарегистрирован.
 
                 var accessAllowed = await CheckPasswordAsync(model.UserName, model.Password);
 
@@ -101,11 +174,19 @@ namespace Security_Service_AspNetCore.Services
         public async Task<List<UserDTO>> GetUsersAsync()
         {
             var users = await _userStore.GetUsersAsync();
+            var userRoles = await _userStore.GetUserRolesAsync();
+            var userStatuses = await _userStore.GetUserStatusesAsync();
             if (users == null)
             {
                 throw new Exception("Пользователи не найдены");
             }
-            var result = _mapper.Map<IEnumerable<User>, IEnumerable<UserDTO>>(users).ToList();
+            var result = _mapper.Map<IEnumerable<UserDB>, IEnumerable<UserDTO>>(users).ToList();
+            result.ForEach(u =>
+            {
+                u.UserRole = userRoles[int.Parse(u.UserRole)];
+                u.Status = userStatuses[int.Parse(u.Status)];
+            });
+
             return result;
         }
 
@@ -136,7 +217,7 @@ namespace Security_Service_AspNetCore.Services
         /// </summary>
         /// <param name="login"></param>
         /// <returns></returns>
-        private async Task<User?> CheckUserByLoginAsync(string login)
+        private async Task<UserDB?> CheckUserByLoginAsync(string login)
         {
             var user = await _userStore.CheckUserByLoginAsync(login);
             return user;
@@ -225,19 +306,19 @@ namespace Security_Service_AspNetCore.Services
         /// <returns>true or false</returns>
         public async Task<bool> CheckPasswordAsync(string userName, string password)
         {
-            User? user = await _userStore.CheckUserByLoginAsync(userName);
-            UserHash? userHash = await _userStore.GetUserHashAsync(userName);
+            UserDB? user = await _userStore.CheckUserByLoginAsync(userName);
+            UserHashDB? userHash = await _userStore.GetUserHashAsync(userName);
             if (userHash == null || user == null)
             {
-                throw new Exception("Пользователь с таким логином не зарегистрирован");
+                throw new Exception("Access denied."); // Пользователь с таким логином не зарегистрирован
             }
 
             switch ((UserStatus)userHash.Status!)
             {
                 case UserStatus.Blocked:
-                    throw new Exception("Пользователь с таким логином заблокирован.");
+                    throw new Exception("Access denied."); // Пользователь с таким логином заблокирован.
                 case UserStatus.Declined:
-                    throw new Exception("Пользователь с таким логином отклонён администрацией.");
+                    throw new Exception("Access denied."); // Пользователь с таким логином отклонён администрацией.
             }
 
             try
@@ -252,10 +333,10 @@ namespace Security_Service_AspNetCore.Services
                 throw new Exception(ex.Message, ex);
             }
 
-            var salt = userHash.Salt;
-            byte[] hash = GetHash(password, salt);
+            var salt = userHash!.Salt;
+            byte[] hash = GetHash(password, salt!);
 
-            // Проверка хэш пароля на соответствие
+            // Проверка хэш пароля на соответствие, если не соответствует - добавляется счётчик неудачных входов
             if (!hash.SequenceEqual(userHash.Hash!))
             {
                 try
@@ -266,7 +347,7 @@ namespace Security_Service_AspNetCore.Services
                 {
                     throw new Exception(ex.Message, ex);
                 }
-                throw new Exception("Логин или пароль указаны неверно.");
+                throw new Exception("Access denied."); // Логин или пароль указаны неверно.
             }
 
             return true;
@@ -275,7 +356,7 @@ namespace Security_Service_AspNetCore.Services
         /// <summary>
         /// Проверка блокировки
         /// </summary>
-        private async Task<bool> CheckBlockedAsync(User user)
+        private async Task<bool> CheckBlockedAsync(UserDB user)
         {
             if (user.LockoutEnabled && user.LockoutEnd != null)
             {
@@ -285,7 +366,7 @@ namespace Security_Service_AspNetCore.Services
                     user.AccessFailedCount = 0;
                     user.LockoutEnd = null;
                     user.LockoutEnabled = false;
-                    await _userStore.UpdateUser(user);
+                    await _userStore.UpdateUserAsync(user);
 
                     return false;
                 }
@@ -302,43 +383,25 @@ namespace Security_Service_AspNetCore.Services
         }
 
         /// <summary>
-        /// Отслеживание неудачной попытки входа
+        /// Добавить неудачную попытку входа
         /// </summary>
-        private async Task<bool> AccessFailedAsync(User user)
+        private async Task AccessFailedAsync(UserDB user)
         {
-            if (user.LockoutEnabled && user.LockoutEnd != null)
+            user.AccessFailedCount++;
+            if (user.AccessFailedCount >= ATTEMPT_COUNT)
             {
-                var blockTime = DateTime.UtcNow - user.LockoutEnd.Value.ToUniversalTime();
-                if (user.LockoutEnd == null
-                    || (DateTime.UtcNow - user.LockoutEnd.Value.ToUniversalTime()).Seconds <= ATTEMPT_DATE)
-                {
-                    user.LockoutEnd = DateTime.UtcNow;
-                    user.LockoutEnabled = false;
-                    if (user.AccessFailedCount >= ATTEMPT_COUNT)
-                    {
-                        user.LockoutEnabled = true;
-                    }
-                    await _userStore.UpdateUser(user);
-
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                var blockedTime = DateTime.UtcNow.AddSeconds(BLOCK_TIME);
+                user.LockoutEnd = blockedTime;
+                user.LockoutEnabled = true;
             }
-            else if (user.LockoutEnabled)
-            {
-                return true;
-            }
-            return false;
+            await _userStore.UpdateUserAsync(user);
         }
 
         /// <summary>
         /// Создание токена при входе в аккант с проверкой логина и пароля
         /// </summary>
         /// <returns>Возвращает токен при успехе</returns>
-        public async Task<TokenResponse> CreateAccessTokenAsync(User user)
+        public async Task<TokenResponse> CreateAccessTokenAsync(UserDB user)
         {
             try
             {

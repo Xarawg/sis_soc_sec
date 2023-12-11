@@ -8,17 +8,17 @@ namespace SecurityService_Core_Stores.Stores
     {
         private readonly CustomerContext _customerContext;
 
-        private readonly DbSet<Docscan> Docscans;
-        private readonly DbSet<Order> Orders;
-        private readonly DbSet<User> Users;
+        private readonly DbSet<DocscanDB> Docscans;
+        private readonly DbSet<OrderDB> Orders;
+        private readonly DbSet<UserDB> Users;
 
         public AdministratorStore(CustomerContext customerContext)
         {
             _customerContext = customerContext;
 
-            Docscans = customerContext.Set<Docscan>();
-            Orders = customerContext.Set<Order>();
-            Users = customerContext.Set<User>();
+            Docscans = customerContext.Set<DocscanDB>();
+            Orders = customerContext.Set<OrderDB>();
+            Users = customerContext.Set<UserDB>();
         }
 
     }

@@ -12,8 +12,8 @@ using SecurityService_Core_Stores;
 namespace SecurityService_Core_Stores.Migrations
 {
     [DbContext(typeof(CustomerContext))]
-    [Migration("20231206133739_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20231211095400_IniticalCreate")]
+    partial class IniticalCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace SecurityService_Core_Stores.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("SecurityService_Core.Models.DB.Docscan", b =>
+            modelBuilder.Entity("SecurityService_Core.Models.DB.DocscanDB", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -76,7 +76,7 @@ namespace SecurityService_Core_Stores.Migrations
                     b.ToTable("docscans", "public");
                 });
 
-            modelBuilder.Entity("SecurityService_Core.Models.DB.Order", b =>
+            modelBuilder.Entity("SecurityService_Core.Models.DB.OrderDB", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -144,7 +144,26 @@ namespace SecurityService_Core_Stores.Migrations
                     b.ToTable("orders", "public");
                 });
 
-            modelBuilder.Entity("SecurityService_Core.Models.DB.User", b =>
+            modelBuilder.Entity("SecurityService_Core.Models.DB.OrderStatusDB", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("OrderStatusName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("order_status_name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("order_statuses", "public");
+                });
+
+            modelBuilder.Entity("SecurityService_Core.Models.DB.UserDB", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -196,9 +215,13 @@ namespace SecurityService_Core_Stores.Migrations
                         .HasColumnType("text")
                         .HasColumnName("fio");
 
-                    b.Property<int?>("INN")
-                        .HasColumnType("integer")
+                    b.Property<string>("INN")
+                        .HasColumnType("text")
                         .HasColumnName("inn");
+
+                    b.Property<bool?>("IsTemporaryAccess")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_temporary_access");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean")
@@ -232,6 +255,10 @@ namespace SecurityService_Core_Stores.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("status");
 
+                    b.Property<DateTime?>("TemporaryAccessExpirationTime")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("temporary_access_expiration_time");
+
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean")
                         .HasColumnName("two_factor_enabled");
@@ -248,10 +275,13 @@ namespace SecurityService_Core_Stores.Migrations
 
                     b.HasIndex("Status");
 
+                    b.HasIndex("UserName")
+                        .IsUnique();
+
                     b.ToTable("users", "public");
                 });
 
-            modelBuilder.Entity("SecurityService_Core.Models.DB.UserHash", b =>
+            modelBuilder.Entity("SecurityService_Core.Models.DB.UserHashDB", b =>
                 {
                     b.Property<Guid>("IdUser")
                         .ValueGeneratedOnAdd()
@@ -276,7 +306,51 @@ namespace SecurityService_Core_Stores.Migrations
 
                     b.HasKey("IdUser");
 
+                    b.HasIndex("Hash")
+                        .IsUnique();
+
+                    b.HasIndex("UserName")
+                        .IsUnique();
+
                     b.ToTable("user_hashes", "public");
+                });
+
+            modelBuilder.Entity("SecurityService_Core.Models.DB.UserRoleDB", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("UserRoleName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("user_role_name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("user_roles", "public");
+                });
+
+            modelBuilder.Entity("SecurityService_Core.Models.DB.UserStatusDB", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("UserStatusName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("user_status_name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("user_statuses", "public");
                 });
 #pragma warning restore 612, 618
         }

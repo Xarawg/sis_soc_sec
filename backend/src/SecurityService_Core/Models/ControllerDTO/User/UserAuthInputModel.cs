@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace SecurityService_Core.Models.ControllerDTO.User
 {
@@ -10,14 +10,14 @@ namespace SecurityService_Core.Models.ControllerDTO.User
         /// <summary>
         /// Логин пользователя
         /// </summary>
-        /// <example>testLogin</example>
+        /// <example>SuperAdmin</example>
         [Required]
         public string UserName { get; set; }
 
         /// <summary>
         /// Пароль пользователя
         /// </summary>
-        /// <example>testPassword</example>
+        /// <example>SuperAdmin</example>
         [Required]
         public string Password { get; set; }
     }

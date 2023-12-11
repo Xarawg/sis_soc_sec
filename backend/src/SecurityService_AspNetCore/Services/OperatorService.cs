@@ -41,11 +41,21 @@ namespace Security_Service_AspNetCore.Services
         public async Task<List<OrderDTO>> GetOrdersAsync()
         {
             var orders = await _operatorStore.GetOrdersAsync();
+            var orderStatuses = await _operatorStore.GetOrderStatusesAsync();
             if (orders == null)
             {
                 throw new Exception("Заявки не найдены");
             }
-            var result = _mapper.Map<IEnumerable<Order>, IEnumerable<OrderDTO>>(orders).ToList();
+            var result = _mapper.Map<IEnumerable<OrderDB>, IEnumerable<OrderDTO>>(orders).ToList();
+            var resultIdOrders = result.Select(x => x.Id).ToList();
+            var docsDB = await _operatorStore.GetDocscanListAsync(resultIdOrders);
+            var docs = _mapper.Map<IEnumerable<DocscanDB>, IEnumerable<DocscanWithoutFileBodyDTO>>(docsDB).ToList();
+
+            result.ForEach(o =>
+            {
+                o.Status = orderStatuses[int.Parse(o.Status)];
+                o.Documents = docs.Where(x => x.IdOrder == o.Id).ToList();
+            });
             return result;
         }
 
@@ -61,14 +71,14 @@ namespace Security_Service_AspNetCore.Services
             try
             {
                 var idOrder = Guid.NewGuid();
-                List<Docscan> docs = new List<Docscan>();
+                List<DocscanDB> docs = new List<DocscanDB>();
                 foreach (var doc in model.Documents)
                 {
                     // Получаем массив байт файла из IFormFile
                     var data = await GetBytesAsync(doc);
                     // Проверяем условия размера файла
                     if (data.Length > FILE_SIZE_LIMIT) throw new Exception($"Превышен лимит размера 5 МБ у файла {doc.FileName}.");
-                    docs.Add(new Docscan()
+                    docs.Add(new DocscanDB()
                     {
                         Id = Guid.NewGuid(),
                         IdOrder = idOrder,

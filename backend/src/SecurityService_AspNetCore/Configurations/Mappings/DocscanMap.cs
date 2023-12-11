@@ -8,7 +8,8 @@ namespace SecurityService_AspNetCore.Configurations.Mappings
     {
         public DocscanMap()
         {
-            CreateMap<Docscan, DocscanDTO>();
+            CreateMap<DocscanDB, DocscanDTO>();
+            CreateMap<DocscanDB, DocscanWithoutFileBodyDTO>();
         }
     }
 }

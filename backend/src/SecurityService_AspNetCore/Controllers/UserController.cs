@@ -44,14 +44,9 @@ namespace Security_Service_AspNetCore.Controllers
         {
             try
             {
-                if (model.INN.ToString().Length == 10 || model.INN.ToString().Length == 12)
-                {
-                    var result = await _userService.RegisterAsync(model);
-                    return Results.Json(Result<bool>.CreateSuccess(result), serializerOptions);
-                } else
-                {
-                    throw new Exception("ИНН у физических лиц составляет в длину 12 символов, у юридический - 10 символов.");
-                }
+                if (model.INN.Length != 10 && model.INN.Length != 12) throw new Exception("Access denied."); // ИНН у физических лиц составляет в длину 12 символов, у юридических - 10 символов.
+                var result = await _userService.RegisterAsync(model);
+                return Results.Json(Result<bool>.CreateSuccess(result), serializerOptions);
             }
             catch (Exception ex)
             {

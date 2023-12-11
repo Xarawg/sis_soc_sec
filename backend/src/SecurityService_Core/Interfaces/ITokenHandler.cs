@@ -5,7 +5,7 @@ namespace SecurityService_Core.Interfaces
 {
     public interface ITokenHandler
     {
-        AccessToken CreateAccessToken(User user);
+        AccessToken CreateAccessToken(UserDB user);
         RefreshToken TakeRefreshToken(string token);
         void RevokeRefreshToken(string token);
     }

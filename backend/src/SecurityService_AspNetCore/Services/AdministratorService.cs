@@ -25,15 +25,5 @@ namespace Security_Service_AspNetCore.Services
             _mapper = mapper;
             _administratorStore = administratorStore;
         }
-
-        public async Task<bool> ChangeUserAsync(AdminRegistrationInputModel model)
-        {
-            return true;
-        }
-
-        public async Task<AdminChangePasswordDTO> ChangePasswordAsync(AdminChangePasswordDTO model)
-        {
-            return new AdminChangePasswordDTO();
-        }
     }
 }

@@ -5,8 +5,11 @@ using Microsoft.Extensions.Logging;
 using Security_Service_AspNetCore.Services;
 using SecurityService_AspNetCore.Configurations;
 using SecurityService_Core.Models.ControllerDTO.Administrator;
+using SecurityService_Core.Models.ControllerDTO.User;
 using SecurityService_Core.Models.DTO;
 using SecurityService_Core.Models.Enums;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Security_Service_AspNetCore.Controllers
 {
@@ -22,6 +25,9 @@ namespace Security_Service_AspNetCore.Controllers
         private readonly AdministratorService _administratorService;
         private readonly UserService _userService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public readonly List<int> USER_ROLES = Enum.GetValues(typeof(UserRole)).Cast<int>().ToList();
+        public readonly List<int> USER_STATUSES = Enum.GetValues(typeof(UserStatus)).Cast<int>().ToList();
 
         /// <summary>
         /// Конструктор контроллера
@@ -47,7 +53,6 @@ namespace Security_Service_AspNetCore.Controllers
         /// Зарегистрировать пользователя средствами администратора
         /// </summary>
         /// <param name="model"></param>
-        /// <remarks>Сейчас регистрирует всех администраторов со статусом 1 - т.е. все сразу одобрены для работы с данными. </remarks>
         /// <returns>Результат регистрации</returns>
         [HttpPost]
         [Route("register")]
@@ -55,13 +60,15 @@ namespace Security_Service_AspNetCore.Controllers
         {
             try
             {
+                var userStatus = (UserStatus?)await _userService.GetUserStatusByLoginAsync(GetUserName());
+                if (userStatus != UserStatus.Registered) throw new Exception("Access denied."); // Учётная запись оператора не одобрена администратором
+                
                 var userRole = (UserRole?)await _userService.GetUserRoleByLoginAsync(GetUserName());
-                if (userRole != UserRole.Administrator)
-                {
-                    throw new Exception("Недостаточно прав");
-                }
-                if (Enumerable.Range(0, 1).Contains(model.Role)) throw new Exception("Идентификатор роли находится в промежутке между 0 и 1.");
-                if (Enumerable.Range(-2, 1).Contains(model.Status)) throw new Exception("Идентификатор статуса находится в промежутке между -2 и 1.");
+                if (userRole != UserRole.Administrator && userRole != UserRole.SuperAdministrator) throw new Exception("Access denied");
+                if (model.Role == (int)UserRole.Administrator && userRole != UserRole.SuperAdministrator) throw new Exception("Access denied");
+                if (model.INN.Length != 10 && model.INN.Length != 12) throw new Exception("Access denied."); // ИНН у физических лиц составляет в длину 12 символов, у юридических - 10 символов.
+                if (!USER_ROLES.Contains(model.Role)) throw new Exception("Access denied."); // Идентификатор роли находится в промежутке между 0 и 31.
+                if (!USER_STATUSES.Contains(model.Status)) throw new Exception("Access denied."); // Идентификатор статуса находится в промежутке между -2 и 1.
                 var result = await _userService.RegisterAsync(null, model);
 
                 return Results.Json(Result<bool>.CreateSuccess(result), serializerOptions);
@@ -83,14 +90,15 @@ namespace Security_Service_AspNetCore.Controllers
         {
             try
             {
+                var userStatus = (UserStatus?)await _userService.GetUserStatusByLoginAsync(GetUserName());
+                if (userStatus != UserStatus.Registered) throw new Exception("Access denied."); // Учётная запись не одобрена администратором
+
                 var userRole = (UserRole?)await _userService.GetUserRoleByLoginAsync(GetUserName());
-                if (userRole != UserRole.Administrator)
-                {
-                    throw new Exception("Недостаточно прав");
-                }
-                if (Enumerable.Range(0, 1).Contains(model.Role)) throw new Exception("Идентификатор роли находится в промежутке между 0 и 1.");
-                if (Enumerable.Range(-2, 1).Contains(model.Status)) throw new Exception("Идентификатор статуса находится в промежутке между -2 и 1.");
-                var result = await _administratorService.ChangeUserAsync(model);
+                if (userRole != UserRole.Administrator && userRole != UserRole.SuperAdministrator) throw new Exception("Access denied");
+                if (model.Role == (int)UserRole.Administrator && userRole != UserRole.SuperAdministrator) throw new Exception("Access denied");
+                if (!USER_ROLES.Contains(model.Role)) throw new Exception("Access denied."); // Идентификатор роли находится в промежутке между 0 и 1.
+                if (!USER_STATUSES.Contains(model.Status)) throw new Exception("Access denied."); // Идентификатор статуса находится в промежутке между -2 и 1.
+                var result = await _userService.ChangeUserAsync(model);
 
                 return Results.Json(Result<bool>.CreateSuccess(result), serializerOptions);
             }
@@ -106,19 +114,22 @@ namespace Security_Service_AspNetCore.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("change-password")]
-        public async Task<IResult> ChangePassword([FromBody] AdminChangePasswordDTO model)
+        [Route("change-user-password")]
+        public async Task<IResult> ChangeUserPassword([FromBody] ChangePasswordDTO model)
         {
             try
             {
-                var userRole = (UserRole?)await _userService.GetUserRoleByLoginAsync(GetUserName());
-                if (userRole != UserRole.Administrator)
-                {
-                    throw new Exception("Недостаточно прав");
-                }
-                var result = await _administratorService.ChangePasswordAsync(model);
+                var userStatus = (UserStatus?)await _userService.GetUserStatusByLoginAsync(GetUserName());
+                if (userStatus != UserStatus.Registered) throw new Exception("Access denied."); // Учётная запись не одобрена администратором
 
-                return Results.Json(Result<AdminChangePasswordDTO>.CreateSuccess(result), serializerOptions);
+                var userRole = (UserRole?)await _userService.GetUserRoleByLoginAsync(GetUserName());
+                if (userRole != UserRole.Administrator && userRole != UserRole.SuperAdministrator) throw new Exception("Access denied");
+
+                var changedUserRole = (UserRole?)await _userService.GetUserRoleByLoginAsync(model.UserName);
+                if (changedUserRole == UserRole.SuperAdministrator) throw new Exception("Access denied");
+                var result = await _userService.CreateTemporaryUserPasswordAsync(model);
+
+                return Results.Json(Result<bool>.CreateSuccess(result), serializerOptions);
             }
             catch (Exception ex)
             {
@@ -136,11 +147,11 @@ namespace Security_Service_AspNetCore.Controllers
         {
             try
             {
+                var userStatus = (UserStatus?)await _userService.GetUserStatusByLoginAsync(GetUserName());
+                if (userStatus != UserStatus.Registered) throw new Exception("Access denied."); // Учётная запись не одобрена администратором
+
                 var userRole = (UserRole?)await _userService.GetUserRoleByLoginAsync(GetUserName());
-                if (userRole != UserRole.Administrator)
-                {
-                    throw new Exception("Недостаточно прав");
-                }
+                if (userRole != UserRole.Administrator && userRole != UserRole.SuperAdministrator) throw new Exception("Access denied");
                 var result = await _userService.GetUsersAsync();
 
                 return Results.Json(Result<List<UserDTO>>.CreateSuccess(result), serializerOptions);

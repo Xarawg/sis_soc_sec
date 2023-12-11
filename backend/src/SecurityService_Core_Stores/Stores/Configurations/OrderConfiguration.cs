@@ -4,9 +4,9 @@ using SecurityService_Core.Models.DB;
 
 namespace SecurityService_Core_Stores.Stores.Configurations
 {
-    public class OrderConfiguration : IEntityTypeConfiguration<Order>
+    public class OrderConfiguration : IEntityTypeConfiguration<OrderDB>
     {
-        public void Configure(EntityTypeBuilder<Order> builder)
+        public void Configure(EntityTypeBuilder<OrderDB> builder)
         {
             builder.HasKey(t => t.Id);
 

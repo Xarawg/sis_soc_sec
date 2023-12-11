@@ -17,13 +17,13 @@ namespace SecurityService_Core.Models.ControllerDTO.User
         [Phone]
         public string PhoneNumber { get; set; }
         [Required]
-        [Length(8, 100)]
+        [Length(6, 100)]
         public string FIO { get; set; }
         [Required]
         [Length(10, 100)]
         public string Organization { get; set; }
         [Required]
-        public int INN { get; set; }
+        public string INN { get; set; }
         [Required]
         [MinLength(10), MaxLength(256)]
         public string Address { get; set; }

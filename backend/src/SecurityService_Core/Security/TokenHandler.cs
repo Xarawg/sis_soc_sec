@@ -24,7 +24,7 @@ namespace SecurityService_Core.Security
             _configuration = configuration;
         }
 
-        public AccessToken CreateAccessToken(User user)
+        public AccessToken CreateAccessToken(UserDB user)
         {
             var refreshToken = BuildRefreshToken();
             var accessToken = BuildAccessToken(user.Id, refreshToken, user.UserName!);

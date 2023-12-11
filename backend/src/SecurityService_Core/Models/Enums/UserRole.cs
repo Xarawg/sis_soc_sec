@@ -5,7 +5,9 @@
     /// </summary>
     public enum UserRole
     {
-        Operator = 0,
-        Administrator = 1
+        None = 0,
+        Operator = 1,
+        Administrator = 2,
+        SuperAdministrator = 3
     }
 }

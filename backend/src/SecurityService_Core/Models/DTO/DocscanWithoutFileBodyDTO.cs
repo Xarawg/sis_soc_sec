@@ -1,10 +1,10 @@
-﻿namespace SecurityService_Core.Models.DB
+﻿namespace SecurityService_Core.Models.DTO
 {
-    public class Docscan : BaseEntity
+    public class DocscanWithoutFileBodyDTO
     {
+        public Guid Id { get; set; }
         public Guid IdOrder { get; set; }
         public string FileName { get; set; }
         public string FileExt { get; set; }
-        public byte[] FileBody{ get; set; }
     }
 }

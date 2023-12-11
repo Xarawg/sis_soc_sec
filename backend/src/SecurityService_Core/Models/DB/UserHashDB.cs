@@ -1,6 +1,6 @@
 ﻿namespace SecurityService_Core.Models.DB
 {
-    public class UserHash
+    public class UserHashDB
     {
         public Guid IdUser { get; set; }
         public string? UserName { get; set; }

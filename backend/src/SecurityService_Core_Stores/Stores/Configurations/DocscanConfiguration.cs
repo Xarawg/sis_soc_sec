@@ -4,9 +4,9 @@ using SecurityService_Core.Models.DB;
 
 namespace SecurityService_Core_Stores.Stores.Configurations
 {
-    public class DocscanConfiguration : IEntityTypeConfiguration<Docscan>
+    public class DocscanConfiguration : IEntityTypeConfiguration<DocscanDB>
     {
-        public void Configure(EntityTypeBuilder<Docscan> builder)
+        public void Configure(EntityTypeBuilder<DocscanDB> builder)
         {
             builder.HasKey(t => t.Id);
 

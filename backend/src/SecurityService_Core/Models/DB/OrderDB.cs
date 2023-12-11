@@ -2,7 +2,7 @@
 
 namespace SecurityService_Core.Models.DB
 {
-    public class Order : BaseEntity
+    public class OrderDB : BaseEntity
     {
         public DateTime? Date { get; set; }
         public string? State { get; set; }

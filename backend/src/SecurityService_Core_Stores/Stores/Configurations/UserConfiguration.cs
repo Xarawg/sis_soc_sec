@@ -5,9 +5,9 @@ using SecurityService_Core.Models.DTO;
 
 namespace SecurityService_Core_Stores.Stores.Configurations
 {
-    public class UserConfiguration : IEntityTypeConfiguration<User>
+    public class UserConfiguration : IEntityTypeConfiguration<UserDB>
     {
-        public void Configure(EntityTypeBuilder<User> builder)
+        public void Configure(EntityTypeBuilder<UserDB> builder)
         {
             builder.HasKey(t => t.Id);
 
@@ -19,6 +19,9 @@ namespace SecurityService_Core_Stores.Stores.Configurations
 
             builder.Property(e => e.UserName)
                 .HasColumnName("user_name");
+
+            builder.HasIndex(e => e.UserName)
+                .IsUnique();
 
             builder.Property(e => e.Email)
                 .HasColumnName("email");
@@ -72,6 +75,12 @@ namespace SecurityService_Core_Stores.Stores.Configurations
                 .HasColumnName("status");
 
             builder.HasIndex(e => e.Status);
+
+            builder.Property(e => e.IsTemporaryAccess)
+                .HasColumnName("is_temporary_access");
+
+            builder.Property(e => e.TemporaryAccessExpirationTime)
+                .HasColumnName("temporary_access_expiration_time");
 
             builder.Property(e => e.ChangeDate)
                 .HasColumnType("timestamp(3) without time zone")

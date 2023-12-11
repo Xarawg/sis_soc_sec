@@ -12,20 +12,28 @@ namespace SecurityService_Core_Stores.Stores
     {
         private readonly CustomerContext _customerContext;
 
-        private readonly DbSet<Docscan> Docscans;
-        private readonly DbSet<Order> Orders;
-        private readonly DbSet<User> Users;
+        private readonly DbSet<DocscanDB> Docscans;
+        private readonly DbSet<OrderDB> Orders;
+        private readonly DbSet<OrderStatusDB> OrderStatuses;
+        private readonly DbSet<UserDB> Users;
 
         public OperatorStore(CustomerContext customerContext)
         {
             _customerContext = customerContext;
 
-            Docscans = customerContext.Set<Docscan>();
-            Orders = customerContext.Set<Order>();
-            Users = customerContext.Set<User>();
+            Docscans = customerContext.Set<DocscanDB>();
+            Orders = customerContext.Set<OrderDB>();
+            OrderStatuses = customerContext.Set<OrderStatusDB>();
+            Users = customerContext.Set<UserDB>();
         }
 
-        public async Task<List<Order>> GetOrdersAsync() => await Orders.AsNoTracking().ToListAsync();
+        public async Task<List<OrderDB>> GetOrdersAsync() => await Orders.AsNoTracking().ToListAsync();
+        public async Task<List<DocscanDB>> GetDocscansAsync(Guid idOrder) => await Docscans.AsNoTracking().Where(x => x.IdOrder == idOrder).ToListAsync();
+        public async Task<List<DocscanDB>> GetDocscanListAsync(List<Guid> idOrders)
+        {
+            return await Docscans.AsNoTracking().Where(x => idOrders.Contains(x.IdOrder)).ToListAsync();
+        }
+        public async Task<Dictionary<int, string>> GetOrderStatusesAsync() => await OrderStatuses.AsNoTracking().ToDictionaryAsync(x => x.Id, x => x.OrderStatusName);
 
         /// <summary>
         /// Создание заявки
@@ -35,9 +43,9 @@ namespace SecurityService_Core_Stores.Stores
         /// <param name="userName"></param>
         /// <param name="docs"></param>
         /// <returns></returns>
-        public async Task<bool> CreateOrderAsync(Guid idOrder, OperatorOrderInputModel model, string userName, List<Docscan> docs)
+        public async Task<bool> CreateOrderAsync(Guid idOrder, OperatorOrderInputModel model, string userName, List<DocscanDB> docs)
         {
-            var newOrder = new Order()
+            var newOrder = new OrderDB()
             {
                 Id = idOrder,
                 Date = DateTime.UtcNow,

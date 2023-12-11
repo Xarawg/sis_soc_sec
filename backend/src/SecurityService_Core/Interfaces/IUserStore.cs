@@ -7,12 +7,16 @@ namespace SecurityService_Core.Interfaces
 {
     public interface IUserStore
     {
-        Task<List<User>> GetUsersAsync();
-        Task<User?> CheckUserByLoginAsync(string login);
-        Task<User?> GetUserByLoginAsync(string login);
-        Task<UserHash?> GetUserHashAsync(string login);
-        Task<UserHash?> GetExistsUserHashAsync(byte[] hash);
+        Task<List<UserDB>> GetUsersAsync();
+        Task<Dictionary<int, string>> GetUserRolesAsync();
+        Task<Dictionary<int, string>> GetUserStatusesAsync();
+        Task<UserDB?> CheckUserByLoginAsync(string login);
+        Task<UserDB?> GetUserByLoginAsync(string login);
+        Task<UserHashDB?> GetUserHashAsync(string login);
+        Task<UserHashDB?> GetExistsUserHashAsync(byte[] hash);
         Task InsertUserAsync(Guid idUser, string salt, byte[] hash, string? user = null, UserRegistrationInputModel? model = null, AdminRegistrationInputModel? adminModel = null);
-        Task UpdateUser(User user);
+        Task UpdateUserAsync(UserDB user);
+        Task CreateTemporaryUserPasswordAsync(ChangePasswordDTO model, string salt, byte[] hash, int temporaryTime);
+        Task ChangePasswordAsync(ChangePasswordDTO model, string salt, byte[] hash);
     }
 }
