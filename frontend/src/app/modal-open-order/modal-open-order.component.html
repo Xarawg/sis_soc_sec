@@ -67,5 +67,5 @@
   <button mat-flat-button type="button" (click)="declineOrder()" *ngIf="order.state == 0 || order.state == 1">Отменить заявку</button>
   <button mat-flat-button type="button" (click)="doubleOrder()" *ngIf="order.state != 0 && order.state != 1">Дублировать заявку</button>
   <hr>
-  <button mat-flat-button type="button"  (click)="saveOrder()" *ngIf="order.state == 0">Сохранить заявку</button>
+  <button mat-flat-button type="button"  (click)="saveOrder()" *ngIf="order.state == 0 || order.id == null">Сохранить заявку</button>
 </mat-dialog-content>

@@ -1,10 +1,15 @@
 import { Component, EventEmitter, Inject, Input, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { Order } from '../interfaces/order';
 import { userColumnsConstants } from '../constants/user.columns.constants';
 import { FormBuilder, Validators, FormControl, FormGroup } from '@angular/forms';
 import { User } from '../interfaces/user';
 import { AuthService } from '../services/auth.service';
+import { UserRegistrationInputModel } from '../interfaces/userRegistrationInputModel';
+import { ModalComponent } from '../modal/modal.component';
+import { AdminRegistrationInputModel } from '../interfaces/adminRegistrationInputModel';
+import { HttpService } from '../services/http.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -28,7 +33,10 @@ export class ModalOpenUserComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public user: User,
     private dialogRef: MatDialogRef<ModalOpenUserComponent>,
     private formBuilder: FormBuilder,
-    private authService: AuthService
+    private authService: AuthService,
+    private httpService: HttpService,
+    private dialog: MatDialog,
+    private router: Router,
   ) {
 
   }
@@ -42,7 +50,7 @@ export class ModalOpenUserComponent implements OnInit {
     ];
     this.getStatusPlaceholder();
     this.roles = this.getAvailableRolesForChange();
-    if (!!this.user) {
+    if (!!this.user && this.user.userName != null) {
       this.form = this.formBuilder.group({
         userName: new FormControl({value: this.user.userName, disabled: true}, Validators.required),
         userRole: [this.user.userRole, Validators.required],
@@ -72,7 +80,6 @@ export class ModalOpenUserComponent implements OnInit {
 
   getStatusPlaceholder(): void {
     const res = this.statuses.filter((x:any) => x.valueView === this.user.status);
-    console.log('res ', res)
     this.statusPlaceholderId =  res != null ? res : 0;
   }
 
@@ -105,22 +112,100 @@ export class ModalOpenUserComponent implements OnInit {
   declineUser(): void {
     console.log('declineUser')
   }
+  
+  registerUser() {
+    if (this.form.valid) {
+      const model: AdminRegistrationInputModel = {            
+        userName: this.form.value.userName,
+        email: this.form.value.email,
+        phoneNumber: this.form.value.phoneNumber,
+        fio: this.form.value.fio,
+        organization: this.form.value.organization,
+        inn: this.form.value.inn,
+        role: this.form.value.userRole,
+        status: this.form.value.status,
+        address: this.form.value.address,
+        password: this.form.value.password
+      }
+    this.httpService.registrationByAdmin(model).subscribe( (data:any)=> {
+      const result = data.value != null && data.value != undefined ? true : false;
+      if (result == true) {
+        this.dialog.open(ModalComponent, {
+          width: '550',
+          data: {
+            modalText: 'Регистрация прошла успешно.'
+          }
+        });
+      } else {
+        this.dialog.open(ModalComponent, {
+          width: '550',
+          data: {
+            modalText: 'Произошла ошибка регистрации.'
+          }
+        });
+      }
+    });
+    }
+    else {
+      this.dialog.open(ModalComponent, {
+        width: '550',
+        data: {
+          modalText: 'Заполните все поля формы.'
+        }
+      });
+    }
+  }     
 
-  registerUser(): void {
-    console.log('registerUser')
+  saveUser() {
+    if (this.form.valid) {
+      const model: AdminRegistrationInputModel = {            
+        userName: this.form.value.userName,
+        email: this.form.value.email,
+        phoneNumber: this.form.value.phoneNumber,
+        fio: this.form.value.fio,
+        organization: this.form.value.organization,
+        inn: this.form.value.inn,
+        role: this.form.value.userRole,
+        status: this.form.value.status,
+        address: this.form.value.address,
+        password: this.form.value.password
+      }
+    this.httpService.changeUserByAdmin(model).subscribe( (data:any)=> {
+      const result = data.value != null && data.value != undefined ? true : false;
+      if (result == true) {
+        this.dialog.open(ModalComponent, {
+          width: '550',
+          data: {
+            modalText: 'Изменение пользователя прошло успешно.'
+          }
+        });
+      } else {
+        this.dialog.open(ModalComponent, {
+          width: '550',
+          data: {
+            modalText: 'Произошла ошибка регистрации.'
+          }
+        });
+      }
+    });
+    }
+    else {
+      this.dialog.open(ModalComponent, {
+        width: '550',
+        data: {
+          modalText: 'Заполните все поля формы.'
+        }
+      });
+    }
   }
 
-  saveUser(): void {
-    console.log('saveUser')
-  }
-     
   blockUser(): void {
     console.log('blockUser')
   }
 
   submit() {
     if (this.form.valid) {
-      console.log('form ', this.form)
+      // console.log('form ', this.form)
     }
   }
 

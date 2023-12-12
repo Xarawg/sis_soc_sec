@@ -6,7 +6,9 @@ import { UserRoles } from 'src/app/enums/userRoles';
 import { UserStates } from 'src/app/enums/userStates';
 import { User } from 'src/app/interfaces/user';
 import { UserAuth } from 'src/app/interfaces/userAuth';
+import { UserRegistrationInputModel } from 'src/app/interfaces/userRegistrationInputModel';
 import { ModalComponent } from 'src/app/modal/modal.component';
+import { HttpService } from 'src/app/services/http.service';
 
 @Component({
   selector: 'register',
@@ -21,7 +23,9 @@ export class AdminRegisterComponent implements OnInit {
   constructor(
     private router: Router,
     private dialog: MatDialog,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private httpService: HttpService,
+
   ) {
 
   }
@@ -33,18 +37,25 @@ export class AdminRegisterComponent implements OnInit {
       inn: ['', [Validators.required]],
       address: ['', [Validators.required]],
       email: ['', [Validators.required]],
-      phone: ['', [Validators.required]],
+      phoneNumber: ['', [Validators.required]],
       password: new FormControl('')
     });
   }
 
   submit() {
     if (this.form.valid) {
-      const user: UserAuth = {
+      const model: UserRegistrationInputModel = {            
         userName: this.form.value.userName,
+        email: this.form.value.email,
+        phoneNumber: this.form.value.phoneNumber,
+        fio: this.form.value.fio,
+        organization: this.form.value.organization,
+        inn: this.form.value.inn,
+        address: this.form.value.address,
         password: this.form.value.password
       }
-      const result = true;
+    this.httpService.registrationByUser(model).subscribe( (data:any)=> {
+      const result = data.value != null && data.value != undefined ? true : false;
       if (result == true) {
         this.dialog.open(ModalComponent, {
           width: '550',
@@ -61,6 +72,7 @@ export class AdminRegisterComponent implements OnInit {
           }
         });
       }
+    });
     }
     else {
       this.dialog.open(ModalComponent, {

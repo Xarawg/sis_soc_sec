@@ -72,10 +72,8 @@ export class HttpService {
     return this.http.post<boolean>(`${environment.apiUrl}/operator/change-order`, model);
   }
 
-  /** Изменение заявки оператором */
+  /** Изменение заявки оператором - один роут для всех видов простых изменений */
   processingOrder(model: OperatorProcessingOrderInputModel) {
     return this.http.post<boolean>(`${environment.apiUrl}/operator/processing-order`, model);
   }
-
-
 }

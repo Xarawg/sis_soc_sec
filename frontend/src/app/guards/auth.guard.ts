@@ -15,7 +15,6 @@ export class AuthGuard {
         if(!!user && route.data['roles'].includes(user.role)) {
             return true
         } else {
-            console.log('navigate home')
             this.router.navigate(['/home'], { queryParams: { returnUrl: state.url } });
             return false;
         }

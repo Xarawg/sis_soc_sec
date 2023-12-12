@@ -53,7 +53,7 @@
     </mat-select>
   </mat-form-field>
 
-  <mat-form-field class="example-full-width" *ngIf="user.userName == null && user.userName == ''">
+  <mat-form-field class="example-full-width" *ngIf="user.userName == null || user.userName == ''">
     <mat-label>{{ userColumnNames[10] }}</mat-label>
     <input matInput placeholder="{{user.password}}" value="{{user.password}}"  formControlName="password">
   </mat-form-field>
@@ -61,7 +61,7 @@
 </form>
   <button mat-flat-button mat-dialog-close>Вернуться</button>
   <button mat-flat-button type="button"  (click)="declineUser()" *ngIf="user.status == 0">Отклонить</button>
-  <button mat-flat-button type="button" (click)="registerUser()" *ngIf="user.status == 0">Зарегистрировать</button>
+  <button mat-flat-button type="button" (click)="registerUser()" *ngIf="user.status == 0 || user.userName == null">Зарегистрировать</button>
   <button mat-flat-button type="button" (click)="blockUser()" *ngIf="user.status == 1">Заблокировать</button>
   <hr>
   <button mat-flat-button type="button" (click)="saveUser()" *ngIf="user.status == 0 || user.status == -1">Сохранить</button>

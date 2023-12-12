@@ -1,8 +1,15 @@
 import {Component, EventEmitter, Inject, Input, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
 import { Order } from '../interfaces/order';
 import { orderColumnsConstants } from '../constants/order.columns.constants';
 import { FormBuilder, Validators, FormControl, FormGroup } from '@angular/forms';
+import { MatTableDataSource } from '@angular/material/table';
+import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
+import { HttpService } from '../services/http.service';
+import { OperatorProcessingOrderInputModel } from '../interfaces/operatorProcessingOrderInputModel';
+import { OrderProcessingAction } from '../enums/orderProcessingAction';
+import { OperatorChangeOrderInputModel } from '../interfaces/operatorChangeOrderInputModel';
 
 
 @Component({
@@ -21,19 +28,21 @@ export class ModalOpenOrderComponent implements OnInit {
   constructor(
       @Inject(MAT_DIALOG_DATA) public order: Order,
       private dialogRef: MatDialogRef<ModalOpenOrderComponent>,
-      private formBuilder: FormBuilder
+      private formBuilder: FormBuilder,
+      private authService: AuthService,
+      private httpService: HttpService,
+      private dialog: MatDialog,
+      private router: Router,
   ) {
     
    }
 
   ngOnInit() {
-    console.log('order ', this.order)
-    console.log('docs ', this.order.documents)
     this.types = [
       {value: 0, valueView: "заявление на смену реквизитов в ПФР"}, 
       {value: 1, valueView: "запрос мер поддержки"}
     ];
-    if (!!this.order) {
+    if (!!this.order && this.order.id != null) {
       this.form = this.formBuilder.group({
         id: new FormControl({value: this.order.id, disabled: true}, Validators.required),
         date: new FormControl({value: this.order.date, disabled: true}, Validators.required),
@@ -77,30 +86,61 @@ export class ModalOpenOrderComponent implements OnInit {
     }
   }
 
+  /**
+   * Изменение заявки, обновление данных в ней - тех, которые можно обновить.
+   */
   saveOrder(): void {
-    console.log('saveOrder')
+    const model: OperatorChangeOrderInputModel = {
+    id: this.order.id,
+    snils: this.form.value.snils,
+    fio: this.form.value.fio,
+    contactData: this.form.value.contactData,
+    type: this.form.value.type,
+    supportMeasures: this.form.value.supportMeasures
+  }
+  this.httpService.changeOrder(model).subscribe( (data:any)=> {
+    const res = data.value;
+  });
   }
 
-  declineOrder(): void {
-    console.log('declineOrder')
+  declineOrder(): void {    
+    const model: OperatorProcessingOrderInputModel = {
+      id: this.order.id,
+      action: OrderProcessingAction.Decline
+    }
+    this.httpService.processingOrder(model).subscribe( (data:any)=> {
+      const res = data.value;
+    });
   }
 
-  sendOrder(): void {
-    console.log('sendOrder')
+  sendOrder(): void {  
+    const model: OperatorProcessingOrderInputModel = {
+      id: this.order.id,
+      action: OrderProcessingAction.Send
+    }
+    this.httpService.processingOrder(model).subscribe( (data:any)=> {
+      const res = data.value;
+    });
   }
   
-  doubleOrder(): void {
-    console.log('doubleOrder')
+  doubleOrder(): void {  
+    const model: OperatorProcessingOrderInputModel = {
+      id: this.order.id,
+      action: OrderProcessingAction.Double
+    }
+    this.httpService.processingOrder(model).subscribe( (data:any)=> {
+      const res = data.value;
+    });
   }
 
   submit() {
     if (this.form.valid) {
-      console.log('form ', this.form)
+      // console.log('form ', this.form)
     }
   }
 
   downloadDocscan(doc: any){
-    console.log('downloadDocscan ', doc)
+    // console.log('downloadDocscan ', doc)
   }
 
   cancel(){

@@ -88,8 +88,7 @@ export class UsersTableComponent implements OnInit, AfterViewInit {
   }
 
   /** Посмотреть заявку. */
-  lookAtUser(user: User) {
-  
+  lookAtUser(user: User) {  
     this.dialog.open(ModalOpenUserComponent, {
       height: "calc(100% - 100px)",
       width: "calc(100% - 100px)",
