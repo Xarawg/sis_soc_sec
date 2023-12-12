@@ -25,4 +25,5 @@ export class HttpService {
     const model: operatorOrderGetModel = { 'limitRowCount': 1000, 'limitOffset': 0 };
     return this.http.post<Order[]>(`${environment.apiUrl}/operator/get-orders`, model);
   }
+
 }

@@ -44,7 +44,6 @@ export class AdminRegisterComponent implements OnInit {
         userName: this.form.value.userName,
         password: this.form.value.password
       }
-      // const result = this.backendService.registerAdmin(user);
       const result = true;
       if (result == true) {
         this.dialog.open(ModalComponent, {

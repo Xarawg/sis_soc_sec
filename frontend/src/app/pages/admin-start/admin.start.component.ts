@@ -26,8 +26,7 @@ export class AdminStartComponent implements OnInit {
     private formBuilder: FormBuilder
   ) {
     // redirect to home if already logged in
-    if (this.authService.userValue.value) { 
-        // this.router.navigate(['/']);
+    if (this.authService.userValue.value) {
     }
   }
 
@@ -60,7 +59,6 @@ export class AdminStartComponent implements OnInit {
 
   private markAsDirty(group: FormGroup): void {
     group.markAsDirty();
-    // tslint:disable-next-line:forin
     for (const i in group.controls) {
       group.controls[i].markAsDirty();
     }

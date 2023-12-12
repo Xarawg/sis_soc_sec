@@ -1,16 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { UsersTableComponent } from './users-table.component';
 
-import { OrderTableComponent } from './orders-table.component';
-
-describe('OrderTableComponent', () => {
-  let component: OrderTableComponent;
-  let fixture: ComponentFixture<OrderTableComponent>;
+describe('UsersTableComponent', () => {
+  let component: UsersTableComponent;
+  let fixture: ComponentFixture<UsersTableComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [OrderTableComponent]
+      declarations: [UsersTableComponent]
     });
-    fixture = TestBed.createComponent(OrderTableComponent);
+    fixture = TestBed.createComponent(UsersTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

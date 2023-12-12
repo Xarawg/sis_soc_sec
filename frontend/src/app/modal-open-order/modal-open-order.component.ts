@@ -63,12 +63,6 @@ export class ModalOpenOrderComponent implements OnInit {
       });
     }
   }
-
-  // getState(state: any): string {
-  //   const result: number = +state +3;
-  //   return this.states[result];
-  // }
-
   
   handleFileInputChange(fileList: FileList | null): void {
     if (fileList != null) {
