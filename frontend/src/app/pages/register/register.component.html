@@ -26,15 +26,15 @@
         </mat-form-field>
   
         <mat-form-field class="example-full-width">
-          <input matInput placeholder="ИНН организации" formControlName="innOrganization" required>
-          <mat-error *ngIf="form.controls['innOrganization'].hasError('required')">
+          <input matInput placeholder="ИНН организации" formControlName="inn" required>
+          <mat-error *ngIf="form.controls['inn'].hasError('required')">
             Введите ИНН организации
           </mat-error>  
         </mat-form-field>
   
         <mat-form-field class="example-full-width">
-          <input matInput placeholder="Адрес организации" formControlName="addressOrganization" required>
-          <mat-error *ngIf="form.controls['addressOrganization'].hasError('required')">
+          <input matInput placeholder="Адрес организации" formControlName="address" required>
+          <mat-error *ngIf="form.controls['address'].hasError('required')">
             Введите адрес организации
           </mat-error>  
         </mat-form-field>

@@ -1,9 +1,10 @@
 import { OrderStates } from "../enums/orderStates";
 import { OrderTypes } from "../enums/orderTypes";
+import { Docscan } from "./docscan";
 
 export interface Order {
     /** Номер заявки – идентификатор не редактируемый */
-    idOrder: string;    
+    id: string;    
     /** Дата заявки – не редактируется */
     date: string;
     /** Состояние заявки – результат обработки услуги госорганом, не редактируется */
@@ -21,7 +22,7 @@ export interface Order {
     /** Тело заявки – сгенерированное в XML(JSON) для отправки на сервис СМЭВ */
     body: string;
     /** Ссылки на документы – при подаче заявлений прикрепляются сканы документов, ограничение одного файла 5 Мб */
-    documents: Array<Blob> | null;
+    documents: Array<Docscan> | null;
     /** Меры поддержки – тело ответа из госоргана при подаче запроса */
     supportMeasures: string;
 }

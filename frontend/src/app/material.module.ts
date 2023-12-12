@@ -1,6 +1,6 @@
 
 import { MatButtonModule } from '@angular/material/button';
-import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
+import { MatNativeDateModule, MatOptionModule, MatRippleModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatTableModule} from '@angular/material/table';
@@ -40,7 +40,8 @@ const MATERIAL_MODULES = [
   MatToolbarModule,
   MatSortModule,
   MatMenuModule,
-  MatGridListModule
+  MatGridListModule,
+  MatOptionModule
 ]
 
 @NgModule({

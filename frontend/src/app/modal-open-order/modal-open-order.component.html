@@ -1,10 +1,116 @@
-<div mat-dialog-content [formGroup]="form">
+<h2 mat-dialog-title>Просмотр заявки</h2>
+<mat-dialog-content [formGroup]="form" style="height: calc(100% - 96px);max-height: unset">
+  <form ng-submit="submit()">
+
+  <mat-form-field class="example-full-width">
+    <mat-label>{{ orderColumnNames[0] }}</mat-label>
+    <input matInput placeholder="{{order.id}}" value="{{order.id}}"  formControlName="id">
+  </mat-form-field>
+
+  <mat-form-field class="example-full-width">
+    <mat-label>{{ orderColumnNames[1] }}</mat-label>
+    <input matInput placeholder="{{order.date | date}}" value="{{order.date | date}}"  formControlName="date">
+  </mat-form-field>
+
+  <!-- <mat-form-field class="example-full-width">
+    <mat-label>{{ orderColumnNames[2] }}</mat-label>
+    <mat-select formControlName="state">
+      <mat-option *ngFor="let s of states" [value]="s.value">
+        {{s.valueView}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field> -->
+<!-- 
+  <mat-form-field class="example-full-width">
+    <mat-label>{{ orderColumnNames[3] }}</mat-label>
+    <mat-select formControlName="status">
+      <mat-option *ngFor="let s of statuses" [value]="s.value">
+        {{s.valueView}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field> -->
+
+  <mat-form-field class="example-full-width">
+    <mat-label>{{ orderColumnNames[2] }}</mat-label>
+    <input matInput placeholder="{{order.state}}" value="{{order.state}}"  formControlName="state">
+  </mat-form-field>
+
+  <mat-form-field class="example-full-width">
+    <mat-label>{{ orderColumnNames[3] }}</mat-label>
+    <input matInput placeholder="{{order.status}}" value="{{order.status}}"  formControlName="status">
+  </mat-form-field>
+
+  <mat-form-field class="example-full-width">
+    <mat-label>{{ orderColumnNames[4] }}</mat-label>
+    <input matInput placeholder="{{order.snils}}" value="{{order.snils}}"  formControlName="snils">
+  </mat-form-field>
+
+  <mat-form-field class="example-full-width">
+    <mat-label>{{ orderColumnNames[5] }}</mat-label>
+    <input matInput placeholder="{{order.fio}}" value="{{order.fio}}"  formControlName="fio">
+  </mat-form-field>
+
+  <mat-form-field class="example-full-width">
+    <mat-label>{{ orderColumnNames[6] }}</mat-label>
+    <input matInput placeholder="{{order.contactData}}" value="{{order.contactData}}"  formControlName="contactData">
+  </mat-form-field>
+
+  <!-- <mat-form-field class="example-full-width">
+    <mat-label>{{ orderColumnNames[7] }}</mat-label>
+    <input matInput placeholder="{{order.type}}" value="{{order.type}}"  formControlName="type">
+  </mat-form-field> -->
+
+  <mat-form-field class="example-full-width">
+    <mat-label>{{ orderColumnNames[7] }}</mat-label>
+    <mat-select formControlName="type">
+      <mat-option *ngFor="let type of types" [value]="type.value">
+        {{type.valueView}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="example-full-width">
+    <mat-label>{{ orderColumnNames[8] }}</mat-label>
+    <input matInput placeholder="{{order.body}}" value="{{order.body}}"  formControlName="body">
+  </mat-form-field>
+  <div class="example-button-row" *ngIf="order.documents != null && order.documents.length > 0">
+    <div class="example-full-width" *ngFor="let doc of order.documents">
+      <button mat-button href="downloadDocscan(doc)">Приложение {{ doc.fileName }}</button>
+      <!-- <mat-label ></mat-label> -->
+      <!-- <a href="{{your expression here}}"></a> -->
+    </div>
+  </div>
+
+  <!-- <mat-form-field class="example-full-width">
+    <mat-label>{{ orderColumnNames[9] }}</mat-label>
+    <mat-select formControlName="documents">
+      <mat-option *ngFor="let doc of order.documents" [value]="doc.value">
+        {{doc.valueView}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field> -->
+
+  <mat-form-field class="example-full-width">
+    <mat-label>{{ orderColumnNames[10] }}</mat-label>
+    <input matInput placeholder="{{order.supportMeasures}}" value="{{order.supportMeasures}}"  formControlName="supportMeasures">
+  </mat-form-field>
+
+</form>
+  <button mat-flat-button mat-dialog-close>Вернуться</button>
+  <button mat-flat-button type="button" (click)="sendOrder()" *ngIf="order.state == 0">Отправить заявку</button>
+  <button mat-flat-button type="button" (click)="declineOrder()" *ngIf="order.state == 0 || order.state == 1">Отменить заявку</button>
+  <button mat-flat-button type="button" (click)="doubleOrder()" *ngIf="order.state != 0 && order.state != 1">Дублировать заявку</button>
+  <hr>
+  <button mat-flat-button type="button"  (click)="saveOrder()" *ngIf="order.state == 0">Сохранить заявку</button>
+</mat-dialog-content>
+
+<!-- <div mat-dialog-content [formGroup]="form">
   <form ng-submit="submit()">
     <h1 mat-dialog-title>Просмотр заявки</h1>
 
     <mat-label>{{ orderColumnNames[0] }}</mat-label>
     <mat-form-field class="example-full-width">
-      <input type="text"  matInput placeholder="{{order.idOrder}}" formControlName="idOrder">
+      <input type="text"  matInput placeholder="{{order.id}}" formControlName="id">
     </mat-form-field>
 
     <mat-label>{{ orderColumnNames[1] }}</mat-label>
@@ -36,7 +142,6 @@
     <mat-form-field class="example-full-width">
       <input type="text" matInput placeholder="{{order.contactData}}" formControlName="contactData">
     </mat-form-field>
-
     <mat-label>{{ orderColumnNames[7] }}</mat-label>
     <mat-form-field class="example-full-width">
       <input type="text" matInput placeholder="{{order.type}}" formControlName="type">
@@ -49,7 +154,7 @@
 
     <mat-label>{{ orderColumnNames[9] }}</mat-label>
     <mat-form-field class="example-full-width">
-      <!-- <input type="text" matInput placeholder="{{order.documents}}" formControlName="documents"> -->
+      <input type="text" matInput placeholder="{{order.documents}}" formControlName="documents">
       <button mat-icon-button matPrefix (click)="f_input.click()">
         <mat-icon>attach_file</mat-icon>
       </button>
@@ -88,4 +193,4 @@
     <button mat-button mat-dialog-close>Вернуться</button>
   </div>
 
-</div>
+</div> -->

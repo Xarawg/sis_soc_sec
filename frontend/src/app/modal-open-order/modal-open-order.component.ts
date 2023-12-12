@@ -12,8 +12,7 @@ import { FormBuilder, Validators, FormControl, FormGroup } from '@angular/forms'
 })
 export class ModalOpenOrderComponent implements OnInit {
   orderColumnNames = orderColumnsConstants.labelColumns;
-  states = orderColumnsConstants.states;
-  
+  types: any;
   form: FormGroup;
   file_store: FileList;
 
@@ -28,25 +27,47 @@ export class ModalOpenOrderComponent implements OnInit {
    }
 
   ngOnInit() {
-    this.form = this.formBuilder.group({
-      idOrder: new FormControl({value: '', disabled: true}, Validators.required),
-      date: new FormControl({value: '', disabled: true}, Validators.required),
-      state: new FormControl({value: '', disabled: true}, Validators.required),
-      status: new FormControl({value: '', disabled: true}, Validators.required),
-      snils: new FormControl({value: '', disabled: true}, Validators.required),
-      fio: ['', Validators.required],
-      contactData: ['', Validators.required],
-      type: ['', Validators.required],
-      body: ['', Validators.required],
-      documents: ['', Validators.required],
-      supportMeasures: ['', Validators.required]
-    });
+    console.log('order ', this.order)
+    console.log('docs ', this.order.documents)
+    this.types = [
+      {value: 0, valueView: "заявление на смену реквизитов в ПФР"}, 
+      {value: 1, valueView: "запрос мер поддержки"}
+    ];
+    if (!!this.order) {
+      this.form = this.formBuilder.group({
+        id: new FormControl({value: this.order.id, disabled: true}, Validators.required),
+        date: new FormControl({value: this.order.date, disabled: true}, Validators.required),
+        state: new FormControl({value: this.order.state, disabled: true}, Validators.required),
+        status: new FormControl({value: this.order.status, disabled: true}, Validators.required),
+        snils: new FormControl({value: this.order.snils, disabled: false}, Validators.required),
+        fio: [{value: this.order.fio, disabled: false}, Validators.required],
+        contactData: [{value: this.order.contactData, disabled: false}, Validators.required],
+        type: [{value: this.order.type, disabled: false}, Validators.required],
+        body: [{value: this.order.body, disabled: true}, Validators.required],
+        documents: [{value: this.order.documents, disabled: false}, Validators.required],
+        supportMeasures: [{value: this.order.supportMeasures, disabled: true}, Validators.required]
+      });
+    } else {
+      this.form = this.formBuilder.group({
+        id: new FormControl({value: '', disabled: true}, Validators.required),
+        date: new FormControl({value: '', disabled: true}, Validators.required),
+        state: new FormControl({value: '', disabled: true}, Validators.required),
+        status: new FormControl({value: '', disabled: true}, Validators.required),
+        snils: new FormControl({value: '', disabled: false}, Validators.required),
+        fio: ['', Validators.required],
+        contactData: ['', Validators.required],
+        type: ['', Validators.required],
+        body: [{value: '', disabled: true}, Validators.required],
+        documents: ['', Validators.required],
+        supportMeasures: [{value: '', disabled: true}, Validators.required]
+      });
+    }
   }
 
-  getState(state: any): string {
-    const result: number = +state +3;
-    return this.states[result];
-  }
+  // getState(state: any): string {
+  //   const result: number = +state +3;
+  //   return this.states[result];
+  // }
 
   
   handleFileInputChange(fileList: FileList | null): void {
@@ -82,6 +103,10 @@ export class ModalOpenOrderComponent implements OnInit {
     if (this.form.valid) {
       console.log('form ', this.form)
     }
+  }
+
+  downloadDocscan(doc: any){
+    console.log('downloadDocscan ', doc)
   }
 
   cancel(){

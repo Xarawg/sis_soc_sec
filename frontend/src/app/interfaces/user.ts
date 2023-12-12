@@ -6,10 +6,10 @@ export interface User {
     userRole: UserRoles;
     fio: string;
     organization: string;
-    innOrganization: string;
-    addressOrganization: string;
+    inn: string;
+    address: string;
     email: string;
-    phone: string;
+    phoneNumber: string;
     password: string;
-    state: UserStates;
+    status: UserStates;
 }

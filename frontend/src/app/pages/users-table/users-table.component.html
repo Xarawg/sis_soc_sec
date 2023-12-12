@@ -32,14 +32,14 @@
           <mat-cell *matCellDef="let row"> {{row.organization}} </mat-cell>
         </ng-container>
 
-        <ng-container matColumnDef="innOrganization">
+        <ng-container matColumnDef="inn">
           <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[4] }} </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{row.innOrganization}} </mat-cell>
+          <mat-cell *matCellDef="let row"> {{row.inn}} </mat-cell>
         </ng-container>
 
-        <ng-container matColumnDef="addressOrganization">
+        <ng-container matColumnDef="address">
           <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[5] }} </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{row.addressOrganization}} </mat-cell>
+          <mat-cell *matCellDef="let row"> {{row.address}} </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="email">

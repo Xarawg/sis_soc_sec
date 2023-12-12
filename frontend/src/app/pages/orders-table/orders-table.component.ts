@@ -72,8 +72,8 @@ export class OrderTableComponent implements OnInit {
   /** Создать заявку. */
   createOrder() {
     this.dialog.open(ModalOpenOrderComponent, {
-      height: "calc(100% - 30px)",
-      width: "calc(100% - 30px)",
+      height: "calc(100% - 100px)",
+      width: "calc(100% - 100px)",
       maxWidth: "100%",
       maxHeight: "100%",
       data: {}
@@ -83,8 +83,8 @@ export class OrderTableComponent implements OnInit {
   /** Посмотреть заявку. */
   lookAtOrder(order: Order) {
     this.dialog.open(ModalOpenOrderComponent, {
-      height: "calc(100% - 30px)",
-      width: "calc(100% - 30px)",
+      height: "calc(100% - 100px)",
+      width: "calc(100% - 100px)",
       maxWidth: "100%",
       maxHeight: "100%",
       data: order

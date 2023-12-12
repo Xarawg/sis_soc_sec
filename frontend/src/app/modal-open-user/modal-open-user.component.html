@@ -4,61 +4,65 @@
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[0] }}</mat-label>
-    <input matInput placeholder="{{user.userName}}" value="user.userName"  formControlName="userName">
+    <input matInput placeholder="{{user.userName}}" value="{{user.userName}}"  formControlName="userName">
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
-    <mat-label>{{ userColumnNames[1] }}</mat-label>
-    <input matInput placeholder="{{user.userRole}}" value="user.userRole" formControlName="userRole">
+    <mat-select placeholder="{{userColumnNames[1]}}" formControlName="userRole">
+      <mat-option *ngFor="let role of roles" [value]="role.value">
+        {{role.valueView}}
+      </mat-option>
+    </mat-select>
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[2] }}</mat-label>
-    <input matInput placeholder="{{user.fio}}" value="user.fio"  formControlName="fio">
+    <input matInput placeholder="{{user.fio}}" value="{{user.fio}}"  formControlName="fio">
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[3] }}</mat-label>
-    <input matInput placeholder="{{user.organization}}" value="user.organization"  formControlName="organization">
+    <input matInput placeholder="{{user.organization}}" value="{{user.organization}}"  formControlName="organization">
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[4] }}</mat-label>
-    <input matInput placeholder="{{user.innOrganization}}" value="user.innOrganization"  formControlName="innOrganization">
+    <input matInput placeholder="{{user.inn}}" value="{{user.inn}}"  formControlName="inn">
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[5] }}</mat-label>
-    <input matInput placeholder="{{user.addressOrganization}}" value="user.addressOrganization"  formControlName="addressOrganization">
+    <input matInput placeholder="{{user.address}}" value="{{user.address}}"  formControlName="address">
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[6] }}</mat-label>
-    <input matInput placeholder="{{user.email}}" value="user.email"  formControlName="email">
+    <input matInput placeholder="{{user.email}}" value="{{user.email}}"  formControlName="email">
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[7] }}</mat-label>
-    <input matInput placeholder="{{user.phone}}" value="user.phone"  formControlName="phone">
+    <input matInput placeholder="{{user.phoneNumber}}" value="{{user.phoneNumber}}"  formControlName="phoneNumber">
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
-    <mat-label>{{ userColumnNames[8] }}</mat-label>
-    <input matInput placeholder="{{getState(user.state)}}" value="user.state" formControlName="state">
+    <mat-select placeholder="{{userColumnNames[8]}}" formControlName="status">
+      <mat-option *ngFor="let status of statuses" [value]="status.value">
+        {{status.valueView}}
+      </mat-option>
+    </mat-select>
   </mat-form-field>
+
+  <mat-form-field class="example-full-width" *ngIf="user.userName == null && user.userName == ''">
+    <mat-label>{{ userColumnNames[10] }}</mat-label>
+    <input matInput placeholder="{{user.password}}" value="{{user.password}}"  formControlName="password">
+  </mat-form-field>
+
 </form>
-</mat-dialog-content>
-<div class="example-button-row" mat-dialog-actions align="end">
   <button mat-flat-button mat-dialog-close>Вернуться</button>
-  <br>
-  <button mat-flat-button type="button"  (click)="declineUser()" *ngIf="user.state == 0">Отклонить</button>
-  <br>
-  <button mat-flat-button type="button" (click)="registerUser()" *ngIf="user.state == 0">Зарегистрировать</button>
-  <br>
-  <button mat-flat-button type="button" (click)="saveUser()" *ngIf="user.state == 0 || user.state == -1">Сохранить</button>
-  <br>
-  <button mat-flat-button type="button" (click)="blockUser()" *ngIf="user.state == 1">Заблокировать</button>
-  <br>
+  <button mat-flat-button type="button"  (click)="declineUser()" *ngIf="user.status == 0">Отклонить</button>
+  <button mat-flat-button type="button" (click)="registerUser()" *ngIf="user.status == 0">Зарегистрировать</button>
+  <button mat-flat-button type="button" (click)="blockUser()" *ngIf="user.status == 1">Заблокировать</button>
   <hr>
-  <button mat-flat-button type="submit" (click)="submit()">Применить изменения</button>
-</div>
+  <button mat-flat-button type="button" (click)="saveUser()" *ngIf="user.status == 0 || user.status == -1">Сохранить</button>
+</mat-dialog-content>

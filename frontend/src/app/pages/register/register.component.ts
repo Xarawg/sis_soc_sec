@@ -30,8 +30,8 @@ export class AdminRegisterComponent implements OnInit {
       userName: ['', [Validators.required]],
       fio: ['', [Validators.required]],
       organization: ['', [Validators.required]],
-      innOrganization: ['', [Validators.required]],
-      addressOrganization: ['', [Validators.required]],
+      inn: ['', [Validators.required]],
+      address: ['', [Validators.required]],
       email: ['', [Validators.required]],
       phone: ['', [Validators.required]],
       password: new FormControl('')

@@ -79,8 +79,8 @@ export class UsersTableComponent implements OnInit, AfterViewInit {
   /** Создать заявку. */
   createUser() {
     this.dialog.open(ModalOpenUserComponent, {
-      height: "calc(100% - 30px)",
-      width: "calc(100% - 30px)",
+      height: "calc(100% - 100px)",
+      width: "calc(100% - 100px)",
       maxWidth: "100%",
       maxHeight: "100%",
       data: {}
@@ -91,8 +91,8 @@ export class UsersTableComponent implements OnInit, AfterViewInit {
   lookAtUser(user: User) {
   
     this.dialog.open(ModalOpenUserComponent, {
-      height: "calc(100% - 30px)",
-      width: "calc(100% - 30px)",
+      height: "calc(100% - 100px)",
+      width: "calc(100% - 100px)",
       maxWidth: "100%",
       maxHeight: "100%",
       data: user

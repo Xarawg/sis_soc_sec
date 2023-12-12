@@ -2,8 +2,8 @@
 export const userColumnsConstants = {
   /** общий массив столбцов для хэдера */
   displayedColumns: [
-    'userName', 'userRole', 'fio', 'organization','innOrganization',
-    'addressOrganization', 'email', 'phone', 'state', 'actions'
+    'userName', 'userRole', 'fio', 'organization','inn',
+    'address', 'email', 'phone', 'state', 'actions'
   ],
   /** описание полей */
   labelColumns: [
@@ -15,7 +15,9 @@ export const userColumnsConstants = {
     'Адрес организации',
     'Почта',
     'Мобильный телефон',
-    'Состояние'
+    'Состояние',
+    'Роль',
+    'Пароль'
   ],
   /** описание состояний */
   states: [
@@ -23,5 +25,12 @@ export const userColumnsConstants = {
     'Отклоненный',
     'Зарегистрированный пользователь',
     'Вновь заведенный пользователь'
+  ],
+  /** описание ролей */
+  roles: [
+    'Без роли',
+    'Оператор',
+    'Администратор',
+    'Супер администратор'
   ]
 } as const;
