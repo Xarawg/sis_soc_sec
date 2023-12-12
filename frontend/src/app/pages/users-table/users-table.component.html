@@ -15,6 +15,17 @@
       </div>
 
       <mat-table [dataSource]="dataSource" matSort>
+        <!-- <tr>
+          <th mat-sort-header="login">text</th>
+          <th mat-sort-header="role">text</th>
+          <th mat-sort-header="fio">text</th>
+          <th mat-sort-header="organization">text</th>
+          <th mat-sort-header="innOrganization">text</th>
+          <th mat-sort-header="addressOrganization">text</th>
+          <th mat-sort-header="email">text</th>
+          <th mat-sort-header="phone">text</th>
+          <th mat-sort-header="state">text</th>
+        </tr> -->
         <ng-container matColumnDef="login">
           <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[0] }} </mat-header-cell>
           <mat-cell *matCellDef="let row"> {{row.login}}</mat-cell>
@@ -61,7 +72,7 @@
         </ng-container>
 
         <ng-container matColumnDef="actions">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> Действия </mat-header-cell>
+          <mat-header-cell *matHeaderCellDef> Действия </mat-header-cell>
           <mat-cell *matCellDef="let row">
             <button mat-button type="button" class="Sign-Up-btn" (click)="lookAtUser(row)">Просмотр</button>
           </mat-cell>
@@ -72,6 +83,6 @@
         </mat-row>
       </mat-table>
 
-      <mat-paginator [pageSizeOptions]="[5, 10, 20, 50, 100]" showFirstLastButtons aria-label="Выберите страницу">
+      <mat-paginator [pageSizeOptions]="[30, 50, 100]" showFirstLastButtons aria-label="Выберите страницу">
       </mat-paginator>
     </div>

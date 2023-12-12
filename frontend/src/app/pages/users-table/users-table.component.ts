@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
@@ -16,14 +16,14 @@ import { FakeBackendService } from 'src/app/services/fake-backend.service';
 })
 
 
-export class UsersTableComponent implements OnInit {
+export class UsersTableComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) set matPaginator(mp: MatPaginator) {
     if (mp) {
       this.paginator = mp;
       this.dataSource.paginator = this.paginator;
     }
   }
-  @ViewChild(MatSort) sort: MatSort | undefined;
+  @ViewChild(MatSort) sort: MatSort | null;
   private paginator: MatPaginator;
 
   /** Названия полей пользователя */
@@ -36,12 +36,15 @@ export class UsersTableComponent implements OnInit {
   /** общий массив данных */
   usersData: User[] = [];
 
-
   readonly displayedColumns = userColumnsConstants.displayedColumns;
 
   constructor(
     private dialog: MatDialog,
     private fakeBackendService: FakeBackendService) {
+  }
+  
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
   }
 
   ngOnInit(): void {
@@ -62,10 +65,6 @@ export class UsersTableComponent implements OnInit {
       filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
       this.dataSource.filter = filterValue;
     }
-  }
-
-  /** Announce the change in sort state for assistive technology. */
-  announceSortChange(sortState: Sort | any) {
   }
 
   /** Создать заявку. */

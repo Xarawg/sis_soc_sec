@@ -37,7 +37,7 @@
         </ng-container>
 
         <ng-container matColumnDef="actions">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> Дата заявки </mat-header-cell>
+          <mat-header-cell *matHeaderCellDef> Действие </mat-header-cell>
           <mat-cell *matCellDef="let row">
             <button mat-button type="button" class="Sign-Up-btn" (click)="lookAtOrder(row)">Просмотр</button>
           </mat-cell>
@@ -48,6 +48,6 @@
         </mat-row>
       </mat-table>
 
-      <mat-paginator [pageSizeOptions]="[5, 10, 20, 50, 100]" showFirstLastButtons aria-label="Выберите страницу">
+      <mat-paginator [pageSizeOptions]="[30, 50, 100]" showFirstLastButtons aria-label="Выберите страницу">
       </mat-paginator>
     </div>

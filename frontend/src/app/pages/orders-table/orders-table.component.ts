@@ -23,7 +23,7 @@ export class OrderTableComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
     }
   }
-  @ViewChild(MatSort) sort: MatSort | undefined;
+  @ViewChild(MatSort) sort: MatSort | null;
   private paginator: MatPaginator;
 
 
@@ -38,6 +38,10 @@ export class OrderTableComponent implements OnInit {
   constructor(
     private dialog: MatDialog,
     private fakeBackendService: FakeBackendService) {
+  }
+  
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
   }
 
   ngOnInit(): void {
