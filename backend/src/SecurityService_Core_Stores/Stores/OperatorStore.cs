@@ -93,7 +93,6 @@ namespace SecurityService_Core_Stores.Stores
             order.FIO = model.FIO;
             order.ContactData = model.ContactData;
             order.Type = model.Type;
-            order.SupportMeasures = model.SupportMeasures;
             Orders.Update(order);
             await _customerContext.SaveChangesAsync();
 

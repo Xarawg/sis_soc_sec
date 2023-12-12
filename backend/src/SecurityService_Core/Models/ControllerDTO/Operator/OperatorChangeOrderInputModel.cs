@@ -16,7 +16,5 @@ namespace SecurityService_Core.Models.ControllerDTO.Operator
         public string? ContactData { get; set; }
         [Required]
         public string? Type { get; set; }
-        [Required]
-        public string? SupportMeasures { get; set; }
     }
 }
