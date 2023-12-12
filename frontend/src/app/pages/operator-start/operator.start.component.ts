@@ -15,9 +15,10 @@ import { FakeBackendService } from 'src/app/services/fake-backend.service';
 })
 export class OperatorStartComponent implements OnInit {
 
-  form: FormGroup;
+  loginForm: FormGroup;
   error: any;
   loading: boolean;
+  public hide: boolean = true; // Password hiding
 
   constructor(private backendService: FakeBackendService,
     private authService: AuthService,
@@ -29,16 +30,17 @@ export class OperatorStartComponent implements OnInit {
 
   }
   ngOnInit(): void {
-    this.form = this.formBuilder.group({
+    this.loginForm = this.formBuilder.group({
       userName: ['', [Validators.required]],
       password: ['', [Validators.required]],
     });
   }
 
-  submit() {
+  public onLogin(): void {
+    this.markAsDirty(this.loginForm);
     const auth: UserAuth = {
-      userName: this.form.value.userName,
-      password: this.form.value.password
+      userName: this.loginForm.value.userName,
+      password: this.loginForm.value.password
     }
     const result = this.authService.login(auth)
     .pipe(first())
@@ -54,7 +56,7 @@ export class OperatorStartComponent implements OnInit {
             this.loading = false;
         }
     });;
-    if (this.form.valid) {
+    if (this.loginForm.valid) {
       this.router.navigateByUrl('/orders-table');
     }
     else {
@@ -67,22 +69,20 @@ export class OperatorStartComponent implements OnInit {
     }
   }
 
-  // submit() {
-  //   if (this.form.valid) {
-  //     const result = this.authService.login(this.form.value);
-  //     if (result === true) this.router.navigateByUrl('/orders-table');
-  //     else {
-  //       this.dialog.open(ModalComponent, {
-  //         width: '550',
-  //         data: {
-  //           modalText: 'Данные введены некорректно.'
-  //         }
-  //       });
-  //     }
-  //   }
-  // }
+  private markAsDirty(group: FormGroup): void {
+    group.markAsDirty();
+    // tslint:disable-next-line:forin
+    for (const i in group.controls) {
+      group.controls[i].markAsDirty();
+    }
+  }
 
   register() {
-    this.router.navigateByUrl('/operator-register');
+    this.router.navigateByUrl('/register');
   }
+
+  backToHome() {
+    this.router.navigateByUrl('/home');
+  }
+
 }

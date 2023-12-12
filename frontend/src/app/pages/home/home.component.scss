@@ -1,8 +1,37 @@
-.container {
-    margin-block: 100px;
-  }
-
-.mat-form-field {
-  width: 100%;
-  min-width: 300px;
+#login-container {
+  display: flex;
+  flex-direction: column;
+  padding: 1.7em;
+  width: 290px;
+  // position: relative;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-49%, -49%);
 }
+
+.Sign-Up-btn {
+  margin-top: 2.5em;
+  height: 2.5em;
+}
+.Login-btn {
+  margin-top: 2.5em;
+  height: 2.5em;
+  float: right;
+}
+.footer-sec {
+  text-align: center;
+}
+.footer-sec a {
+  text-decoration: none;
+}
+
+
+// .container {
+//     margin-block: 100px;
+//   }
+
+// .mat-form-field {
+//   width: 100%;
+//   min-width: 300px;
+// }

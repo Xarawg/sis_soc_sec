@@ -8,13 +8,12 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { MaterialModule } from './material.module';
 import { OperatorStartComponent } from './pages/operator-start/operator.start.component';
-import { OperatorRegisterComponent } from './pages/operator-register/operator.register.component';
 import { ModalComponent } from './modal/modal.component';
 import { ModalOpenOrderComponent } from './modal-open-order/modal-open-order.component';
-import { AdminRegisterComponent } from './pages/admin-register/admin.register.component';
+import { AdminRegisterComponent } from './pages/register/register.component';
 import { AdminStartComponent } from './pages/admin-start/admin.start.component';
 import { ModalOpenUserComponent } from './modal-open-user/modal-open-user.component';
-import { UsersTableComponent } from './pages/users/users-table.component';
+import { UsersTableComponent } from './pages/users-table/users-table.component';
 import { HomeComponent } from './pages/home/home.component';
 import { JwtInterceptor } from './interceptors/jwt.interceptor';
 import { ErrorInterceptor } from './interceptors/error.interceptor';
@@ -23,7 +22,6 @@ import { ErrorInterceptor } from './interceptors/error.interceptor';
   declarations: [
     AppComponent,
     OperatorStartComponent,
-    OperatorRegisterComponent,
     OrderTableComponent,
     ModalComponent,
     ModalOpenOrderComponent,

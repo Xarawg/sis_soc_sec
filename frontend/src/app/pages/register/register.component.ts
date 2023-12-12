@@ -10,11 +10,12 @@ import { ModalComponent } from 'src/app/modal/modal.component';
 import { FakeBackendService } from 'src/app/services/fake-backend.service';
 
 @Component({
-  selector: 'admin-register',
-  templateUrl: './admin.register.component.html',
-  styleUrls: ['./admin.register.component.scss']
+  selector: 'register',
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.scss']
 })
 export class AdminRegisterComponent implements OnInit {
+  Roles: any = ['Admin', 'Author', 'Reader'];
 
   form: FormGroup;
 
@@ -73,7 +74,7 @@ export class AdminRegisterComponent implements OnInit {
     }
   }
 
-  backToAdminStart() {
-    this.router.navigateByUrl('/admin-start');
+  backToHome() {
+    this.router.navigateByUrl('/home');
   }
 }

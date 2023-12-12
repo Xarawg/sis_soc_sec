@@ -63,13 +63,11 @@
         <ng-container matColumnDef="actions">
           <mat-header-cell *matHeaderCellDef mat-sort-header> Действия </mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <div>
-              <a (click)="lookAtUser(row)">Просмотр пользователя</a>
-            </div>
+            <button mat-button type="button" class="Sign-Up-btn" (click)="lookAtUser(row)">Просмотр</button>
           </mat-cell>
         </ng-container>
 
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
         <mat-row *matRowDef="let row; columns: displayedColumns;">
         </mat-row>
       </mat-table>

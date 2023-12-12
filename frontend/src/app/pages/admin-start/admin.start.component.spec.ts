@@ -1,15 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { OperatorStartComponent } from './operator.start.component';
+import { AdminStartComponent } from './admin.start.component';
 
-describe('OperatorStartComponent', () => {
-  let component: OperatorStartComponent;
-  let fixture: ComponentFixture<OperatorStartComponent>;
+describe('AdminStartComponent', () => {
+  let component: AdminStartComponent;
+  let fixture: ComponentFixture<AdminStartComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [OperatorStartComponent]
+      declarations: [AdminStartComponent]
     });
-    fixture = TestBed.createComponent(OperatorStartComponent);
+    fixture = TestBed.createComponent(AdminStartComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,28 +1,27 @@
-:host {
+#login-container {
   display: flex;
-  justify-content: center;
-  margin: 100px 0px;
+  flex-direction: column;
+  padding: 1.7em;
+  width: 290px;
+  // position: relative;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-49%, -49%);
 }
 
-.mat-form-field {
-  width: 100%;
-  min-width: 300px;
+.Sign-Up-btn {
+  margin-top: 2.5em;
+  height: 2.5em;
 }
-
-mat-card-title,
-mat-card-content {
-  display: flex;
-  justify-content: center;
+.Login-btn {
+  margin-top: 2.5em;
+  height: 2.5em;
+  float: right;
 }
-
-.error {
-  padding: 16px;
-  width: 300px;
-  color: white;
-  background-color: red;
+.footer-sec {
+  text-align: center;
 }
-
-.button {
-  display: flex;
-  justify-content: flex-end;
+.footer-sec a {
+  text-decoration: none;
 }

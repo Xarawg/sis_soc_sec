@@ -13,6 +13,8 @@ import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
 import {MatDialogModule} from '@angular/material/dialog';
 import { NgModule } from '@angular/core';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 const MATERIAL_MODULES = [
   MatButtonModule,
@@ -30,7 +32,9 @@ const MATERIAL_MODULES = [
   MatNativeDateModule,
   MatTableModule,
   MatPaginatorModule,
-  MatDialogModule
+  MatDialogModule,
+  MatSlideToggleModule,
+  MatToolbarModule
 ]
 
 @NgModule({

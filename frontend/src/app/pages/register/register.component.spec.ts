@@ -1,15 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { OperatorRegisterComponent } from './operator.register.component';
+import { AdminRegisterComponent } from './register.component';
 
 describe('OperatorRegisterComponent', () => {
-  let component: OperatorRegisterComponent;
-  let fixture: ComponentFixture<OperatorRegisterComponent>;
+  let component: AdminRegisterComponent;
+  let fixture: ComponentFixture<AdminRegisterComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [OperatorRegisterComponent]
+      declarations: [AdminRegisterComponent]
     });
-    fixture = TestBed.createComponent(OperatorRegisterComponent);
+    fixture = TestBed.createComponent(AdminRegisterComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
