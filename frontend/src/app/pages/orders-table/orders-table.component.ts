@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
@@ -6,7 +6,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { orderColumnsConstants } from 'src/app/constants/order.columns.constants';
 import { Order } from 'src/app/interfaces/order';
 import { ModalOpenOrderComponent } from 'src/app/modal-open-order/modal-open-order.component';
-import { FakeBackendService } from 'src/app/services/fake-backend.service';
+import { HttpService } from 'src/app/services/http.service';
 
 @Component({
   selector: 'orders-table',
@@ -17,6 +17,8 @@ import { FakeBackendService } from 'src/app/services/fake-backend.service';
 
 
 export class OrderTableComponent implements OnInit {
+  /** источник данных */
+  dataSource: MatTableDataSource<Order> = new MatTableDataSource();
   @ViewChild(MatPaginator) set matPaginator(mp: MatPaginator) {
     if (mp) {
       this.paginator = mp;
@@ -26,18 +28,16 @@ export class OrderTableComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort | null;
   private paginator: MatPaginator;
 
-
-  /** источник данных */
-  dataSource: MatTableDataSource<Order>; // источник данных
   /** общий массив данных */
   ordersData: Order[] = [];
 
-
+  /** Отображаемые в таблице колонки */
   readonly displayedColumns = orderColumnsConstants.displayedColumns;
 
   constructor(
     private dialog: MatDialog,
-    private fakeBackendService: FakeBackendService) {
+    private httpService: HttpService,
+    private changeDetectorRefs: ChangeDetectorRef) {
   }
   
   ngAfterViewInit(): void {
@@ -45,27 +45,18 @@ export class OrderTableComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.fakeBackendService.orders$.subscribe((item:any) => {
-    //   console.log('item ', item)
-    //   if (item?.value != null) {
-    //     if (!!this.dataSource?.data) {
-    //       this.dataSource.data = item.value;
-    //     } else {
-    //       this.dataSource = new MatTableDataSource<Order>(item.value);
-    //     }
-    //     this.dataSource.paginator = this.paginator;
-    //     this.dataSource.sort = this.sort!;
-    //     this.ordersData = item.value; 
-    //   }
-    // });
-    let data = this.fakeBackendService.orders;
-    if (data.length > 0) {
-      console.log('data ', data)
-      this.dataSource = new MatTableDataSource<Order>(data);
+    this.updateOrdersDataList();
+  }
+
+  private updateOrdersDataList(){
+    this.httpService.getOrders().subscribe( (data:any)=> {
+      const res = data.value;
+      this.dataSource = new MatTableDataSource(res);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort!;
-      this.ordersData = data;
-    }
+      this.ordersData = res;
+    });
+    this.changeDetectorRefs.detectChanges();
   }
 
   /** Применить фильтр */
@@ -78,14 +69,13 @@ export class OrderTableComponent implements OnInit {
     }
   }
 
-  /** Announce the change in sort state for assistive technology. */
-  announceSortChange(sortState: Sort | any) {
-  }
-
   /** Создать заявку. */
   createOrder() {
     this.dialog.open(ModalOpenOrderComponent, {
-      width: '550',
+      height: "calc(100% - 30px)",
+      width: "calc(100% - 30px)",
+      maxWidth: "100%",
+      maxHeight: "100%",
       data: {}
     });
   }
@@ -93,7 +83,10 @@ export class OrderTableComponent implements OnInit {
   /** Посмотреть заявку. */
   lookAtOrder(order: Order) {
     this.dialog.open(ModalOpenOrderComponent, {
-      width: '550',
+      height: "calc(100% - 30px)",
+      width: "calc(100% - 30px)",
+      maxWidth: "100%",
+      maxHeight: "100%",
       data: order
     });
   }

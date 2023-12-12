@@ -6,7 +6,6 @@ import { first } from 'rxjs';
 import { UserAuth } from 'src/app/interfaces/userAuth';
 import { ModalComponent } from 'src/app/modal/modal.component';
 import { AuthService } from 'src/app/services/auth.service';
-import { FakeBackendService } from 'src/app/services/fake-backend.service';
 
 @Component({
   selector: 'operator-start',
@@ -20,7 +19,7 @@ export class OperatorStartComponent implements OnInit {
   loading: boolean;
   public hide: boolean = true; // Password hiding
 
-  constructor(private backendService: FakeBackendService,
+  constructor(
     private authService: AuthService,
     private route: ActivatedRoute,
     private router: Router,

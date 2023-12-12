@@ -10,17 +10,14 @@
         </mat-form-field>
       </div>
 
-      <div>
-        <button mat-button (click)="createUser()">Создать пользователя</button>
-      </div>
-
       <mat-table [dataSource]="dataSource" matSort>
+
         <ng-container matColumnDef="userName">
           <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[0] }} </mat-header-cell>
           <mat-cell *matCellDef="let row"> {{row.userName}}</mat-cell>
         </ng-container>
 
-        <ng-container matColumnDef="role">
+        <ng-container matColumnDef="userRole">
           <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[1] }} </mat-header-cell>
           <mat-cell *matCellDef="let row"> {{ row.role }}</mat-cell>
         </ng-container>
@@ -64,9 +61,6 @@
           <mat-header-cell *matHeaderCellDef> Действия </mat-header-cell>
           <mat-cell *matCellDef="let row">
             <button mat-button type="button" class="Sign-Up-btn" (click)="lookAtUser(row)">Просмотр</button>
-            <!-- <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Действия"> -->
-              <!-- <mat-icon>more_vert</mat-icon> -->
-            <!-- </button>             -->
           </mat-cell>
         </ng-container>
 
@@ -75,11 +69,21 @@
         </mat-row>
       </mat-table>
 
-      <mat-paginator [pageSizeOptions]="[30, 50, 100]" showFirstLastButtons aria-label="Выберите страницу">
-      </mat-paginator>
-    </div>
+      <mat-toolbar>
+        <mat-toolbar-row>
+          <button mat-fab extended color="basic" (click)="createUser()" style="margin-right: 15px;">
+            <mat-icon>person_add</mat-icon>
+            Создать пользователя
+          </button>
+          <span class="example-spacer"></span>
+          <mat-paginator [pageSizeOptions]="[30, 50, 100]" showFirstLastButtons aria-label="Выберите страницу"></mat-paginator>
+        </mat-toolbar-row>
+      </mat-toolbar>
 
 
+<!-- <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Действия"> -->
+              <!-- <mat-icon>more_vert</mat-icon> -->
+            <!-- </button>             -->
     <!-- <mat-menu #menu="matMenu">
       <button mat-menu-item (click)="edit($event)">
         <mat-icon>edit</mat-icon>

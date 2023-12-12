@@ -34,7 +34,7 @@ export class ModalOpenUserComponent implements OnInit {
     if (!!this.user) {
       this.form = this.formBuilder.group({
         userName: new FormControl({value: this.user.userName, disabled: true}, Validators.required),
-        role: [this.user.role, Validators.required],
+        userRole: [this.user.userRole, Validators.required],
         fio: [this.user.fio, Validators.required],
         organization: [this.user.organization, Validators.required],
         innOrganization: [this.user.innOrganization, Validators.required],
@@ -46,7 +46,7 @@ export class ModalOpenUserComponent implements OnInit {
     } else {
       this.form = this.formBuilder.group({
         userName: ['', Validators.required],
-        role: ['', Validators.required],
+        userRole: ['', Validators.required],
         fio: ['', Validators.required],
         organization: ['', Validators.required],
         innOrganization: ['', Validators.required],

@@ -7,7 +7,6 @@ import { UserStates } from 'src/app/enums/userStates';
 import { User } from 'src/app/interfaces/user';
 import { UserAuth } from 'src/app/interfaces/userAuth';
 import { ModalComponent } from 'src/app/modal/modal.component';
-import { FakeBackendService } from 'src/app/services/fake-backend.service';
 
 @Component({
   selector: 'register',
@@ -19,7 +18,7 @@ export class AdminRegisterComponent implements OnInit {
 
   form: FormGroup;
 
-  constructor(private backendService: FakeBackendService,
+  constructor(
     private router: Router,
     private dialog: MatDialog,
     private formBuilder: FormBuilder

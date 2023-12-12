@@ -48,7 +48,7 @@ namespace Security_Service_AspNetCore.Controllers
                 {
                     throw new Exception("Пользователь не аутентифицирован");
                 }
-                return HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Login")?.Value ?? string.Empty;
+                return HttpContext.User.Claims.FirstOrDefault(c => c.Type == "UserName")?.Value ?? string.Empty;
             }
             catch (Exception ex)
             {

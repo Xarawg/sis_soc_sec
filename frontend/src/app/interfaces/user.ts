@@ -3,7 +3,7 @@ import { UserStates } from "../enums/userStates";
 
 export interface User {
     userName: string;
-    role: UserRoles;
+    userRole: UserRoles;
     fio: string;
     organization: string;
     innOrganization: string;
