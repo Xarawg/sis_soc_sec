@@ -12,6 +12,8 @@ import { User } from '../interfaces/user';
   styleUrls: ['./modal-open-user.component.scss'],
 })
 export class ModalOpenUserComponent implements OnInit {
+  public breakpoint: number; // Breakpoint observer code
+
   userColumnNames = userColumnsConstants.labelColumns;
   states = userColumnsConstants.states;
 
@@ -31,19 +33,19 @@ export class ModalOpenUserComponent implements OnInit {
   ngOnInit() {
     if (!!this.user) {
       this.form = this.formBuilder.group({
-        login: new FormControl({value: '', disabled: true}, Validators.required),
-        role: ['', Validators.required],
-        fio: ['', Validators.required],
-        organization: ['', Validators.required],
-        innOrganization: ['', Validators.required],
-        addressOrganization: ['', Validators.required],
-        email: ['', Validators.required],
-        phone: ['', Validators.required],
-        state: ['', Validators.required]
+        userName: new FormControl({value: this.user.userName, disabled: true}, Validators.required),
+        role: [this.user.role, Validators.required],
+        fio: [this.user.fio, Validators.required],
+        organization: [this.user.organization, Validators.required],
+        innOrganization: [this.user.innOrganization, Validators.required],
+        addressOrganization: [this.user.addressOrganization, Validators.required],
+        email: [this.user.email, Validators.required],
+        phone: [this.user.phone, Validators.required],
+        state: [this.user.state, Validators.required]
       });
     } else {
       this.form = this.formBuilder.group({
-        login: ['', Validators.required],
+        userName: ['', Validators.required],
         role: ['', Validators.required],
         fio: ['', Validators.required],
         organization: ['', Validators.required],

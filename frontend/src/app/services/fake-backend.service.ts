@@ -82,7 +82,7 @@ export class FakeBackendService {
     let phone = '+79' + Math.floor(Math.random() * 99).toString()+ '-' + Math.floor(Math.random() * 999).toString() + '-' + Math.floor(Math.random() * 9999).toString();
 
       let userModel: User = { 
-        login: 'testLogin',
+        userName: 'testLogin',
         role: role,
         fio: 'Тестов Тест Тестович',
         organization: 'Тестовая организация',

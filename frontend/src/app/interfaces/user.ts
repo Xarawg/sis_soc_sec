@@ -2,7 +2,7 @@ import { UserRoles } from "../enums/userRoles";
 import { UserStates } from "../enums/userStates";
 
 export interface User {
-    login: string;
+    userName: string;
     role: UserRoles;
     fio: string;
     organization: string;

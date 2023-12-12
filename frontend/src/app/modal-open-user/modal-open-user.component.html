@@ -1,77 +1,64 @@
-<div mat-dialog-content [formGroup]="form">
+<h2 mat-dialog-title>Просмотр пользователя</h2>
+<mat-dialog-content [formGroup]="form" style="height: calc(100% - 96px);max-height: unset">
   <form ng-submit="submit()">
-    <h1 mat-dialog-title>Просмотр заявки</h1>
 
+  <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[0] }}</mat-label>
-    <mat-form-field class="example-full-width">
-      <input type="text" matInput placeholder="{{user.login}}" formControlName="userName">
-    </mat-form-field>
+    <input matInput placeholder="{{user.userName}}" value="user.userName"  formControlName="userName">
+  </mat-form-field>
 
+  <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[1] }}</mat-label>
-    <mat-form-field class="example-full-width">
-      <input type="text" matInput placeholder="{{user.role}}" formControlName="role">
-    </mat-form-field>
+    <input matInput placeholder="{{user.role}}" value="user.role" formControlName="role">
+  </mat-form-field>
 
+  <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[2] }}</mat-label>
-    <mat-form-field class="example-full-width">
-      <input type="text" matInput placeholder="{{user.fio}}" formControlName="fio">
-    </mat-form-field>
+    <input matInput placeholder="{{user.fio}}" value="user.fio"  formControlName="fio">
+  </mat-form-field>
 
+  <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[3] }}</mat-label>
-    <mat-form-field class="example-full-width">
-      <input type="text" matInput placeholder="{{user.organization}}" formControlName="organization">
-    </mat-form-field>
+    <input matInput placeholder="{{user.organization}}" value="user.organization"  formControlName="organization">
+  </mat-form-field>
 
+  <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[4] }}</mat-label>
-    <mat-form-field class="example-full-width">
-      <input type="text" matInput placeholder="{{user.innOrganization}}" formControlName="innOrganization">
-    </mat-form-field>
+    <input matInput placeholder="{{user.innOrganization}}" value="user.innOrganization"  formControlName="innOrganization">
+  </mat-form-field>
 
+  <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[5] }}</mat-label>
-    <mat-form-field class="example-full-width">
-      <input type="text" matInput placeholder="{{user.addressOrganization}}" formControlName="addressOrganization">
-    </mat-form-field>
+    <input matInput placeholder="{{user.addressOrganization}}" value="user.addressOrganization"  formControlName="addressOrganization">
+  </mat-form-field>
 
+  <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[6] }}</mat-label>
-    <mat-form-field class="example-full-width">
-      <input type="text" matInput placeholder="{{user.email}}" formControlName="email">
-    </mat-form-field>
+    <input matInput placeholder="{{user.email}}" value="user.email"  formControlName="email">
+  </mat-form-field>
 
+  <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[7] }}</mat-label>
-    <mat-form-field class="example-full-width">
-      <input type="text" matInput placeholder="{{user.phone}}" formControlName="phone">
-    </mat-form-field>
+    <input matInput placeholder="{{user.phone}}" value="user.phone"  formControlName="phone">
+  </mat-form-field>
 
+  <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[8] }}</mat-label>
-    <mat-form-field class="example-full-width">
-      <input type="text" matInput placeholder="{{getState(user.state)}}" formControlName="state">
-    </mat-form-field>
-
-    <div class="button">
-      <button (click)="submit()" mat-button>Применить изменения</button>
-    </div>
-  </form>
-
-
-
-  <div class="button" *ngIf="user.state == 0">
-    <button mat-raised-button (click)="declineUser()">Отклонить</button>
-  </div>
-
-  <div class="button" *ngIf="user.state == 0">
-    <button mat-raised-button (click)="registerUser()">Зарегистрировать</button>
-  </div>
-
-  <div class="button" *ngIf="user.state == 0 || user.state == -1">
-    <button mat-raised-button (click)="saveUser()">Сохранить</button>
-  </div>
-
-  <div class="button" *ngIf="user.state == 1">
-    <button mat-raised-button (click)="blockUser()">Заблокировать</button>
-  </div>
-
-  <div mat-dialog-actions class="button">
-    <button mat-button mat-dialog-close>Вернуться</button>
-  </div>
-
+    <input matInput placeholder="{{getState(user.state)}}" value="user.state" formControlName="state">
+  </mat-form-field>
+</form>
+</mat-dialog-content>
+<div class="example-button-row" mat-dialog-actions align="end">
+  <button mat-flat-button mat-dialog-close>Вернуться</button>
+  <br>
+  <button mat-flat-button type="button"  (click)="declineUser()" *ngIf="user.state == 0">Отклонить</button>
+  <br>
+  <button mat-flat-button type="button" (click)="registerUser()" *ngIf="user.state == 0">Зарегистрировать</button>
+  <br>
+  <button mat-flat-button type="button" (click)="saveUser()" *ngIf="user.state == 0 || user.state == -1">Сохранить</button>
+  <br>
+  <button mat-flat-button type="button" (click)="blockUser()" *ngIf="user.state == 1">Заблокировать</button>
+  <br>
+  <hr>
+  <button mat-flat-button type="submit" (click)="submit()">Применить изменения</button>
 </div>

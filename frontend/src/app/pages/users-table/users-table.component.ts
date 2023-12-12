@@ -1,5 +1,8 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -12,7 +15,7 @@ import { FakeBackendService } from 'src/app/services/fake-backend.service';
   selector: 'users-table',
   changeDetection: ChangeDetectionStrategy.Default,
   templateUrl: './users-table.component.html',
-  styleUrls: ['./users-table.component.scss']
+  styleUrls: ['./users-table.component.scss'],
 })
 
 
@@ -77,10 +80,16 @@ export class UsersTableComponent implements OnInit, AfterViewInit {
 
   /** Посмотреть заявку. */
   lookAtUser(user: User) {
+  
     this.dialog.open(ModalOpenUserComponent, {
-      width: '550',
+      // width: '550',
+      // data: user
+      
+      height: "calc(100% - 30px)",
+      width: "calc(100% - 30px)",
+      maxWidth: "100%",
+      maxHeight: "100%",
       data: user
     });
-  }
-
+  }  
 }
