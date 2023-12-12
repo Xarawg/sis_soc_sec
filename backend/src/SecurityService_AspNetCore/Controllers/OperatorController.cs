@@ -152,7 +152,7 @@ namespace Security_Service_AspNetCore.Controllers
         /// <returns>Успешность действия</returns>
         [HttpPost]
         [Route("processing-order")]
-        public async Task<IResult> DoubleOrder([FromBody] OperatorProcessingOrderInputModel model)
+        public async Task<IResult> ProcessingOrder([FromBody] OperatorProcessingOrderInputModel model)
         {
             try
             {
