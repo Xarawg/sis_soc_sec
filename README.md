@@ -1,4 +1,4 @@
-## Запуск frontend на .NET Core:
+## Запуск backend на .NET Core:
 
 * Клонируете репозиторий.
 * Открываете каталог backend через Visual Studio
