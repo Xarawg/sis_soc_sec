@@ -35,7 +35,7 @@
         <mat-form-field class="example-full-width">
           <input matInput placeholder="Адрес организации" formControlName="address" required>
           <mat-error *ngIf="form.controls['address'].hasError('required')">
-            Введите адрес организации. Длина не менее 10 и не боле 256 символов.
+            Введите адрес организации. Длина не менее 10 и не более 256 символов.
           </mat-error>  
         </mat-form-field>
   

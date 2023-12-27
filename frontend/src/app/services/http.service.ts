@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs';
+import { BehaviorSubject, map } from 'rxjs';
 import { environment } from '../environments/environment';
 import { User } from '../interfaces/user';
 import { Order } from '../interfaces/order';
@@ -17,6 +17,7 @@ import { OperatorProcessingOrderInputModel } from '../interfaces/operatorProcess
   providedIn: 'root'
 })
 export class HttpService {
+  uploadFormData$ = new BehaviorSubject<FormData | null>(null);
 
   constructor(private http: HttpClient) { 
 
@@ -61,7 +62,7 @@ export class HttpService {
   /** Создание новой заявки оператором */
   createOrder(formData: FormData) {
     if (!!formData) {
-      return this.http.post<any>(`${environment.apiUrl}/api/operator/create-order`, formData);
+      return this.http.post<any>(`${environment.apiUrl}/operator/create-order`, formData);
     } else {
       return null
     }

@@ -5,6 +5,9 @@
   <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[0] }}</mat-label>
     <input matInput placeholder="{{user.userName}}" value="{{user.userName}}"  formControlName="userName">
+    <mat-error *ngIf="form.controls['userName'].hasError('required')">
+      Введите логин. Длина не менее 6 и не более 100 символов.
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
@@ -13,36 +16,57 @@
         {{role.valueView}}
       </mat-option>
     </mat-select>
+    <mat-error *ngIf="form.controls['userRole'].hasError('required')">
+      Выберите роль.
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[2] }}</mat-label>
     <input matInput placeholder="{{user.fio}}" value="{{user.fio}}"  formControlName="fio">
+    <mat-error *ngIf="form.controls['fio'].hasError('required')">
+      Введите ФИО пользователя. Длина не менее 6 и не более 100 символов.
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[3] }}</mat-label>
     <input matInput placeholder="{{user.organization}}" value="{{user.organization}}"  formControlName="organization">
+    <mat-error *ngIf="form.controls['organization'].hasError('required')">
+      Введите наименование организации. Длина не менее 10 и не более 100 символов.
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[4] }}</mat-label>
     <input matInput placeholder="{{user.inn}}" value="{{user.inn}}"  formControlName="inn">
+    <mat-error *ngIf="form.controls['inn'].hasError('required')">
+      Введите ИНН организации. Длина 10 или 12 символов.
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[5] }}</mat-label>
     <input matInput placeholder="{{user.address}}" value="{{user.address}}"  formControlName="address">
+    <mat-error *ngIf="form.controls['address'].hasError('required')">
+      Введите адрес организации. Длина не менее 10 и не более 256 символов.
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[6] }}</mat-label>
     <input matInput placeholder="{{user.email}}" value="{{user.email}}"  formControlName="email">
+    <mat-error *ngIf="form.controls['email'].hasError('required')">
+      Введите адрес организации. Длина не менее 10 и не более 256 символов.
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[7] }}</mat-label>
     <input matInput placeholder="{{user.phoneNumber}}" value="{{user.phoneNumber}}"  formControlName="phoneNumber">
+    <mat-error *ngIf="form.controls['phoneNumber'].hasError('required')">
+      Введите номер телефона. Длина не менее 11 и не более 20 символов.
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
@@ -51,11 +75,17 @@
         {{status.valueView}}
       </mat-option>
     </mat-select>
+    <mat-error *ngIf="form.controls['status'].hasError('required')">
+      Выберите статус пользователя.
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field class="example-full-width" *ngIf="user.userName == null || user.userName == ''">
     <mat-label>{{ userColumnNames[10] }}</mat-label>
     <input matInput placeholder="{{user.password}}" value="{{user.password}}"  formControlName="password">
+    <mat-error *ngIf="form.controls['password'].hasError('required')">
+      Введите пароль пользователя. Длина не менее 10 и не более 18 символов.
+    </mat-error>
   </mat-form-field>
 
 </form>

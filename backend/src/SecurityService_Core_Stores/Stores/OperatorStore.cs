@@ -69,8 +69,7 @@ namespace SecurityService_Core_Stores.Stores
                 SNILS = model.SNILS,
                 FIO = model.FIO,
                 ContactData = model.ContactData,
-                Type = model.Type,
-                SupportMeasures = model.SupportMeasures
+                Type = model.Type
             };
 
             await Orders.AddAsync(newOrder);
@@ -156,7 +155,7 @@ namespace SecurityService_Core_Stores.Stores
         {
             var order = await Orders.AsNoTracking().Where(x => x.Id == idOrder).FirstOrDefaultAsync();
             if (order == null) throw new Exception("Заявки не существует.");
-            order.Id = idOrder;
+            order.Id = Guid.NewGuid();
             order.CreateDate = DateTime.UtcNow;
             order.CreateUser = userName;
 

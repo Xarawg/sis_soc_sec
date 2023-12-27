@@ -10,7 +10,6 @@ namespace SecurityService_Core.Models.ControllerDTO.Operator
         public string? FIO { get; set; }
         public string? ContactData { get; set; }
         public string? Type { get; set; }
-        public string? SupportMeasures { get; set; }
         public List<IFormFile> Documents { get; set; }
     }
 }

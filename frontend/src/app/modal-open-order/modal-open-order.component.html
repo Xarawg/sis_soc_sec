@@ -5,36 +5,57 @@
   <mat-form-field class="example-full-width">
     <mat-label>{{ orderColumnNames[0] }}</mat-label>
     <input matInput placeholder="{{order.id}}" value="{{order.id}}"  formControlName="id">
+    <mat-error *ngIf="form.controls['id'].hasError('required')">
+      Введите адрес организации. Длина не менее 10 и не более 256 символов.
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ orderColumnNames[1] }}</mat-label>
     <input matInput placeholder="{{order.date | date}}" value="{{order.date | date}}"  formControlName="date">
+    <mat-error *ngIf="form.controls['date'].hasError('required')">
+      Введите адрес организации. Длина не менее 10 и не более 256 символов.
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ orderColumnNames[2] }}</mat-label>
     <input matInput placeholder="{{order.state}}" value="{{order.state}}"  formControlName="state">
+    <mat-error *ngIf="form.controls['state'].hasError('required')">
+      Введите адрес организации. Длина не менее 10 и не более 256 символов.
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ orderColumnNames[3] }}</mat-label>
     <input matInput placeholder="{{order.status}}" value="{{order.status}}"  formControlName="status">
+    <mat-error *ngIf="form.controls['status'].hasError('required')">
+      Введите адрес организации. Длина не менее 10 и не более 256 символов.
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ orderColumnNames[4] }}</mat-label>
     <input matInput placeholder="{{order.snils}}" value="{{order.snils}}"  formControlName="snils">
+    <mat-error *ngIf="form.controls['snils'].hasError('required')">
+      Введите адрес организации. Длина не менее 10 и не более 256 символов.
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ orderColumnNames[5] }}</mat-label>
     <input matInput placeholder="{{order.fio}}" value="{{order.fio}}"  formControlName="fio">
+    <mat-error *ngIf="form.controls['fio'].hasError('required')">
+      Введите адрес организации. Длина не менее 10 и не более 256 символов.
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ orderColumnNames[6] }}</mat-label>
     <input matInput placeholder="{{order.contactData}}" value="{{order.contactData}}"  formControlName="contactData">
+    <mat-error *ngIf="form.controls['contactData'].hasError('required')">
+      Введите адрес организации. Длина не менее 10 и не более 256 символов.
+    </mat-error>
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
@@ -54,6 +75,24 @@
     <div class="example-full-width" *ngFor="let doc of order.documents">
       <button mat-button href="downloadDocscan(doc)">Приложение {{ doc.fileName }}</button>
     </div>
+  </div>
+  <div class="example-button-row" *ngIf="order.state === undefined">
+    
+		<mat-form-field style="width: 100%;">
+			<mat-label>Прикрепить документы.</mat-label>
+			<button mat-icon-button matPrefix (click)="f_input.click()">
+        <mat-icon>attach_file</mat-icon>
+      </button>
+			<input type="text" readonly matInput [formControl]="display" />
+			<input
+                type="file"
+                multiple
+                hidden
+                #f_input
+                (change)="handleFileInputChange(f_input.files)"
+            />
+			<mat-error>Вес файла должен быть менее 5 МБ.</mat-error>
+		</mat-form-field>
   </div>
 
   <mat-form-field class="example-full-width">

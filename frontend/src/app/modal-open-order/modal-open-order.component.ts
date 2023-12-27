@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Inject, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Inject, Input, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
 import { Order } from '../interfaces/order';
 import { orderColumnsConstants } from '../constants/order.columns.constants';
@@ -14,6 +14,7 @@ import { OperatorChangeOrderInputModel } from '../interfaces/operatorChangeOrder
 
 @Component({
   selector: 's-modal-open-order',
+  changeDetection: ChangeDetectionStrategy.Default,
   templateUrl: './modal-open-order.component.html',
   styleUrls: ['./modal-open-order.component.scss'],
 })
@@ -22,6 +23,7 @@ export class ModalOpenOrderComponent implements OnInit {
   types: any;
   form: FormGroup;
   file_store: FileList;
+  display: FormControl = new FormControl("", Validators.required);
 
   resultModal = new EventEmitter<boolean>();
 
@@ -43,6 +45,7 @@ export class ModalOpenOrderComponent implements OnInit {
       {value: 1, valueView: "запрос мер поддержки"}
     ];
     if (!!this.order && this.order.id != null) {
+      console.log('1')
       this.form = this.formBuilder.group({
         id: new FormControl({value: this.order.id, disabled: true}, Validators.required),
         date: new FormControl({value: this.order.date, disabled: true}, Validators.required),
@@ -57,31 +60,45 @@ export class ModalOpenOrderComponent implements OnInit {
         supportMeasures: [{value: this.order.supportMeasures, disabled: true}, Validators.required]
       });
     } else {
+      console.log('2')
       this.form = this.formBuilder.group({
-        id: new FormControl({value: '', disabled: true}, Validators.required),
-        date: new FormControl({value: '', disabled: true}, Validators.required),
-        state: new FormControl({value: '', disabled: true}, Validators.required),
-        status: new FormControl({value: '', disabled: true}, Validators.required),
+        id: new FormControl({value: '', disabled: true}),
+        date: new FormControl({value: '', disabled: true}),
+        state: new FormControl({value: '', disabled: true}),
+        status: new FormControl({value: '', disabled: true}),
         snils: new FormControl({value: '', disabled: false}, Validators.required),
         fio: ['', Validators.required],
         contactData: ['', Validators.required],
         type: ['', Validators.required],
-        body: [{value: '', disabled: true}, Validators.required],
-        documents: ['', Validators.required],
-        supportMeasures: [{value: '', disabled: true}, Validators.required]
+        body: [{value: '', disabled: true}],
+        documents: [""],
+        supportMeasures: [{value: '', disabled: true}]
       });
     }
+    
+    this.httpService.uploadFormData$.subscribe((form:FormData | null) => {
+      if (!!form) {
+         this.httpService.createOrder(form)?.subscribe((res) => {},
+         err => {
+          console.log('HTTP Error', err)
+         }
+        );
+       }
+     })
   }
   
+  /**
+   * Вложить файл в заявку
+   */
   handleFileInputChange(fileList: FileList | null): void {
     if (fileList != null) {
       this.file_store = fileList;
       if (fileList.length) {
         const f = fileList[0];
-        const count = fileList.length > 1 ? `(+${fileList.length - 1} files)` : "";
-        (this.form.get('documents') as FormControl).patchValue(`${f.name}${count}`);
+        const count = fileList.length > 1 ? ` и ещё ${fileList.length - 1} файл (-ов)` : "";
+        this.display.patchValue(`${f.name}${count}`);
       } else {
-        (this.form.get('documents') as FormControl).patchValue("");
+        this.display.patchValue("");
       }
     }
   }
@@ -90,30 +107,44 @@ export class ModalOpenOrderComponent implements OnInit {
    * Изменение заявки, обновление данных в ней - тех, которые можно обновить.
    */
   saveOrder(): void {
-    const model: OperatorChangeOrderInputModel = {
-    id: this.order.id,
-    snils: this.form.value.snils,
-    fio: this.form.value.fio,
-    contactData: this.form.value.contactData,
-    type: this.form.value.type,
-    supportMeasures: this.form.value.supportMeasures
-  }
-  this.httpService.changeOrder(model).subscribe( (data:any)=> {
-    const res = data.value;
-  });
-  }
-
-  declineOrder(): void {    
-    const model: OperatorProcessingOrderInputModel = {
-      id: this.order.id,
-      action: OrderProcessingAction.Decline
+    if (this.form.valid) {
+      const formData = new FormData();
+      formData.append("id",this.form.value.id);
+      formData.append("snils",this.form.value.snils);
+      formData.append("fio",this.form.value.fio);
+      formData.append("contactData",this.form.value.contactData);
+      formData.append("type",this.form.value.type);
+      if (this.file_store != undefined) {
+        for (let i = 0; i < this.file_store.length; i++) {
+          formData.append("documents", this.file_store[i]);
+        }
+      }
+      this.httpService.uploadFormData$.next(formData);
     }
-    this.httpService.processingOrder(model).subscribe( (data:any)=> {
-      const res = data.value;
-    });
   }
 
-  sendOrder(): void {  
+  /**
+   * Отменить заявку - изменить её статус на отклонённую
+   */
+  declineOrder(): void {   
+    if (this.form.valid) { 
+      console.log('decline')
+      const model: OperatorProcessingOrderInputModel = {
+        id: this.order.id,
+        action: OrderProcessingAction.Decline
+      }
+      this.httpService.processingOrder(model).subscribe( (data:any)=> {
+        const res = data.value;
+      });
+    }
+  }
+
+  /**
+   * Отправить заявку
+   */
+  sendOrder(): void {    
+    if (this.form.valid) {
+      console.log('send')
     const model: OperatorProcessingOrderInputModel = {
       id: this.order.id,
       action: OrderProcessingAction.Send
@@ -121,28 +152,35 @@ export class ModalOpenOrderComponent implements OnInit {
     this.httpService.processingOrder(model).subscribe( (data:any)=> {
       const res = data.value;
     });
+    }
   }
   
-  doubleOrder(): void {  
-    const model: OperatorProcessingOrderInputModel = {
-      id: this.order.id,
-      action: OrderProcessingAction.Double
+  /**
+   * Продублировать заявку
+   */
+  doubleOrder(): void { 
+    if (this.form.valid) { 
+      console.log('double')
+      const model: OperatorProcessingOrderInputModel = {
+        id: this.order.id,
+        action: OrderProcessingAction.Double
+      }
+      this.httpService.processingOrder(model).subscribe( (data:any)=> {
+        const res = data.value;
+      });
     }
-    this.httpService.processingOrder(model).subscribe( (data:any)=> {
-      const res = data.value;
-    });
   }
 
-  submit() {
-    if (this.form.valid) {
-      // console.log('form ', this.form)
-    }
-  }
-
+  /**
+   * Скачать вложенный документ
+   */
   downloadDocscan(doc: any){
     // console.log('downloadDocscan ', doc)
   }
 
+  /**
+   * Вернуться назад без изменений
+   */
   cancel(){
     this.resultModal.emit(false);
     this.dialogRef.close();
