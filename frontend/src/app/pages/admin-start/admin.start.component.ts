@@ -25,9 +25,6 @@ export class AdminStartComponent implements OnInit {
     private dialog: MatDialog,
     private formBuilder: FormBuilder
   ) {
-    // redirect to home if already logged in
-    if (this.authService.userValue.value) {
-    }
   }
 
   ngOnInit(): void {

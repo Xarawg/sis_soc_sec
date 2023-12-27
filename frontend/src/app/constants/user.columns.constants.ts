@@ -3,7 +3,7 @@ export const userColumnsConstants = {
   /** общий массив столбцов для хэдера */
   displayedColumns: [
     'userName', 'userRole', 'fio', 'organization','inn',
-    'address', 'email', 'phone', 'state', 'actions'
+    'address', 'email', 'phoneNumber', 'state', 'actions'
   ],
   /** описание полей */
   labelColumns: [

@@ -11,7 +11,7 @@ export class AuthGuard {
     ) { }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        const user = this.authService.userValue.value;
+        const user = this.authService.userValue?.value;
         if(!!user && route.data['roles'].includes(user.role)) {
             return true
         } else {

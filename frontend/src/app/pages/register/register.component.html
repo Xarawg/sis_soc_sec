@@ -7,49 +7,49 @@
         <mat-form-field class="example-full-width">
           <input matInput placeholder="Логин" formControlName="userName" required>
           <mat-error *ngIf="form.controls['userName'].hasError('required')">
-            Введите логин
+            Введите логин. Длина не менее 6 символов.
           </mat-error>  
         </mat-form-field>
   
         <mat-form-field class="example-full-width">
           <input matInput placeholder="ФИО" formControlName="fio" required>
           <mat-error *ngIf="form.controls['fio'].hasError('required')">
-            Введите ФИО
+            Введите ФИО. Длина не менее 6 символов.
           </mat-error>  
         </mat-form-field>
   
         <mat-form-field class="example-full-width">
           <input matInput placeholder="Название организации" formControlName="organization" required>
           <mat-error *ngIf="form.controls['organization'].hasError('required')">
-            Введите название организации
+            Введите название организации. Длина не менее 10 символов.
           </mat-error>  
         </mat-form-field>
   
         <mat-form-field class="example-full-width">
           <input matInput placeholder="ИНН организации" formControlName="inn" required>
           <mat-error *ngIf="form.controls['inn'].hasError('required')">
-            Введите ИНН организации
+            Введите ИНН организации. Длина 10 или 12 символов. Только цифры.
           </mat-error>  
         </mat-form-field>
   
         <mat-form-field class="example-full-width">
           <input matInput placeholder="Адрес организации" formControlName="address" required>
           <mat-error *ngIf="form.controls['address'].hasError('required')">
-            Введите адрес организации
+            Введите адрес организации. Длина не менее 10 и не боле 256 символов.
           </mat-error>  
         </mat-form-field>
   
         <mat-form-field class="example-full-width">
-          <input matInput placeholder="Номер телефона" formControlName="phone" required>
-          <mat-error *ngIf="form.controls['phone'].hasError('required')">
-            Введите номер телефона
+          <input matInput placeholder="Номер телефона" formControlName="phoneNumber" required>
+          <mat-error *ngIf="form.controls['phoneNumber'].hasError('required')">
+            Введите номер телефона. Длина не менее 11 символов.
           </mat-error>  
         </mat-form-field>
   
         <mat-form-field class="example-full-width">
           <input matInput placeholder="Пароль" formControlName="password" required>
           <mat-error *ngIf="form.controls['password'].hasError('required')">
-            Введите пароль
+            Введите пароль. Длина не менее 6 и не более 18 символов.
           </mat-error>  
         </mat-form-field>
 
