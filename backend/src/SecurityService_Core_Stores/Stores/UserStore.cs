@@ -107,15 +107,25 @@ namespace SecurityService_Core_Stores.Stores
         {
             try
             {
-                var userDB = await Users.FirstOrDefaultAsync(u => u.Id == user.Id);
-                userDB = user;
-                Users.Update(userDB);
+                // Получаем пользователя из БД
+                var userDB = await Users.Where(u => u.Id == user.Id).FirstOrDefaultAsync();
+                // Получаем хэш пользователя из БД
+                var userHashDB = await UserHashes.Where(u => u.IdUser == user.Id).FirstOrDefaultAsync();
+                if (userDB != null && userHashDB != null)
+                {
+                    userDB.AccessFailedCount = user.AccessFailedCount;
+                    userDB.LockoutEnabled = user.LockoutEnabled;
+                    userDB.AccessFailedAttemptDate = user.AccessFailedAttemptDate;
+                    Users.Update(userDB);
 
-                var userHashDB = await UserHashes.FirstOrDefaultAsync(u => u.IdUser == user.Id);
-                userHashDB.Status = user.Status;
-                UserHashes.Update(userHashDB);
+                    userHashDB.Status = user.Status;
+                    UserHashes.Update(userHashDB);
+                    await _customerContext.SaveChangesAsync();
+                } else
+                {
+                    throw new Exception("Пользователь отсутствует в БД");
+                }
 
-                await _customerContext.SaveChangesAsync();
             }
             catch (Exception ex)
             {

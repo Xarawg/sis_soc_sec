@@ -47,7 +47,7 @@ namespace SecurityService_Core_Stores.Stores.Configurations
             builder.Property(e => e.TwoFactorEnabled)
                 .HasColumnName("two_factor_enabled");
 
-            builder.Property(e => e.LockoutEnd)
+            builder.Property(e => e.AccessFailedAttemptDate)
                 .HasColumnName("lockout_end");
 
             builder.Property(e => e.LockoutEnabled)

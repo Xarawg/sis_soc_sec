@@ -148,17 +148,17 @@ namespace Security_Service_AspNetCore.Controllers
             try
             {
                 var userStatus = (UserStatus?)await _userService.GetUserStatusByLoginAsync(GetUserName());
-                if (userStatus != UserStatus.Registered) throw new Exception("Access denied."); // Учётная запись не одобрена администратором
+                if (userStatus != UserStatus.Registered) throw new Exception("Учётная запись не одобрена администратором."); 
 
                 var userRole = (UserRole?)await _userService.GetUserRoleByLoginAsync(GetUserName());
-                if (userRole != UserRole.Administrator && userRole != UserRole.SuperAdministrator) throw new Exception("Access denied");
+                if (userRole != UserRole.Administrator && userRole != UserRole.SuperAdministrator) throw new Exception("Недостаточно прав.");
                 var result = await _userService.GetUsersAsync();
 
                 return Results.Json(Result<List<UserDTO>>.CreateSuccess(result), serializerOptions);
             }
             catch (Exception ex)
             {
-                return Results.Json(Result<string>.CreateFailure(ex.Message), serializerOptions);
+                return Results.Json(Result<string>.CreateFailure("Access denied."), serializerOptions);
             }
         }
     }

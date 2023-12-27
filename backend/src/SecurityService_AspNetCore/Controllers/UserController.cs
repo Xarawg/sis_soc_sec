@@ -72,7 +72,7 @@ namespace Security_Service_AspNetCore.Controllers
             }
             catch (Exception ex)
             {
-                return Results.Json(Result<string>.CreateFailure(ex.Message), serializerOptions);
+                return Results.Json(Result<string>.CreateFailure("Access denied."), serializerOptions);
             }
         }
     }

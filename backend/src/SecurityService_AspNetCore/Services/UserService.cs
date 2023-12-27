@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Identity;
 using SecurityService_Core.Models.Enums;
 using SecurityService_AspNetCore.Services.Communication;
 using SecurityService_Core.Models.ControllerDTO.Administrator;
+using SecurityService_Core.Security.Auth;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authentication.OAuth;
 
 namespace Security_Service_AspNetCore.Services
 {
@@ -22,6 +25,9 @@ namespace Security_Service_AspNetCore.Services
         private readonly IUserStore _userStore;
         private readonly ITokenHandler _tokenHandler;
 
+        private readonly AuthOptions authOptions = new();
+        public IConfiguration Configuration { get; }
+
         public const int SALT_SIZE = 32;
         public const int HASH_SIZE = 32;
         public const int ITERATIONS = 100000;
@@ -29,8 +35,6 @@ namespace Security_Service_AspNetCore.Services
 
         public const int TEMPORARY_ACCESS_EXPIRATION_TIME = 30 * 60; // длительность временного доступа после сброса пароля
         public const int BLOCK_TIME = 15 * 60; // время блокировки
-        public const int ATTEMPT_DATE = 180; // интервал между попытками ввода
-        public const int ATTEMPT_COUNT = 5; // кол-во неудачных попыток
 
         /// <summary>
         /// Конструктор сервиса файлов
@@ -38,16 +42,20 @@ namespace Security_Service_AspNetCore.Services
         /// <param name="mapper"></param>
         /// <param name="userStore"></param>
         /// <param name="tokenHandler"></param>
+        /// <param name="configuration"></param>
         public UserService(
             IMapper mapper
             , IUserStore userStore
             , ITokenHandler tokenHandler
+            , IConfiguration configuration
             )
         {
+            Configuration = configuration;
             _mapper = mapper;
             _userStore = userStore;
             _tokenHandler = tokenHandler;
-        }
+            Configuration.GetSection("AuthOptions").Bind(authOptions);
+    }
 
         public async Task<bool> RegisterAsync(UserRegistrationInputModel? userModel = null, AdminRegistrationInputModel? adminModel = null)
         {
@@ -157,7 +165,7 @@ namespace Security_Service_AspNetCore.Services
             try
             {
                 var user = await CheckUserByLoginAsync(model.UserName);
-                if (user == null) throw new Exception("Access denied."); // Пользователь не зарегистрирован.
+                if (user == null) throw new Exception("Пользователь не зарегистрирован."); 
 
                 var accessAllowed = await CheckPasswordAsync(model.UserName, model.Password);
 
@@ -309,7 +317,6 @@ namespace Security_Service_AspNetCore.Services
         /// </summary>
         /// <param name="userName">Логин пользователя</param>
         /// <param name="password">Пароль пользователя</param>
-        /// <remarks>TODO: Метод можно забрутфорсить если не поставить ограничение на вызов метода с одного IP адреса.</remarks>
         /// <returns>true or false</returns>
         public async Task<bool> CheckPasswordAsync(string userName, string password)
         {
@@ -317,27 +324,7 @@ namespace Security_Service_AspNetCore.Services
             UserHashDB? userHash = await _userStore.GetUserHashAsync(userName);
             if (userHash == null || user == null)
             {
-                throw new Exception("Access denied."); // Пользователь с таким логином не зарегистрирован
-            }
-
-            switch ((UserStatus)userHash.Status!)
-            {
-                case UserStatus.Blocked:
-                    throw new Exception("Access denied."); // Пользователь с таким логином заблокирован.
-                case UserStatus.Declined:
-                    throw new Exception("Access denied."); // Пользователь с таким логином отклонён администрацией.
-            }
-
-            try
-            {
-                if (await this.CheckBlockedAsync(user))
-                {
-                    throw new Exception("Ваша учетная запись заблокирована на " + (BLOCK_TIME / 60).ToString() + " мин.");
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message, ex);
+                throw new Exception("Пользователь с таким логином не зарегистрирован.");
             }
 
             var salt = userHash!.Salt;
@@ -348,13 +335,27 @@ namespace Security_Service_AspNetCore.Services
             {
                 try
                 {
-                    await this.AccessFailedAsync(user);
+                    await AddFailedAuthAsync(user);
                 }
                 catch (Exception ex)
                 {
                     throw new Exception(ex.Message, ex);
                 }
-                throw new Exception("Access denied."); // Логин или пароль указаны неверно.
+                throw new Exception("Логин или пароль указаны неверно.");
+            }
+
+            switch ((UserStatus)userHash.Status!)
+            {
+                case UserStatus.Blocked:
+                    throw new Exception("Пользователь с таким логином заблокирован."); // 
+                case UserStatus.Declined:
+                    throw new Exception("Пользователь с таким логином отклонён администрацией."); // 
+            }
+
+            bool isUserBlocked = await CheckIsUserBlockedAsync(user);
+            if (isUserBlocked)
+            {
+                throw new Exception("Ваша учетная запись заблокирована на " + (authOptions.BlockTime).ToString() + " мин.");
             }
 
             return true;
@@ -363,26 +364,30 @@ namespace Security_Service_AspNetCore.Services
         /// <summary>
         /// Проверка блокировки
         /// </summary>
-        private async Task<bool> CheckBlockedAsync(UserDB user)
+        private async Task<bool> CheckIsUserBlockedAsync(UserDB user)
         {
-            if (user.LockoutEnabled && user.LockoutEnd != null)
+            // не нулевая дата и признак блокировки - маркер текущей блокировки, но она могла закончиться по времени
+            if (user.LockoutEnabled ?? false
+                && user.AccessFailedAttemptDate != null)
             {
-                var blockTime = DateTime.UtcNow - user.LockoutEnd.Value.ToUniversalTime();
-                if (blockTime.TotalSeconds >= BLOCK_TIME)
+                // проверяем кончилась ли блокировка
+                var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+                var dateWhenBlocked = user.AccessFailedAttemptDate.Value;
+                var blockTimeDiff = dateNow - dateWhenBlocked;
+                // разница текущего времени должна превышать дату блокировки на время блокировки
+                if (blockTimeDiff.TotalSeconds >= authOptions.BlockTime * 60)
                 {
-                    user.AccessFailedCount = 0;
-                    user.LockoutEnd = null;
-                    user.LockoutEnabled = false;
-                    await _userStore.UpdateUserAsync(user);
-
+                    await WhenBlockIsOutdated(user);
                     return false;
                 }
+                // блокировка ещё не закончилась
                 else
                 {
                     return true;
                 }
             }
-            else if (user.LockoutEnabled)
+            // если время блокировки null, значит блокировка вечная
+            else if (user.LockoutEnabled ?? false)
             {
                 return true;
             }
@@ -390,17 +395,54 @@ namespace Security_Service_AspNetCore.Services
         }
 
         /// <summary>
-        /// Добавить неудачную попытку входа
+        /// Снимаем ограничения с пользователя если блокировка устарела
         /// </summary>
-        private async Task AccessFailedAsync(UserDB user)
+        /// <param name="user">Пользователь</param>
+        /// <returns>true заблокирован, false не заблокирован</returns>
+        private async Task WhenBlockIsOutdated(UserDB user)
         {
-            user.AccessFailedCount++;
-            if (user.AccessFailedCount >= ATTEMPT_COUNT)
+            // Время блокировки прошло. Снимаем ограничения, обнуляем дату и счётчик блокировки
+            user.AccessFailedCount = 0;
+            user.AccessFailedAttemptDate = null;
+            user.LockoutEnabled = false;
+            await _userStore.UpdateUserAsync(user);
+        }
+
+        /// <summary>
+        /// Засчитать ошибочную попытку входа в аккаунт, если они превышают лимит - пользователь получает блокировку
+        /// </summary>
+        private async Task AddFailedAuthAsync(UserDB user)
+        {
+            // если есть данные о последней неудачной попытке входа - значит попытка не первая,
+            // и нужно проверить её актуальность, или обнулить её
+            if (user.AccessFailedAttemptDate != null)
             {
-                var blockedTime = DateTime.UtcNow.AddSeconds(BLOCK_TIME);
-                user.LockoutEnd = blockedTime;
+                // если последняя попытка входа была давно, то считаем эту провальную попытку первой
+                var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+                var dateWhenBlocked = user.AccessFailedAttemptDate.Value;
+                var blockTimeDiff = dateNow - dateWhenBlocked;
+                if (blockTimeDiff.TotalSeconds >= authOptions.BlockTime * 60)
+                {
+                    user.AccessFailedCount = 1;
+                }
+                else
+                {
+                    user.AccessFailedCount++; // инкрементируем количество неудачных попыток входа.
+                }
+            }
+            // если дата null, значит провальная попытка входа - первая.
+            else
+            {
+                user.AccessFailedCount = 1;
+            }
+
+            // если ошибок ввода пароля больше лимита - пользователь получает блокировку
+            if (user.AccessFailedCount >= authOptions.FailedAttempCountLimit)
+            {
                 user.LockoutEnabled = true;
             }
+            user.AccessFailedAttemptDate = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+            // обновляем данные о блокировке пользователя в БД
             await _userStore.UpdateUserAsync(user);
         }
 
