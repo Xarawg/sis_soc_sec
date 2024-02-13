@@ -45,7 +45,6 @@ export class ModalOpenOrderComponent implements OnInit {
       {value: 1, valueView: "запрос мер поддержки"}
     ];
     if (!!this.order && this.order.id != null) {
-      console.log('1')
       this.form = this.formBuilder.group({
         id: new FormControl({value: this.order.id, disabled: true}, Validators.required),
         date: new FormControl({value: this.order.date, disabled: true}, Validators.required),
@@ -60,7 +59,6 @@ export class ModalOpenOrderComponent implements OnInit {
         supportMeasures: [{value: this.order.supportMeasures, disabled: true}, Validators.required]
       });
     } else {
-      console.log('2')
       this.form = this.formBuilder.group({
         id: new FormControl({value: '', disabled: true}),
         date: new FormControl({value: '', disabled: true}),

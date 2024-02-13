@@ -12,7 +12,7 @@
 
   <mat-form-field class="example-full-width">
     <mat-select placeholder="{{userColumnNames[1]}}" formControlName="userRole">
-      <mat-option *ngFor="let role of roles" [value]="role.value">
+      <mat-option *ngFor="let role of roles" [value]="role">
         {{role.valueView}}
       </mat-option>
     </mat-select>

@@ -35,14 +35,25 @@ export class AdminStartComponent implements OnInit {
   }
 
   public onLogin(): void {
-    this.markAsDirty(this.loginForm);
-    const auth: UserAuth = {
-      userName: this.loginForm.value.userName,
-      password: this.loginForm.value.password
-    }
-    const result = this.authService.login(auth);
+    const auth = this.loginForm.value;
+    
+    const result = this.authService.login(auth)
+    .pipe(first())
+    .subscribe({
+        next: () => {
+            // get return url from route parameters or default to '/'
+            // const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+            // console.log('navigate return /')
+            // this.router.navigate([returnUrl]);
+        },
+        error: error => {
+            // this.error = error;
+            // this.loading = false;
+        }
+    });;
     if (this.loginForm.valid && result) {
-      this.router.navigateByUrl('/users-table');
+      const returnUrl = '/users-table';
+      this.router.navigateByUrl(returnUrl);
     }
     else {
       this.dialog.open(ModalComponent, {
@@ -54,12 +65,12 @@ export class AdminStartComponent implements OnInit {
     }
   }
 
-  private markAsDirty(group: FormGroup): void {
-    group.markAsDirty();
-    for (const i in group.controls) {
-      group.controls[i].markAsDirty();
-    }
-  }
+  // private markAsDirty(group: FormGroup): void {
+  //   group.markAsDirty();
+  //   for (const i in group.controls) {
+  //     group.controls[i].markAsDirty();
+  //   }
+  // }
 
   register() {
     this.router.navigateByUrl('/register');

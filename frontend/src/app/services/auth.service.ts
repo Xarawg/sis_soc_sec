@@ -23,17 +23,21 @@ export class AuthService {
   }
 
   public get userValue(): any {
-      return this.userSubject.value;
+    return this.userSubject.value;
   }
 
   login(authModel: UserAuth) {      
       return this.http.post<any>(`${environment.apiUrl}/user/auth`, authModel)
-          .pipe(map(user => {
-              // store user details and jwt token in local storage to keep user logged in between page refreshes
-              localStorage.setItem('userData', JSON.stringify(user));
-              this.userSubject.next(user);
-              return user;
-          }));
+          .pipe(
+            map((result) => {
+              if (result.hasErrors) {
+                throw result.error;
+              }
+              this.userSubject.next(result.value);
+              localStorage.setItem('userData', JSON.stringify(result.value));
+              return result.value;
+            })
+          );
   }
 
   logout() {

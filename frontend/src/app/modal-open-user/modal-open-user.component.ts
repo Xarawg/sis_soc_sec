@@ -94,7 +94,7 @@ export class ModalOpenUserComponent implements OnInit {
    * Получить список доступных для изменения ролей пользователей
    */
   getAvailableRolesForChange(): any {
-    switch(this.authService.userValue.value['role']) {
+    switch(this.authService.userValue.role) {
       case 3: 
         return [
                 {value: 0, valueView: "Отсутствует"}, 
@@ -205,7 +205,6 @@ export class ModalOpenUserComponent implements OnInit {
 
   submit() {
     if (this.form.valid) {
-      // console.log('form ', this.form)
     }
   }
 

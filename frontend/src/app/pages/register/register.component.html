@@ -19,6 +19,14 @@
         </mat-form-field>
   
         <mat-form-field class="example-full-width">
+          <input matInput placeholder="Электронная почта" formControlName="email" required>
+          <mat-error *ngIf="form.controls['email'].hasError('required')">
+            Введите электронный адрес. Длина не менее 5 символов.
+          </mat-error>  
+        </mat-form-field>
+  
+  
+        <mat-form-field class="example-full-width">
           <input matInput placeholder="Название организации" formControlName="organization" required>
           <mat-error *ngIf="form.controls['organization'].hasError('required')">
             Введите название организации. Длина не менее 10 символов.
@@ -54,7 +62,7 @@
         </mat-form-field>
 
         <div class="footer-sec">
-          <button mat-raised-button type="submit" color="primary" class="Login-btn" (click)="submit()">Зарегистрироваться</button>
+          <button mat-raised-button type="button" color="primary" class="Login-btn" (click)="submit()">Зарегистрироваться</button>
         </div>
 
         <div class="footer-sec">

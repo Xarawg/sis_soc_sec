@@ -11,18 +11,17 @@ export class JwtInterceptor implements HttpInterceptor {
     /**
      * Добавление токена авторизации.
      */
-    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any | null>> {
         const user = this.authenticationService.userValue;
-        const isLoggedIn = user?.value.token.token;
+        
+        const isLoggedIn = user?.token?.token;
         const isApiUrl = request.url.startsWith(environment.apiUrl);
         if (isLoggedIn && isApiUrl) {
             request = request.clone({
-                setHeaders: {
-                    Authorization: `Bearer ${user.value.token.token}`
-                }
+                headers: request.headers.set('Authorization', 'Bearer ' + user.token.token),
             });
         }
-
+        
         return next.handle(request);
     }
 }
