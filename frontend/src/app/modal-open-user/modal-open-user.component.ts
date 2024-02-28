@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Inject, Input, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { Order } from '../interfaces/order';
 import { userColumnsConstants } from '../constants/user.columns.constants';
@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
   selector: 's-modal-open-user',
   templateUrl: './modal-open-user.component.html',
   styleUrls: ['./modal-open-user.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class ModalOpenUserComponent implements OnInit {
   userColumnNames = userColumnsConstants.labelColumns;
@@ -122,7 +123,7 @@ export class ModalOpenUserComponent implements OnInit {
         fio: this.form.value.fio,
         organization: this.form.value.organization,
         inn: this.form.value.inn,
-        role: this.form.value.userRole,
+        role: this.form.value.userRole.value,
         status: this.form.value.status,
         address: this.form.value.address,
         password: this.form.value.password
@@ -183,7 +184,7 @@ export class ModalOpenUserComponent implements OnInit {
         this.dialog.open(ModalComponent, {
           width: '550',
           data: {
-            modalText: 'Произошла ошибка регистрации.'
+            modalText: 'Произошла ошибка изменения пользователя.'
           }
         });
       }
