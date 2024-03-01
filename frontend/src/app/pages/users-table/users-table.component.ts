@@ -10,6 +10,7 @@ import { userColumnsConstants } from 'src/app/constants/user.columns.constants';
 import { User } from 'src/app/interfaces/user';
 import { ModalOpenUserComponent } from 'src/app/modal-open-user/modal-open-user.component';
 import { HttpService } from 'src/app/services/http.service';
+import { ModalService } from 'src/app/services/modal.service';
 
 @Component({
   selector: 'users-table',
@@ -44,7 +45,8 @@ export class UsersTableComponent implements OnInit, AfterViewInit {
   constructor(
     private dialog: MatDialog,
     private httpService: HttpService,
-    private changeDetectorRefs: ChangeDetectorRef) {
+    private changeDetectorRefs: ChangeDetectorRef,
+    private modalService: ModalService) {
   }
   
   ngAfterViewInit(): void {
@@ -53,6 +55,10 @@ export class UsersTableComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.updateUserDataList();
+    this.modalService.changed.subscribe( (data:any) => {
+      this.updateUserDataList();
+    });
+    this.changeDetectorRefs.detectChanges();
   }
 
   private updateUserDataList(){
@@ -64,7 +70,6 @@ export class UsersTableComponent implements OnInit, AfterViewInit {
       this.dataSource.sort = this.sort!;
       this.usersData = res;
     });
-    this.changeDetectorRefs.detectChanges();
   }
 
   /** Применить фильтр */

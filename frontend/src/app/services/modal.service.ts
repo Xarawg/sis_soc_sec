@@ -1,4 +1,4 @@
-import { ElementRef, Injectable } from "@angular/core";
+import { ElementRef, EventEmitter, Injectable } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 
 @Injectable({
@@ -11,6 +11,11 @@ export class ModalService {
       currentOpenedModalName: string = '';
       overlay!: ElementRef;
       modalList!: ElementRef[];
+
+      /**
+       * Модальное окно внесло изменения, поэтому данные следует обновить.
+       */
+      changed = new EventEmitter<any>();
     
       constructor(private dialog: MatDialog) {}
     

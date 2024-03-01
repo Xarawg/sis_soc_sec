@@ -10,6 +10,7 @@ import { HttpService } from '../services/http.service';
 import { Router } from '@angular/router';
 import { AdminChangeInputModel } from '../interfaces/adminChangeInputModel';
 import { MyErrorStateMatcher } from '../errorStateMatcher/errorStateMatcher';
+import { ModalService } from '../services/modal.service';
 
 
 @Component({
@@ -42,6 +43,7 @@ export class ModalOpenUserComponent implements OnInit {
     private formBuilder: FormBuilder,
     private authService: AuthService,
     private httpService: HttpService,
+    private modalService: ModalService,
     private dialog: MatDialog,
     private router: Router,
   ) {
@@ -83,8 +85,6 @@ export class ModalOpenUserComponent implements OnInit {
         password: ['', Validators.required]
       });
     }
-    console.log("this.form ", this.form.value)
-    console.log("this.user ", this.user)
   }
 
   setStatusPlaceholder(): void {
@@ -120,6 +120,8 @@ export class ModalOpenUserComponent implements OnInit {
 
   declineUser(): void {
     console.log('declineUser')
+    this.modalService.changed.next(null);
+    this.dialogRef.close();
   }
 
   registerUser() {
@@ -138,6 +140,7 @@ export class ModalOpenUserComponent implements OnInit {
       }
       this.httpService.registrationByAdmin(model).subscribe((data: any) => {
         const result = data.value != null && data.value != undefined ? true : false;
+        this.modalService.changed.next(result);
         if (result == true) {
           this.dialog.open(ModalComponent, {
             width: '550',
@@ -145,6 +148,7 @@ export class ModalOpenUserComponent implements OnInit {
               modalText: 'Регистрация прошла успешно.'
             }
           });
+          this.dialogRef.close();
         } else {
           this.dialog.open(ModalComponent, {
             width: '550',
@@ -181,10 +185,9 @@ export class ModalOpenUserComponent implements OnInit {
         state: this.form.value.state,
         address: this.form.value.address
       }
-      console.log('modthis.formel ', this.form.value)
-      console.log('model ', model)
       this.httpService.changeUserByAdmin(model).subscribe((data: any) => {
         const result = data.value != null && data.value != undefined ? true : false;
+        this.modalService.changed.next(result);
         if (result == true) {
           this.dialog.open(ModalComponent, {
             width: '550',
@@ -192,6 +195,7 @@ export class ModalOpenUserComponent implements OnInit {
               modalText: 'Изменение пользователя прошло успешно.'
             }
           });
+          this.dialogRef.close();
         } else {
           this.dialog.open(ModalComponent, {
             width: '550',
@@ -214,6 +218,8 @@ export class ModalOpenUserComponent implements OnInit {
 
   blockUser(): void {
     console.log('blockUser')
+    this.modalService.changed.next(null);
+    this.dialogRef.close();
   }
 
   submit() {

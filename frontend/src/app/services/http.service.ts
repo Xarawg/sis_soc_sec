@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, map } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { BehaviorSubject, Observable, map } from 'rxjs';
 import { environment } from '../environments/environment';
 import { User } from '../interfaces/user';
 import { Order } from '../interfaces/order';
@@ -22,7 +22,6 @@ export class HttpService {
   uploadFormData$ = new BehaviorSubject<FormData | null>(null);
   
   constructor(private http: HttpClient) { 
-
   }
 
   /** Получение списка пользователей */
@@ -57,8 +56,12 @@ export class HttpService {
   }
 
   /** Получение файла из заявки */
-  getOrderFileByIdDoc(model: OperatorGetDocscanModel) {
-    return this.http.post<Docscan>(`${environment.apiUrl}/operator/get-order-document-by-id`, model);
+  public getOrderFileByIdDoc(model: OperatorGetDocscanModel): Observable<any> {  
+    let url = `${environment.apiUrl}/operator/get-order-document-by-id`;  
+    return this.http.post(url, model, {
+      responseType: "blob",
+      headers: new HttpHeaders().append("Content-Type", "application/json")
+    });
   }
 
   /** Создание новой заявки оператором */

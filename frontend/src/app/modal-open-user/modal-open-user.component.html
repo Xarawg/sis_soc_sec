@@ -73,7 +73,7 @@
     Либо селект при возможности выбора статуса, либо инпут, 
     когда выбрать нельзя и надо только отрисовать. 
   
-  для корректного отображения статуса, при варианте оформления input был выбран formControlName="status", 
+  для корректного отображения статуса, при варианте оформления input был убран formControlName
   хотя он не присутствует в форме. Поле ввода отключено флагом [disabled]="true".
    
   -->
@@ -90,7 +90,7 @@
   
   <mat-form-field *ngIf="user.userName != null" class="example-full-width">    
     <mat-label>{{ userColumnNames[8] }}</mat-label>
-    <input matInput [errorStateMatcher]="matcher" placeholder="{{ statusPlaceholder.valueView }}" value="{{ statusPlaceholder.valueView }}"  formControlName="status" [disabled]="true">
+    <input matInput [errorStateMatcher]="matcher" placeholder="{{ statusPlaceholder.valueView }}" value="{{ statusPlaceholder.valueView }}" [disabled]="true">
   </mat-form-field>
   <!--  -->
 

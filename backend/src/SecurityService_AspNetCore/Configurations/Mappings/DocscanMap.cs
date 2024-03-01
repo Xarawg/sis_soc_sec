@@ -8,7 +8,11 @@ namespace SecurityService_AspNetCore.Configurations.Mappings
     {
         public DocscanMap()
         {
-            CreateMap<DocscanDB, DocscanDTO>();
+            CreateMap<DocscanDB, DocscanDTO>()
+                .ForMember(
+                    dest => dest.IdDoc,
+                    opt => opt.MapFrom(src => src.Id)
+                );
             CreateMap<DocscanDB, DocscanWithoutFileBodyDTO>();
         }
     }

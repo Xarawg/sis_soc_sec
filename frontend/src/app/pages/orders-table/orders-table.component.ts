@@ -8,6 +8,7 @@ import { MyErrorStateMatcher } from 'src/app/errorStateMatcher/errorStateMatcher
 import { Order } from 'src/app/interfaces/order';
 import { ModalOpenOrderComponent } from 'src/app/modal-open-order/modal-open-order.component';
 import { HttpService } from 'src/app/services/http.service';
+import { ModalService } from 'src/app/services/modal.service';
 
 @Component({
   selector: 'orders-table',
@@ -44,7 +45,8 @@ export class OrderTableComponent implements OnInit {
   constructor(
     private dialog: MatDialog,
     private httpService: HttpService,
-    private changeDetectorRefs: ChangeDetectorRef) {
+    private changeDetectorRefs: ChangeDetectorRef,
+    private modalService: ModalService) {
   }
   
   ngAfterViewInit(): void {
@@ -53,6 +55,10 @@ export class OrderTableComponent implements OnInit {
 
   ngOnInit(): void {
     this.updateOrdersDataList();
+    this.modalService.changed.subscribe( (data:any) => {
+      this.updateOrdersDataList();
+    });
+    this.changeDetectorRefs.detectChanges();
   }
 
   private updateOrdersDataList(){
@@ -65,7 +71,6 @@ export class OrderTableComponent implements OnInit {
         this.ordersData = res;
       }
     });
-    this.changeDetectorRefs.detectChanges();
   }
 
   /** Применить фильтр */

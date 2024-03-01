@@ -11,7 +11,10 @@ import { OperatorProcessingOrderInputModel } from '../interfaces/operatorProcess
 import { OrderProcessingAction } from '../enums/orderProcessingAction';
 import { OperatorChangeOrderInputModel } from '../interfaces/operatorChangeOrderInputModel';
 import { MyErrorStateMatcher } from '../errorStateMatcher/errorStateMatcher';
-
+import { Docscan } from '../interfaces/docscan';
+import { OperatorGetDocscanModel } from '../interfaces/operatorGetDocscanModel';
+import { saveAs } from '@progress/kendo-file-saver'
+import { ModalService } from '../services/modal.service';
 
 @Component({
   selector: 's-modal-open-order',
@@ -41,6 +44,7 @@ export class ModalOpenOrderComponent implements OnInit {
       private formBuilder: FormBuilder,
       private authService: AuthService,
       private httpService: HttpService,
+      private modalService: ModalService,
       private dialog: MatDialog,
       private router: Router,
   ) {
@@ -126,6 +130,8 @@ export class ModalOpenOrderComponent implements OnInit {
         }
       }
       this.httpService.uploadFormData$.next(formData);
+      this.modalService.changed.next(null);
+      this.dialogRef.close();
     }
   }
 
@@ -143,7 +149,8 @@ export class ModalOpenOrderComponent implements OnInit {
         supportMeasures: this.form.value.supportMeasures
       }
       this.httpService.changeOrder(model).subscribe( (data:any)=> {
-        const res = data.value;
+        this.modalService.changed.next(data.value);
+        this.dialogRef.close();
       });
     }
   }
@@ -152,52 +159,60 @@ export class ModalOpenOrderComponent implements OnInit {
    * Отменить заявку - изменить её статус на отклонённую
    */
   declineOrder(): void {   
-    if (this.form.valid) { 
-      const model: OperatorProcessingOrderInputModel = {
-        id: this.order.id,
-        action: OrderProcessingAction.Decline
-      }
-      this.httpService.processingOrder(model).subscribe( (data:any)=> {
-        const res = data.value;
-      });
+    const model: OperatorProcessingOrderInputModel = {
+      id: this.order.id,
+      action: OrderProcessingAction.Decline
     }
+    this.httpService.processingOrder(model).subscribe( (data:any)=> {
+      this.modalService.changed.next(data.value);
+      this.dialogRef.close();
+    });
   }
 
   /**
    * Отправить заявку
    */
   sendOrder(): void {    
-    if (this.form.valid) {
     const model: OperatorProcessingOrderInputModel = {
       id: this.order.id,
       action: OrderProcessingAction.Send
     }
     this.httpService.processingOrder(model).subscribe( (data:any)=> {
       const res = data.value;
+      this.dialogRef.close();
     });
-    }
   }
   
   /**
    * Продублировать заявку
    */
   doubleOrder(): void { 
-    if (this.form.valid) { 
-      const model: OperatorProcessingOrderInputModel = {
-        id: this.order.id,
-        action: OrderProcessingAction.Double
-      }
-      this.httpService.processingOrder(model).subscribe( (data:any)=> {
-        const res = data.value;
-      });
+    const model: OperatorProcessingOrderInputModel = {
+      id: this.order.id,
+      action: OrderProcessingAction.Double
     }
+    this.httpService.processingOrder(model).subscribe( (data:any)=> {
+      this.modalService.changed.next(data.value);
+      this.dialogRef.close();
+    });
   }
 
   /**
    * Скачать вложенный документ
    */
   downloadDocscan(doc: any){
-    // console.log('downloadDocscan ', doc)
+    console.log('click')
+    let model: OperatorGetDocscanModel = { 'IdDoc': doc.id };
+    this.httpService.getOrderFileByIdDoc(model)
+    .subscribe(
+      data => {
+        saveAs(data, doc.fileName);
+      },
+      err => {
+        alert("Проблема при скачивании файла.");
+        console.error(err);
+      }
+    );
   }
 
   /**

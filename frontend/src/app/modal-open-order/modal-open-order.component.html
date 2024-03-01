@@ -62,7 +62,10 @@
   </mat-form-field>
   <div class="example-button-row" *ngIf="order.documents != null && order.documents.length > 0">
     <div class="example-full-width" *ngFor="let doc of order.documents">
-      <a (onClick)="downloadDocscan(doc)">Приложение {{ doc.fileName }}</a>
+      <button mat-fab extended color="basic" (click)="downloadDocscan(doc)">
+        <mat-icon>attachment</mat-icon>
+        {{ doc.fileName }}
+      </button>
     </div>
   </div>
   <div class="example-button-row" *ngIf="order.state === undefined">

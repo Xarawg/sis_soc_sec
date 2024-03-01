@@ -66,9 +66,9 @@ namespace Security_Service_AspNetCore.Controllers
         }
 
         /// <summary>
-        /// Получить список заявок для оператора
+        /// Получить документ заявки по айди документа
         /// </summary>
-        /// <returns>Список заявок</returns>
+        /// <returns>Документ</returns>
         [HttpPost]
         [Route("get-order-document-by-id")]
         public async Task<IResult> GetOrderDocumentsById([FromBody] OperatorGetDocscanModel model)
@@ -83,7 +83,7 @@ namespace Security_Service_AspNetCore.Controllers
 
                 var result = await _operatorService.GetDocscanAsync(model.IdDoc);
 
-                return Results.Json(result);
+                return Results.File(result.FileBody, "application/octet-stream", $"{result.FileName}.{result.FileExt}");
             }
             catch (Exception ex)
             {
