@@ -26,4 +26,8 @@
     <ProjectReference Include="..\SecurityService_Core\SecurityService_Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

@@ -29,7 +29,7 @@ namespace SecurityService_Core_Stores.Stores.Configurations
 
             builder.Property(e => e.Salt)
                 .HasColumnName("salt");
-            
+
             builder.Property(e => e.Status)
                 .HasColumnName("status");
         }

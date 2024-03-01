@@ -1,18 +1,17 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using SecurityService_AspNetCore.Services.Communication;
 using SecurityService_Core.Interfaces;
+using SecurityService_Core.Models.ControllerDTO.Administrator;
 using SecurityService_Core.Models.ControllerDTO.User;
 using SecurityService_Core.Models.DB;
 using SecurityService_Core.Models.DTO;
+using SecurityService_Core.Models.Enums;
+using SecurityService_Core.Security.Auth;
 using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.AspNetCore.Identity;
-using SecurityService_Core.Models.Enums;
-using SecurityService_AspNetCore.Services.Communication;
-using SecurityService_Core.Models.ControllerDTO.Administrator;
-using SecurityService_Core.Security.Auth;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Authentication.OAuth;
 
 namespace Security_Service_AspNetCore.Services
 {
@@ -55,7 +54,7 @@ namespace Security_Service_AspNetCore.Services
             _userStore = userStore;
             _tokenHandler = tokenHandler;
             Configuration.GetSection("AuthOptions").Bind(authOptions);
-    }
+        }
 
         public async Task<bool> RegisterAsync(UserRegistrationInputModel? userModel = null, AdminRegistrationInputModel? adminModel = null)
         {
@@ -88,7 +87,7 @@ namespace Security_Service_AspNetCore.Services
             }
         }
 
-        public async Task<bool> ChangeUserAsync(AdminRegistrationInputModel model)
+        public async Task<bool> ChangeUserAsync(AdminChangeInputModel model)
         {
             try
             {
@@ -96,7 +95,7 @@ namespace Security_Service_AspNetCore.Services
                 UserDB? existingUser = await CheckUserByLoginAsync(model.UserName);
                 if (existingUser == null) throw new Exception("Access denied."); // Неудачная попытка изменения. Такого пользователя не существует.
 
-                existingUser = _mapper.Map<AdminRegistrationInputModel, UserDB>(model);
+                existingUser.State = model.State;
                 await _userStore.UpdateUserAsync(existingUser);
                 return true;
             }
@@ -165,7 +164,7 @@ namespace Security_Service_AspNetCore.Services
             try
             {
                 var user = await CheckUserByLoginAsync(model.UserName);
-                if (user == null) throw new Exception("Пользователь не зарегистрирован."); 
+                if (user == null) throw new Exception("Пользователь не зарегистрирован.");
 
                 var accessAllowed = await CheckPasswordAsync(model.UserName, model.Password);
 
@@ -192,7 +191,7 @@ namespace Security_Service_AspNetCore.Services
             result.ForEach(u =>
             {
                 u.UserRole = userRoles[int.Parse(u.UserRole)];
-                u.Status = userStatuses[int.Parse(u.Status)];
+                u.Status = userStatuses[u.State];
             });
 
             return result;
@@ -224,7 +223,7 @@ namespace Security_Service_AspNetCore.Services
         public async Task<int?> GetUserStatusByLoginAsync(string login)
         {
             var user = await _userStore.GetUserByLoginAsync(login);
-            return user?.Status;
+            return user?.State;
         }
 
         /// <summary>

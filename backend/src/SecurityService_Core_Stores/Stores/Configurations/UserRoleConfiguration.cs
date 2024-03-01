@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SecurityService_Core.Models.DB;
-using SecurityService_Core.Models.DTO;
 
 namespace SecurityService_Core_Stores.Stores.Configurations
 {

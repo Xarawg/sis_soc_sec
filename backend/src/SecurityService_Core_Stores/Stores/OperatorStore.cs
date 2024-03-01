@@ -1,10 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using SecurityService_Core.Interfaces;
 using SecurityService_Core.Models.ControllerDTO.Operator;
 using SecurityService_Core.Models.DB;
 using SecurityService_Core.Models.Enums;
-using System.ComponentModel.DataAnnotations;
 
 namespace SecurityService_Core_Stores.Stores
 {
@@ -65,7 +63,8 @@ namespace SecurityService_Core_Stores.Stores
                 Date = DateTime.UtcNow,
                 CreateDate = DateTime.UtcNow,
                 CreateUser = userName,
-                Status = (int)OrderStatus.New,
+                State = (int)OrderStatus.New,
+                Status = "",
                 SNILS = model.SNILS,
                 FIO = model.FIO,
                 ContactData = model.ContactData,
@@ -108,10 +107,10 @@ namespace SecurityService_Core_Stores.Stores
         {
             var order = await Orders.Where(x => x.Id == idOrder).FirstOrDefaultAsync();
             if (order == null) throw new Exception("Заявки не существует.");
-            if ((OrderStatus)order.Status! != OrderStatus.New)
+            if ((OrderStatus)order.State! != OrderStatus.New)
                 throw new Exception("Отменить можно только новую заявку.");
 
-            order.Status = 1;
+            order.State = 1;
             order.ChangeDate = DateTime.UtcNow;
             order.ChangeUser = userName;
 
@@ -131,11 +130,11 @@ namespace SecurityService_Core_Stores.Stores
         {
             var order = await Orders.Where(x => x.Id == idOrder).FirstOrDefaultAsync();
             if (order == null) throw new Exception("Заявки не существует.");
-            if ((OrderStatus)order.Status! != OrderStatus.New
-                    && (OrderStatus)order.Status! != OrderStatus.Registered)
+            if ((OrderStatus)order.State! != OrderStatus.New
+                    && (OrderStatus)order.State! != OrderStatus.Registered)
                 throw new Exception("Отменить можно только новую и зарегистрированную заявки.");
 
-            order.Status = -2;
+            order.State = -2;
             order.ChangeDate = DateTime.UtcNow;
             order.ChangeUser = userName;
 

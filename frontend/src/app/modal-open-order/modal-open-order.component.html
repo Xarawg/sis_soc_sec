@@ -4,57 +4,46 @@
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ orderColumnNames[0] }}</mat-label>
-    <input matInput placeholder="{{order.id}}" value="{{order.id}}"  formControlName="id">
-    <mat-error *ngIf="form.controls['id'].hasError('required')">
-      Введите адрес организации. Длина не менее 10 и не более 256 символов.
-    </mat-error>
+    <input matInput [errorStateMatcher]="matcher" placeholder="{{order.id}}" value="{{order.id}}"  formControlName="id">
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ orderColumnNames[1] }}</mat-label>
-    <input matInput placeholder="{{order.date | date}}" value="{{order.date | date}}"  formControlName="date">
-    <mat-error *ngIf="form.controls['date'].hasError('required')">
-      Введите адрес организации. Длина не менее 10 и не более 256 символов.
-    </mat-error>
+    <input matInput [errorStateMatcher]="matcher" placeholder="{{order.date | date}}" value="{{order.date | date}}"  formControlName="date">
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ orderColumnNames[2] }}</mat-label>
-    <input matInput placeholder="{{order.state}}" value="{{order.state}}"  formControlName="state">
-    <mat-error *ngIf="form.controls['state'].hasError('required')">
-      Введите адрес организации. Длина не менее 10 и не более 256 символов.
-    </mat-error>
+    <input matInput [errorStateMatcher]="matcher" placeholder="{{order.state}}" value="{{order.state}}"  formControlName="state">
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ orderColumnNames[3] }}</mat-label>
-    <input matInput placeholder="{{order.status}}" value="{{order.status}}"  formControlName="status">
-    <mat-error *ngIf="form.controls['status'].hasError('required')">
-      Введите адрес организации. Длина не менее 10 и не более 256 символов.
-    </mat-error>
+    <input matInput [errorStateMatcher]="matcher" placeholder="{{order.status}}" value="{{order.status}}"  formControlName="status">
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ orderColumnNames[4] }}</mat-label>
-    <input matInput placeholder="{{order.snils}}" value="{{order.snils}}"  formControlName="snils">
+    <input matInput [errorStateMatcher]="matcher" placeholder="{{order.snils}}" value="{{order.snils}}"  formControlName="snils">
     <mat-error *ngIf="form.controls['snils'].hasError('required')">
-      Введите адрес организации. Длина не менее 10 и не более 256 символов.
+      Введите СНИЛС. Введите в формате XXX-XXX-XXX XX.
     </mat-error>
+    <!-- TODO: формат СНИЛС XXX-XXX-XXX XX -->
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ orderColumnNames[5] }}</mat-label>
-    <input matInput placeholder="{{order.fio}}" value="{{order.fio}}"  formControlName="fio">
+    <input matInput [errorStateMatcher]="matcher" placeholder="{{order.fio}}" value="{{order.fio}}"  formControlName="fio">
     <mat-error *ngIf="form.controls['fio'].hasError('required')">
-      Введите адрес организации. Длина не менее 10 и не более 256 символов.
+      Введите ФИО.
     </mat-error>
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ orderColumnNames[6] }}</mat-label>
-    <input matInput placeholder="{{order.contactData}}" value="{{order.contactData}}"  formControlName="contactData">
+    <input matInput [errorStateMatcher]="matcher" placeholder="{{order.contactData}}" value="{{order.contactData}}"  formControlName="contactData">
     <mat-error *ngIf="form.controls['contactData'].hasError('required')">
-      Введите адрес организации. Длина не менее 10 и не более 256 символов.
+      Введите контактные данные.
     </mat-error>
   </mat-form-field>
 
@@ -69,11 +58,11 @@
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ orderColumnNames[8] }}</mat-label>
-    <input matInput placeholder="{{order.body}}" value="{{order.body}}"  formControlName="body">
+    <input matInput [errorStateMatcher]="matcher" placeholder="{{order.body}}" value="{{order.body}}"  formControlName="body">
   </mat-form-field>
   <div class="example-button-row" *ngIf="order.documents != null && order.documents.length > 0">
     <div class="example-full-width" *ngFor="let doc of order.documents">
-      <button mat-button href="downloadDocscan(doc)">Приложение {{ doc.fileName }}</button>
+      <a (onClick)="downloadDocscan(doc)">Приложение {{ doc.fileName }}</a>
     </div>
   </div>
   <div class="example-button-row" *ngIf="order.state === undefined">
@@ -97,14 +86,22 @@
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ orderColumnNames[10] }}</mat-label>
-    <input matInput placeholder="{{order.supportMeasures}}" value="{{order.supportMeasures}}"  formControlName="supportMeasures">
+    <input matInput [errorStateMatcher]="matcher" placeholder="{{order.supportMeasures}}" value="{{order.supportMeasures}}"  formControlName="supportMeasures">
   </mat-form-field>
 
 </form>
+
+<!-- Кнопки соответствуют статусам заявки:
+  отправить можно только новую; Она должна быть в статусе 0 (новая заведённая)
+  отклонить можно только новую заведённую или находящуюся в процессе, т.е. со статусом 0 или 1;
+  дублировать можно успешно обработанную, отклонённую, отменённую или ошибочную;
+  отправить можно только вновь заведённую;
+-->
   <button mat-flat-button mat-dialog-close>Вернуться</button>
   <button mat-flat-button type="button" (click)="sendOrder()" *ngIf="order.state == 0">Отправить заявку</button>
   <button mat-flat-button type="button" (click)="declineOrder()" *ngIf="order.state == 0 || order.state == 1">Отменить заявку</button>
-  <button mat-flat-button type="button" (click)="doubleOrder()" *ngIf="order.state != 0 && order.state != 1">Дублировать заявку</button>
+  <button mat-flat-button type="button" (click)="doubleOrder()" *ngIf="order.state < 0 || order?.state == 2">Дублировать заявку</button>
   <hr>
-  <button mat-flat-button type="button"  (click)="saveOrder()" *ngIf="order.state == 0 || order.id == null">Сохранить заявку</button>
+  <button mat-flat-button type="button"  (click)="saveOrder()" *ngIf="order.id == null">Сохранить заявку</button>
+  <button mat-flat-button type="button"  (click)="changeOrder(order.id)" *ngIf="order.state == 0">Изменить заявку</button>
 </mat-dialog-content>

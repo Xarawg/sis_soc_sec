@@ -12,24 +12,26 @@ import { Docscan } from '../interfaces/docscan';
 import { OperatorGetDocscanModel } from '../interfaces/operatorGetDocscanModel';
 import { OperatorChangeOrderInputModel } from '../interfaces/operatorChangeOrderInputModel';
 import { OperatorProcessingOrderInputModel } from '../interfaces/operatorProcessingOrderInputModel';
+import { AdminChangeInputModel } from '../interfaces/adminChangeInputModel';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class HttpService {
   uploadFormData$ = new BehaviorSubject<FormData | null>(null);
-
+  
   constructor(private http: HttpClient) { 
 
   }
 
   /** Получение списка пользователей */
-  getUsers() {
+  getUsers() : any {
     return this.http.get<User[]>(`${environment.apiUrl}/administrator/get-users`);
   }
 
   /** Получение списка заявок */
-  getOrders() {
+  getOrders() : any {
     const model: operatorOrderGetModel = { 'limitRowCount': 1000, 'limitOffset': 0 };
     return this.http.post<Order[]>(`${environment.apiUrl}/operator/get-orders`, model);
   }
@@ -45,7 +47,7 @@ export class HttpService {
   }
 
   /** Изменение пользователя админом */
-  changeUserByAdmin(model: AdminRegistrationInputModel) {
+  changeUserByAdmin(model: AdminChangeInputModel) {
     return this.http.post<boolean>(`${environment.apiUrl}/administrator/change-user`, model);
   }
 

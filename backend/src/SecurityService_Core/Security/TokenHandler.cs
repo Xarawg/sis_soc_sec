@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Options;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using Microsoft.Extensions.Configuration;
-using SecurityService_Core.Security.Tokens;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using SecurityService_Core.Interfaces;
 using SecurityService_Core.Models.DB;
+using SecurityService_Core.Security.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
 
 namespace SecurityService_Core.Security

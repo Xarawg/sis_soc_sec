@@ -121,12 +121,12 @@ namespace SecurityService_Core_Stores.Migrations
                         .HasColumnType("text")
                         .HasColumnName("snils");
 
-                    b.Property<string>("State")
-                        .HasColumnType("text")
+                    b.Property<int?>("State")
+                        .HasColumnType("integer")
                         .HasColumnName("state");
 
-                    b.Property<int?>("Status")
-                        .HasColumnType("integer");
+                    b.Property<string>("Status")
+                        .HasColumnType("text");
 
                     b.Property<string>("SupportMeasures")
                         .HasColumnType("text")
@@ -167,6 +167,10 @@ namespace SecurityService_Core_Stores.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id")
                         .HasDefaultValueSql("uuid_generate_v4()");
+
+                    b.Property<DateTime?>("AccessFailedAttemptDate")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("lockout_end");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer")
@@ -220,13 +224,9 @@ namespace SecurityService_Core_Stores.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_temporary_access");
 
-                    b.Property<bool>("LockoutEnabled")
+                    b.Property<bool?>("LockoutEnabled")
                         .HasColumnType("boolean")
                         .HasColumnName("lockout_enabled");
-
-                    b.Property<DateTime?>("LockoutEnd")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("lockout_end");
 
                     b.Property<string>("Organization")
                         .HasColumnType("text")

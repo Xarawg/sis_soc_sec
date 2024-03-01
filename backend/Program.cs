@@ -25,7 +25,7 @@ var app = builder.Build();
 
 app.UseCors("DefaultPolicyWithOrigin");
 
-if (app.Environment.IsDevelopment() 
+if (app.Environment.IsDevelopment()
     || app.Environment.IsProduction() // MARK: Можно отключить, если в проде сваггер не нужен
     )
 {

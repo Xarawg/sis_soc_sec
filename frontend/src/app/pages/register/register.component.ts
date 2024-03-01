@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { UserRoles } from 'src/app/enums/userRoles';
 import { UserStates } from 'src/app/enums/userStates';
+import { MyErrorStateMatcher } from 'src/app/errorStateMatcher/errorStateMatcher';
 import { User } from 'src/app/interfaces/user';
 import { UserAuth } from 'src/app/interfaces/userAuth';
 import { UserRegistrationInputModel } from 'src/app/interfaces/userRegistrationInputModel';
@@ -17,8 +18,13 @@ import { HttpService } from 'src/app/services/http.service';
 })
 export class AdminRegisterComponent implements OnInit {
   Roles: any = ['Admin', 'Author', 'Reader'];
-
   form: FormGroup;
+  
+  /**
+   * Отмечает ошибки по кастомной логике. 
+   * В текущем виде - подсвечивает поля ошибочными до того, как пользователь их дотронется.
+   */
+  matcher = new MyErrorStateMatcher();
 
   constructor(
     private router: Router,

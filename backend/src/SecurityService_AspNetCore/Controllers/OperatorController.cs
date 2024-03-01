@@ -32,7 +32,7 @@ namespace Security_Service_AspNetCore.Controllers
         public OperatorController(
             ILogger<OperatorController> logger
             , OperatorService operatorService
-            ,UserService userService)
+            , UserService userService)
         {
             _logger = logger;
             _operatorService = operatorService;
@@ -163,9 +163,9 @@ namespace Security_Service_AspNetCore.Controllers
                 if (userRole != UserRole.Operator && userRole != UserRole.SuperAdministrator) throw new Exception("Access denied");
 
                 if (!ACTIONS.Contains(model.Action)) throw new Exception("Access denied."); // Идентификатор действия находится в промежутке между 0 и 2.
-                
+
                 var result = await _operatorService.ProcessingOrderAsync(model, GetUserName());
-                
+
                 return Results.Json(Result<bool>.CreateSuccess(result), serializerOptions);
             }
             catch (Exception ex)

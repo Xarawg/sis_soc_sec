@@ -10,6 +10,7 @@ import { HttpService } from '../services/http.service';
 import { OperatorProcessingOrderInputModel } from '../interfaces/operatorProcessingOrderInputModel';
 import { OrderProcessingAction } from '../enums/orderProcessingAction';
 import { OperatorChangeOrderInputModel } from '../interfaces/operatorChangeOrderInputModel';
+import { MyErrorStateMatcher } from '../errorStateMatcher/errorStateMatcher';
 
 
 @Component({
@@ -26,6 +27,13 @@ export class ModalOpenOrderComponent implements OnInit {
   display: FormControl = new FormControl("", Validators.required);
 
   resultModal = new EventEmitter<boolean>();
+
+  
+  /**
+   * Отмечает ошибки по кастомной логике. 
+   * В текущем виде - подсвечивает поля ошибочными до того, как пользователь их дотронется.
+   */
+  matcher = new MyErrorStateMatcher();
 
   constructor(
       @Inject(MAT_DIALOG_DATA) public order: Order,
@@ -102,7 +110,7 @@ export class ModalOpenOrderComponent implements OnInit {
   }
 
   /**
-   * Изменение заявки, обновление данных в ней - тех, которые можно обновить.
+   * Сохранение заявки, обновление данных в ней - тех, которые можно обновить.
    */
   saveOrder(): void {
     if (this.form.valid) {
@@ -122,11 +130,29 @@ export class ModalOpenOrderComponent implements OnInit {
   }
 
   /**
+   * Изменение заявки, обновление данных в ней - тех, которые можно обновить.
+   */
+  changeOrder(id: any): void {
+    if (this.form.valid) { 
+      const model: OperatorChangeOrderInputModel = {
+        id: id,
+        snils: this.form.value.snils,
+        fio: this.form.value.fio,
+        contactData: this.form.value.contactData,
+        type: this.form.value.type,
+        supportMeasures: this.form.value.supportMeasures
+      }
+      this.httpService.changeOrder(model).subscribe( (data:any)=> {
+        const res = data.value;
+      });
+    }
+  }
+
+  /**
    * Отменить заявку - изменить её статус на отклонённую
    */
   declineOrder(): void {   
     if (this.form.valid) { 
-      console.log('decline')
       const model: OperatorProcessingOrderInputModel = {
         id: this.order.id,
         action: OrderProcessingAction.Decline
@@ -142,7 +168,6 @@ export class ModalOpenOrderComponent implements OnInit {
    */
   sendOrder(): void {    
     if (this.form.valid) {
-      console.log('send')
     const model: OperatorProcessingOrderInputModel = {
       id: this.order.id,
       action: OrderProcessingAction.Send
@@ -158,7 +183,6 @@ export class ModalOpenOrderComponent implements OnInit {
    */
   doubleOrder(): void { 
     if (this.form.valid) { 
-      console.log('double')
       const model: OperatorProcessingOrderInputModel = {
         id: this.order.id,
         action: OrderProcessingAction.Double

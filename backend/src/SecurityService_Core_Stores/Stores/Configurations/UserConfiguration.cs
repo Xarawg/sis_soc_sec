@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SecurityService_Core.Models.DB;
-using SecurityService_Core.Models.DTO;
 
 namespace SecurityService_Core_Stores.Stores.Configurations
 {
@@ -52,29 +51,29 @@ namespace SecurityService_Core_Stores.Stores.Configurations
 
             builder.Property(e => e.LockoutEnabled)
                 .HasColumnName("lockout_enabled");
-            
+
             builder.Property(e => e.AccessFailedCount)
                 .HasColumnName("access_failed_count");
-            
+
             builder.Property(e => e.UserRole)
                 .HasColumnName("user_role");
-            
+
             builder.Property(e => e.FIO)
                 .HasColumnName("fio");
-            
+
             builder.Property(e => e.Organization)
                 .HasColumnName("organization");
-            
+
             builder.Property(e => e.INN)
                 .HasColumnName("inn");
-            
+
             builder.Property(e => e.Address)
                 .HasColumnName("address");
-            
-            builder.Property(e => e.Status)
-                .HasColumnName("status");
 
-            builder.HasIndex(e => e.Status);
+            builder.Property(e => e.State)
+                .HasColumnName("state");
+
+            builder.HasIndex(e => e.State);
 
             builder.Property(e => e.IsTemporaryAccess)
                 .HasColumnName("is_temporary_access");

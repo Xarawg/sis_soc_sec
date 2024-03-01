@@ -26,7 +26,7 @@ namespace SecurityService_Core.Models.ControllerDTO.Administrator
         [Required]
         public int Role { get; set; }
         [Required]
-        public int Status { get; set; }
+        public int State { get; set; }
         [Required]
         [MinLength(10), MaxLength(256)]
         public string Address { get; set; }

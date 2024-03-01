@@ -22,21 +22,24 @@ namespace SecurityService_Core_Stores.Stores.Configurations
             builder.Property(e => e.State)
                 .HasColumnName("state");
 
+            builder.Property(e => e.Status)
+                .HasColumnName("status");
+
             builder.Property(e => e.SNILS)
                 .HasColumnName("snils");
-            
+
             builder.Property(e => e.FIO)
                 .HasColumnName("fio");
-            
+
             builder.Property(e => e.ContactData)
                 .HasColumnName("contact_data");
-            
+
             builder.Property(e => e.Type)
                 .HasColumnName("type");
-            
+
             builder.Property(e => e.Body)
                 .HasColumnName("body");
-            
+
             builder.Property(e => e.SupportMeasures)
                 .HasColumnName("support_measures");
 

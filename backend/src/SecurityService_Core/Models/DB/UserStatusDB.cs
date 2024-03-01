@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace SecurityService_Core.Models.DB
+﻿namespace SecurityService_Core.Models.DB
 {
     public class UserStatusDB
     {

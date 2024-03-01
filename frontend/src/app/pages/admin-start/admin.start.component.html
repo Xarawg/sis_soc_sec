@@ -5,7 +5,7 @@
       <h2 class="primary" style="text-align: center;">Вход в кабинет администратора</h2>
 
       <mat-form-field class="example-full-width">
-        <input matInput placeholder="Логин" formControlName="userName" required>
+        <input matInput [errorStateMatcher]="matcher" placeholder="Логин" formControlName="userName" required>
         <mat-error *ngIf="loginForm.controls['userName'].hasError('required')">
           Введите логин
         </mat-error>
@@ -13,7 +13,7 @@
       </mat-form-field>
 
       <mat-form-field>
-        <input matInput placeholder="Пароль" [type]="hide ? 'password' : 'text'" formControlName="password"
+        <input matInput [errorStateMatcher]="matcher" placeholder="Пароль" [type]="hide ? 'password' : 'text'" formControlName="password"
           required>
         <mat-error *ngIf="loginForm.controls['password'].hasError('required')">
           Введите пароль

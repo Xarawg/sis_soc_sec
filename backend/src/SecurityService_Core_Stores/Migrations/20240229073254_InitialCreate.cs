@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace SecurityService_Core_Stores.Migrations
 {
     /// <inheritdoc />
-    public partial class IniticalCreate : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -56,8 +56,8 @@ namespace SecurityService_Core_Stores.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "uuid_generate_v4()"),
                     date = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    state = table.Column<string>(type: "text", nullable: true),
-                    Status = table.Column<int>(type: "integer", nullable: true),
+                    state = table.Column<int>(type: "integer", nullable: false),
+                    status = table.Column<string>(type: "text", nullable: true),
                     snils = table.Column<string>(type: "text", nullable: true),
                     fio = table.Column<string>(type: "text", nullable: true),
                     contact_data = table.Column<string>(type: "text", nullable: true),
@@ -134,7 +134,7 @@ namespace SecurityService_Core_Stores.Migrations
                     phone_number_confirmed = table.Column<bool>(type: "boolean", nullable: false),
                     two_factor_enabled = table.Column<bool>(type: "boolean", nullable: false),
                     lockout_end = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    lockout_enabled = table.Column<bool>(type: "boolean", nullable: false),
+                    lockout_enabled = table.Column<bool>(type: "boolean", nullable: true),
                     access_failed_count = table.Column<int>(type: "integer", nullable: false),
                     user_role = table.Column<int>(type: "integer", nullable: true),
                     fio = table.Column<string>(type: "text", nullable: true),

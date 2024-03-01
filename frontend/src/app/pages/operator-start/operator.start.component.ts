@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { first } from 'rxjs';
+import { MyErrorStateMatcher } from 'src/app/errorStateMatcher/errorStateMatcher';
 import { UserAuth } from 'src/app/interfaces/userAuth';
 import { ModalComponent } from 'src/app/modal/modal.component';
 import { AuthService } from 'src/app/services/auth.service';
@@ -17,6 +18,13 @@ export class OperatorStartComponent implements OnInit {
   loginForm: FormGroup;
   error: any;
   loading: boolean;
+  
+  /**
+   * Отмечает ошибки по кастомной логике. 
+   * В текущем виде - подсвечивает поля ошибочными до того, как пользователь их дотронется.
+   */
+  matcher = new MyErrorStateMatcher();
+
   public hide: boolean = true; // Password hiding
 
   constructor(
@@ -36,43 +44,22 @@ export class OperatorStartComponent implements OnInit {
   }
 
   public onLogin(): void {
-    this.markAsDirty(this.loginForm);
-    const auth: UserAuth = {
-      userName: this.loginForm.value.userName,
-      password: this.loginForm.value.password
-    }
+    const auth = this.loginForm.value;
     const result = this.authService.login(auth)
-    .pipe(first())
-    .subscribe({
-        next: () => {
-            // get return url from route parameters or default to '/'
-            // const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-            // console.log('navigate return /')
-            // this.router.navigate([returnUrl]);
+      .subscribe(
+        (result) => {
+          const returnUrl = '/orders-table';
+          this.router.navigateByUrl(returnUrl);
         },
-        error: error => {
-            this.error = error;
-            this.loading = false;
+        (error) => {
+          this.dialog.open(ModalComponent, {
+            width: '550',
+            data: {
+              modalText: 'Данные введены некорректно.'
+            }
+          });
         }
-    });;
-    if (this.loginForm.valid) {
-      this.router.navigateByUrl('/orders-table');
-    }
-    else {
-      this.dialog.open(ModalComponent, {
-        width: '550',
-        data: {
-          modalText: 'Данные введены некорректно.'
-        }
-      });
-    }
-  }
-
-  private markAsDirty(group: FormGroup): void {
-    group.markAsDirty();
-    for (const i in group.controls) {
-      group.controls[i].markAsDirty();
-    }
+      );
   }
 
   register() {

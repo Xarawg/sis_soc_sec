@@ -1,7 +1,6 @@
 ﻿using SecurityService_Core.Models.ControllerDTO.Administrator;
 using SecurityService_Core.Models.ControllerDTO.User;
 using SecurityService_Core.Models.DB;
-using SecurityService_Core.Models.DTO;
 
 namespace SecurityService_Core.Interfaces
 {

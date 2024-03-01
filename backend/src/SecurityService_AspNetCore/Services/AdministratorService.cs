@@ -1,9 +1,5 @@
 ﻿using AutoMapper;
 using SecurityService_Core.Interfaces;
-using SecurityService_Core.Models.ControllerDTO.User;
-using SecurityService_Core.Models.ControllerDTO.Administrator;
-using SecurityService_Core.Models.DTO;
-using SecurityService_Core.Models.DB;
 
 namespace Security_Service_AspNetCore.Services
 {

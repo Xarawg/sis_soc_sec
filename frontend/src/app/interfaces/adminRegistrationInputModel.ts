@@ -9,7 +9,7 @@ export interface AdminRegistrationInputModel {
     organization: string;
     inn: string;
     role: UserRoles;
-    status: UserStates;
+    state: UserStates;
     address: string;
     password: string;
 }

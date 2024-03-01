@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SecurityService_Core.Models.ControllerDTO.User
+namespace SecurityService_Core.Models.ControllerDTO.Administrator
 {
-    public class UserRegistrationInputModel
+    public class AdminChangeInputModel
     {
         [Required]
         [Length(6, 100)]
@@ -24,10 +24,11 @@ namespace SecurityService_Core.Models.ControllerDTO.User
         [Required]
         public string INN { get; set; }
         [Required]
+        public int Role { get; set; }
+        [Required]
+        public int State { get; set; }
+        [Required]
         [MinLength(10), MaxLength(256)]
         public string Address { get; set; }
-        [Required]
-        [MinLength(6), MaxLength(18)]
-        public string Password { get; set; }
     }
 }

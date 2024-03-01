@@ -4,6 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { orderColumnsConstants } from 'src/app/constants/order.columns.constants';
+import { MyErrorStateMatcher } from 'src/app/errorStateMatcher/errorStateMatcher';
 import { Order } from 'src/app/interfaces/order';
 import { ModalOpenOrderComponent } from 'src/app/modal-open-order/modal-open-order.component';
 import { HttpService } from 'src/app/services/http.service';
@@ -28,6 +29,12 @@ export class OrderTableComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort | null;
   private paginator: MatPaginator;
 
+  /**
+   * Отмечает ошибки по кастомной логике. 
+   * В текущем виде - подсвечивает поля ошибочными до того, как пользователь их дотронется.
+   */
+  matcher = new MyErrorStateMatcher();
+
   /** общий массив данных */
   ordersData: Order[] = [];
 
@@ -51,10 +58,12 @@ export class OrderTableComponent implements OnInit {
   private updateOrdersDataList(){
     this.httpService.getOrders().subscribe( (data:any)=> {
       const res = data.value;
-      this.dataSource = new MatTableDataSource(res);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort!;
-      this.ordersData = res;
+      if (!!data.value) {
+        this.dataSource = new MatTableDataSource(res);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort!;
+        this.ordersData = res;
+      }
     });
     this.changeDetectorRefs.detectChanges();
   }

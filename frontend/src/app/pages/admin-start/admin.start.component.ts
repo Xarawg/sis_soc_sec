@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { first } from 'rxjs';
+import { MyErrorStateMatcher } from 'src/app/errorStateMatcher/errorStateMatcher';
 import { UserAuth } from 'src/app/interfaces/userAuth';
 import { ModalComponent } from 'src/app/modal/modal.component';
 import { AuthService } from 'src/app/services/auth.service';
@@ -16,7 +17,15 @@ import { AuthService } from 'src/app/services/auth.service';
 export class AdminStartComponent implements OnInit {
   public loginForm: FormGroup;
 
+  error: any;
+  loading: boolean;
   public hide: boolean = true; // Password hiding
+  
+  /**
+   * Отмечает ошибки по кастомной логике. 
+   * В текущем виде - подсвечивает поля ошибочными до того, как пользователь их дотронется.
+   */
+  matcher = new MyErrorStateMatcher();
 
   constructor(
     private authService: AuthService,
@@ -36,41 +45,22 @@ export class AdminStartComponent implements OnInit {
 
   public onLogin(): void {
     const auth = this.loginForm.value;
-    
     const result = this.authService.login(auth)
-    .pipe(first())
-    .subscribe({
-        next: () => {
-            // get return url from route parameters or default to '/'
-            // const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-            // console.log('navigate return /')
-            // this.router.navigate([returnUrl]);
+      .subscribe(
+        (result) => {
+          const returnUrl = '/users-table';
+          this.router.navigateByUrl(returnUrl);
         },
-        error: error => {
-            // this.error = error;
-            // this.loading = false;
+        (error) => {
+          this.dialog.open(ModalComponent, {
+            width: '550',
+            data: {
+              modalText: 'Данные введены некорректно.'
+            }
+          });
         }
-    });;
-    if (this.loginForm.valid && result) {
-      const returnUrl = '/users-table';
-      this.router.navigateByUrl(returnUrl);
-    }
-    else {
-      this.dialog.open(ModalComponent, {
-        width: '550',
-        data: {
-          modalText: 'Данные введены некорректно.'
-        }
-      });
-    }
+      );
   }
-
-  // private markAsDirty(group: FormGroup): void {
-  //   group.markAsDirty();
-  //   for (const i in group.controls) {
-  //     group.controls[i].markAsDirty();
-  //   }
-  // }
 
   register() {
     this.router.navigateByUrl('/register');

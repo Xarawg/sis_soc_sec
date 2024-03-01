@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SecurityService_Core.Security.Tokens
+﻿namespace SecurityService_Core.Security.Tokens
 {
     public class AccessToken : JsonWebToken
     {

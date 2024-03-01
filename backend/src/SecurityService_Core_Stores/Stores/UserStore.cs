@@ -71,7 +71,7 @@ namespace SecurityService_Core_Stores.Stores
                         Organization = userModel != null ? userModel.Organization : adminModel.Organization,
                         INN = userModel != null ? userModel.INN : adminModel.INN,
                         Address = userModel != null ? userModel.Address : adminModel.Address,
-                        Status = adminModel != null ? adminModel.Status : (int)UserStatus.New,
+                        State = adminModel != null ? adminModel.State : (int)UserStatus.New,
                         CreateDate = DateTime.UtcNow,
                         CreateUser = userName != null ? userName : ""
                     };
@@ -83,7 +83,7 @@ namespace SecurityService_Core_Stores.Stores
                         IdUser = idUser,
                         Hash = hash,
                         Salt = salt,
-                        Status = adminModel != null ? adminModel.Status : (int)UserStatus.New,
+                        Status = adminModel != null ? adminModel.State : (int)UserStatus.New,
                         UserName = newUser.UserName,
                     };
                     await UserHashes.AddAsync(newHash);
@@ -118,10 +118,11 @@ namespace SecurityService_Core_Stores.Stores
                     userDB.AccessFailedAttemptDate = user.AccessFailedAttemptDate;
                     Users.Update(userDB);
 
-                    userHashDB.Status = user.Status;
+                    userHashDB.Status = user.State;
                     UserHashes.Update(userHashDB);
                     await _customerContext.SaveChangesAsync();
-                } else
+                }
+                else
                 {
                     throw new Exception("Пользователь отсутствует в БД");
                 }

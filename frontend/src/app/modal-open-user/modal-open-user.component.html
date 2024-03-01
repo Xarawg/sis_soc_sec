@@ -4,7 +4,7 @@
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[0] }}</mat-label>
-    <input matInput placeholder="{{user.userName}}" value="{{user.userName}}"  formControlName="userName">
+    <input matInput [errorStateMatcher]="matcher" placeholder="{{user.userName}}" value="{{user.userName}}"  formControlName="userName">
     <mat-error *ngIf="form.controls['userName'].hasError('required')">
       Введите логин. Длина не менее 6 и не более 100 символов.
     </mat-error>
@@ -23,7 +23,7 @@
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[2] }}</mat-label>
-    <input matInput placeholder="{{user.fio}}" value="{{user.fio}}"  formControlName="fio">
+    <input matInput [errorStateMatcher]="matcher" placeholder="{{user.fio}}" value="{{user.fio}}"  formControlName="fio">
     <mat-error *ngIf="form.controls['fio'].hasError('required')">
       Введите ФИО пользователя. Длина не менее 6 и не более 100 символов.
     </mat-error>
@@ -31,7 +31,7 @@
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[3] }}</mat-label>
-    <input matInput placeholder="{{user.organization}}" value="{{user.organization}}"  formControlName="organization">
+    <input matInput [errorStateMatcher]="matcher" placeholder="{{user.organization}}" value="{{user.organization}}"  formControlName="organization">
     <mat-error *ngIf="form.controls['organization'].hasError('required')">
       Введите наименование организации. Длина не менее 10 и не более 100 символов.
     </mat-error>
@@ -39,7 +39,7 @@
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[4] }}</mat-label>
-    <input matInput placeholder="{{user.inn}}" value="{{user.inn}}"  formControlName="inn">
+    <input matInput [errorStateMatcher]="matcher" placeholder="{{user.inn}}" value="{{user.inn}}"  formControlName="inn">
     <mat-error *ngIf="form.controls['inn'].hasError('required')">
       Введите ИНН организации. Длина 10 или 12 символов.
     </mat-error>
@@ -47,7 +47,7 @@
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[5] }}</mat-label>
-    <input matInput placeholder="{{user.address}}" value="{{user.address}}"  formControlName="address">
+    <input matInput [errorStateMatcher]="matcher" placeholder="{{user.address}}" value="{{user.address}}"  formControlName="address">
     <mat-error *ngIf="form.controls['address'].hasError('required')">
       Введите адрес организации. Длина не менее 10 и не более 256 символов.
     </mat-error>
@@ -55,7 +55,7 @@
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[6] }}</mat-label>
-    <input matInput placeholder="{{user.email}}" value="{{user.email}}"  formControlName="email">
+    <input matInput [errorStateMatcher]="matcher" placeholder="{{user.email}}" value="{{user.email}}"  formControlName="email">
     <mat-error *ngIf="form.controls['email'].hasError('required')">
       Введите адрес организации. Длина не менее 10 и не более 256 символов.
     </mat-error>
@@ -63,36 +63,56 @@
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[7] }}</mat-label>
-    <input matInput placeholder="{{user.phoneNumber}}" value="{{user.phoneNumber}}"  formControlName="phoneNumber">
+    <input matInput [errorStateMatcher]="matcher" placeholder="{{user.phoneNumber}}" value="{{user.phoneNumber}}"  formControlName="phoneNumber">
     <mat-error *ngIf="form.controls['phoneNumber'].hasError('required')">
       Введите номер телефона. Длина не менее 11 и не более 20 символов.
     </mat-error>
   </mat-form-field>
 
-  <mat-form-field class="example-full-width">
-    <mat-select placeholder="{{userColumnNames[8]}}" formControlName="status">
+  <!-- можно через ngTemplate, но сделал через ngIf. 
+    Либо селект при возможности выбора статуса, либо инпут, 
+    когда выбрать нельзя и надо только отрисовать. 
+  
+  для корректного отображения статуса, при варианте оформления input был выбран formControlName="status", 
+  хотя он не присутствует в форме. Поле ввода отключено флагом [disabled]="true".
+   
+  -->
+  <mat-form-field *ngIf="user.userName == null" class="example-full-width">
+    <mat-select placeholder="{{userColumnNames[8]}}" formControlName="state">
       <mat-option *ngFor="let status of statuses" [value]="status.value">
         {{status.valueView}}
       </mat-option>
     </mat-select>
-    <mat-error *ngIf="form.controls['status'].hasError('required')">
+    <mat-error *ngIf="form.controls['state'].hasError('required')">
       Выберите статус пользователя.
     </mat-error>
   </mat-form-field>
+  
+  <mat-form-field *ngIf="user.userName != null" class="example-full-width">    
+    <mat-label>{{ userColumnNames[8] }}</mat-label>
+    <input matInput [errorStateMatcher]="matcher" placeholder="{{ statusPlaceholder.valueView }}" value="{{ statusPlaceholder.valueView }}"  formControlName="status" [disabled]="true">
+  </mat-form-field>
+  <!--  -->
 
   <mat-form-field class="example-full-width" *ngIf="user.userName == null || user.userName == ''">
     <mat-label>{{ userColumnNames[10] }}</mat-label>
-    <input matInput placeholder="{{user.password}}" value="{{user.password}}"  formControlName="password">
+    <input matInput [errorStateMatcher]="matcher" placeholder="{{user.password}}" value="{{user.password}}"  formControlName="password">
     <mat-error *ngIf="form.controls['password'].hasError('required')">
       Введите пароль пользователя. Длина не менее 10 и не более 18 символов.
     </mat-error>
   </mat-form-field>
-
 </form>
+
+<!-- Вновь заведённого пользователя можно отклонить и зарегистрировать.
+  Зарегистрированного можно изменить и заблокировать.
+  Отклонённого можно изменить. 
+  С заблокированным нельзя ничего сделать.
+-->
+
   <button mat-flat-button mat-dialog-close>Вернуться</button>
-  <button mat-flat-button type="button"  (click)="declineUser()" *ngIf="user.status == 0">Отклонить</button>
-  <button mat-flat-button type="button" (click)="registerUser()" *ngIf="user.status == 0 || user.userName == null">Зарегистрировать</button>
-  <button mat-flat-button type="button" (click)="blockUser()" *ngIf="user.status == 1">Заблокировать</button>
+  <button mat-flat-button type="button"  (click)="declineUser()" *ngIf="user.state == 0">Отклонить</button>
+  <button mat-flat-button type="button" (click)="registerUser()" *ngIf="user.state == 0 || user.userName == null">Зарегистрировать</button>
+  <button mat-flat-button type="button" (click)="blockUser()" *ngIf="user.state == 1">Заблокировать</button>
   <hr>
-  <button mat-flat-button type="button" (click)="saveUser()" *ngIf="user.status == 0 || user.status == -1">Сохранить</button>
+  <button mat-flat-button type="button" (click)="changeUser(user.userName)" *ngIf="user.state == 0">Изменить</button>
 </mat-dialog-content>

@@ -56,7 +56,8 @@ export class UsersTableComponent implements OnInit, AfterViewInit {
   }
 
   private updateUserDataList(){
-    this.httpService.getUsers().subscribe( (data:any) => {
+    this.httpService.getUsers()
+    .subscribe( (data:any) => {
       const res = data.value;
       this.dataSource = new MatTableDataSource(res);
       this.dataSource.paginator = this.paginator;
@@ -76,7 +77,7 @@ export class UsersTableComponent implements OnInit, AfterViewInit {
     }
   }
 
-  /** Создать заявку. */
+  /** Создать пользователя. */
   createUser() {
     this.dialog.open(ModalOpenUserComponent, {
       height: "calc(100% - 100px)",
@@ -87,7 +88,7 @@ export class UsersTableComponent implements OnInit, AfterViewInit {
     });
   }
 
-  /** Посмотреть заявку. */
+  /** Посмотреть пользователя. */
   lookAtUser(user: User) {  
     this.dialog.open(ModalOpenUserComponent, {
       height: "calc(100% - 100px)",

@@ -1,81 +1,131 @@
 <div class="container">
   <div class="segment">
-
-
     <div class="example-container mat-elevation-z8">
       <div class="example-header">
-
         <mat-form-field>
-          <input matInput (keyup)="applyFilter($event)" placeholder="Поисковый запрос">
+          <input
+            matInput
+            (keyup)="applyFilter($event)"
+            placeholder="Поисковый запрос"
+          />
         </mat-form-field>
+        <button
+          mat-stroked-button
+          color="basic"
+          class="button-mobile"
+          (click)="createUser()"
+          style="margin-right: 15px"
+        >
+          <mat-icon>create</mat-icon>
+          Создать заявку
+        </button>
       </div>
 
       <mat-table [dataSource]="dataSource" matSort>
-
         <ng-container matColumnDef="userName">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[0] }} </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{row.userName}}</mat-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ userColumnNames[0] }}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ row.userName }}</mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="userRole">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[1] }} </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{ row.userRole }}</mat-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ userColumnNames[1] }}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ row.userRole }} </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="fio">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[2] }} </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{row.fio}} </mat-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ userColumnNames[2] }}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ row.fio }} </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="organization">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[3] }} </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{row.organization}} </mat-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ userColumnNames[3] }} 
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ row.organization }} </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="inn">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[4] }} </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{row.inn}} </mat-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ userColumnNames[4] }} 
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ row.inn }} </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="address">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[5] }} </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{row.address}} </mat-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ userColumnNames[5] }} 
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ row.address }} </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="email">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[6] }} </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{row.email}} </mat-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ userColumnNames[6] }} 
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ row.email }} </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="phoneNumber">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[7] }} </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{row.phoneNumber}} </mat-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ userColumnNames[7] }} 
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ row.phoneNumber }} </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="state">
-          <mat-header-cell *matHeaderCellDef mat-sort-header> {{ userColumnNames[8] }} </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{ states[row.state] }} </mat-cell>
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ userColumnNames[8] }} 
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ row.status }} </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="actions">
-          <mat-header-cell *matHeaderCellDef> Действия </mat-header-cell>
+          <mat-header-cell *matHeaderCellDef> Действие </mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <button mat-button type="button" class="Sign-Up-btn" (click)="lookAtUser(row)">Просмотр</button>
+            <button
+              mat-button
+              type="button"
+              class="Sign-Up-btn"
+              (click)="lookAtUser(row)"
+            >
+              Действия
+            </button>
           </mat-cell>
         </ng-container>
 
-        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns;">
-        </mat-row>
+        <mat-header-row
+          *matHeaderRowDef="displayedColumns; sticky: true"
+        ></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"> </mat-row>
       </mat-table>
 
-      <mat-toolbar>
-        <mat-toolbar-row>
-          <button mat-fab extended color="basic" (click)="createUser()" style="margin-right: 15px;">
+      <mat-toolbar class="toolabar">
+        <mat-toolbar-row class="toolabar-row">
+          <button
+            mat-stroked-button
+            color="basic"
+            class="button"
+            (click)="createUser()"
+            style="margin-right: 15px"
+          >
             <mat-icon>person_add</mat-icon>
             Создать пользователя
           </button>
-          <span class="example-spacer"></span>
-          <mat-paginator [pageSizeOptions]="[30, 50, 100]" showFirstLastButtons aria-label="Выберите страницу"></mat-paginator>
+          <!-- <span class="example-spacer"></span> -->
+          <mat-paginator
+            class="paginator"
+            [pageSizeOptions]="[30, 50, 100]"
+            showFirstLastButtons
+            aria-label="Выберите страницу"
+          ></mat-paginator>
         </mat-toolbar-row>
       </mat-toolbar>
+    </div>
+  </div>
+</div>

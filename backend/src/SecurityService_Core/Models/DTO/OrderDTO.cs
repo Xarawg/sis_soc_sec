@@ -6,7 +6,7 @@ namespace SecurityService_Core.Models.DTO
     {
         public Guid Id { get; set; }
         public DateTime? Date { get; set; }
-        public string? State { get; set; }
+        public int? State { get; set; }
         public string Status { get; set; }
         public string? SNILS { get; set; }
         public string? FIO { get; set; }

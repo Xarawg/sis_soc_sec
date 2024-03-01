@@ -1,16 +1,12 @@
 ﻿using AutoMapper;
-using System.Data;
 using Microsoft.AspNetCore.Http;
-using System.Globalization;
-using Microsoft.VisualBasic;
-using System.Collections.Generic;
 using SecurityService_Core.Interfaces;
-using SecurityService_Core.Models.ControllerDTO.Administrator;
-using SecurityService_Core.Models.DTO;
 using SecurityService_Core.Models.ControllerDTO.Operator;
 using SecurityService_Core.Models.DB;
-using SecurityService_Core_Stores.Stores;
+using SecurityService_Core.Models.DTO;
 using SecurityService_Core.Models.Enums;
+using SecurityService_Core_Stores.Stores;
+using System.Data;
 
 namespace Security_Service_AspNetCore.Services
 {
@@ -41,11 +37,11 @@ namespace Security_Service_AspNetCore.Services
         public async Task<List<OrderDTO>> GetOrdersAsync(OperatorOrderGetModel model)
         {
             var orders = await _operatorStore.GetOrdersAsync(model);
-            var orderStatuses = await _operatorStore.GetOrderStatusesAsync();
             if (orders == null)
             {
                 throw new Exception("Заявки не найдены");
             }
+            var orderStatuses = await _operatorStore.GetOrderStatusesAsync();
             var result = _mapper.Map<IEnumerable<OrderDB>, IEnumerable<OrderDTO>>(orders).ToList();
             var resultIdOrders = result.Select(x => x.Id).ToList();
             var docsDB = await _operatorStore.GetDocscanListAsync(resultIdOrders);
@@ -53,7 +49,7 @@ namespace Security_Service_AspNetCore.Services
 
             result.ForEach(o =>
             {
-                o.Status = orderStatuses[int.Parse(o.Status)];
+                o.Status = orderStatuses[(int)o.State];
                 o.Documents = docs.Where(x => x.IdOrder == o.Id).ToList();
             });
             return result;
@@ -67,7 +63,8 @@ namespace Security_Service_AspNetCore.Services
                 if (doc == null) throw new Exception("Документ не найден");
                 var result = _mapper.Map<DocscanDB, DocscanDTO>(doc);
                 return result;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message, ex);
             }
@@ -102,7 +99,8 @@ namespace Security_Service_AspNetCore.Services
                     });
                 }
                 return await _operatorStore.CreateOrderAsync(idOrder, model, userName, docs);
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message, ex);
             }

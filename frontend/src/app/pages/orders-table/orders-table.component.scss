@@ -1,12 +1,19 @@
+.button-mobile {
+  display: none;
+}
+
 .example-container {
   display: flex;
   flex-direction: column;
-  min-width: 800px;
 }
 
 .example-header {
   min-height: 64px;
   padding: 8px 24px 0;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .mat-form-field {
@@ -38,11 +45,86 @@
   background: white;
   z-index: 9999;
 }
-.mat-mdc-table {
-  width: 100%;
-  max-height: 500px;
-  overflow: auto;
-}
+
 .mat-column-name {
   height: 100px;
+}
+
+.paginator {
+  width: 100%;
+  background-color: unset;
+}
+
+.segment {
+  width: 100%;
+}
+
+.button.mdc-button {
+  min-width: unset !important;
+}
+
+@media screen and (max-width: 800px) {
+
+  .mat-mdc-header-row {
+    flex-wrap: wrap;
+  }
+
+  .mat-mdc-header-cell {
+    width: 100%;
+  }
+
+  .button {
+    display: none;
+  }
+
+  .button-mobile {
+    display: block;
+
+    margin-bottom: 22px;
+  }
+
+  .mat-mdc-table {
+    border: 0;
+    vertical-align: middle;
+  }
+
+  .toolabar {
+  }
+
+  .toolabar-row {
+    display: flex;
+    flex-flow: column;
+    align-items: start;
+
+    height: 100% !important;
+  }
+
+  .mat-mdc-table caption {
+    font-size: 1em;
+  }
+
+  // .mat-mdc-table .mat-mdc-header-cell {
+  //   border: 10px solid;
+  //   clip: rect(0 0 0 0);
+  //   height: 1px;
+  //   margin: -1px;
+  //   padding: 0;
+  //   position: absolute;
+  //   width: 1px;
+  // }
+
+  .mat-mdc-table .mat-mdc-row {
+    border-bottom: 5px solid #ddd;
+    display: block;
+  }
+  /*
+  .mat-table .mat-row:nth-child(even) {background: #CCC}
+  .mat-table .mat-row:nth-child(odd) {background: #FFF}
+  */
+  .mat-mdc-table .mat-mdc-cell {
+    min-height: unset;
+    border-bottom: 1px solid #ddd;
+    display: block;
+    padding: 8px;
+  }
 }

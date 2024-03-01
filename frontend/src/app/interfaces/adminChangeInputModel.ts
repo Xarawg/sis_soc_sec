@@ -1,16 +1,14 @@
 import { UserRoles } from "../enums/userRoles";
 import { UserStates } from "../enums/userStates";
 
-export interface User {
+export interface AdminChangeInputModel {
     userName: string;
-    userRole: UserRoles;
+    email: string;
+    phoneNumber: string;
     fio: string;
     organization: string;
     inn: string;
-    address: string;
-    email: string;
-    phoneNumber: string;
-    password: string;
+    role: UserRoles;
     state: UserStates;
-    status: string;
+    address: string;
 }
