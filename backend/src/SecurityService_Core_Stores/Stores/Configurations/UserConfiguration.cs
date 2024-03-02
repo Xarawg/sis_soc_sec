@@ -75,6 +75,9 @@ namespace SecurityService_Core_Stores.Stores.Configurations
 
             builder.HasIndex(e => e.State);
 
+            builder.Property(e => e.Status)
+                .HasColumnName("status");
+
             builder.Property(e => e.IsTemporaryAccess)
                 .HasColumnName("is_temporary_access");
 

@@ -12,7 +12,7 @@ using SecurityService_Core_Stores;
 namespace SecurityService_Core_Stores.Migrations
 {
     [DbContext(typeof(CustomerContext))]
-    [Migration("20240229073254_InitialCreate")]
+    [Migration("20240302080208_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -124,12 +124,13 @@ namespace SecurityService_Core_Stores.Migrations
                         .HasColumnType("text")
                         .HasColumnName("snils");
 
-                    b.Property<int?>("State")
+                    b.Property<int>("State")
                         .HasColumnType("integer")
                         .HasColumnName("state");
 
                     b.Property<string>("Status")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("status");
 
                     b.Property<string>("SupportMeasures")
                         .HasColumnType("text")
@@ -251,8 +252,12 @@ namespace SecurityService_Core_Stores.Migrations
                         .HasColumnType("text")
                         .HasColumnName("security_stamp");
 
-                    b.Property<int?>("Status")
+                    b.Property<int>("State")
                         .HasColumnType("integer")
+                        .HasColumnName("state");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("text")
                         .HasColumnName("status");
 
                     b.Property<DateTime?>("TemporaryAccessExpirationTime")
@@ -273,7 +278,7 @@ namespace SecurityService_Core_Stores.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Status");
+                    b.HasIndex("State");
 
                     b.HasIndex("UserName")
                         .IsUnique();

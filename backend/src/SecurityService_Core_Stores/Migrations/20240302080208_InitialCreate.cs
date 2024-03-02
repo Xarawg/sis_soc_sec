@@ -141,7 +141,8 @@ namespace SecurityService_Core_Stores.Migrations
                     organization = table.Column<string>(type: "text", nullable: true),
                     inn = table.Column<string>(type: "text", nullable: true),
                     address = table.Column<string>(type: "text", nullable: true),
-                    status = table.Column<int>(type: "integer", nullable: true),
+                    state = table.Column<int>(type: "integer", nullable: false),
+                    status = table.Column<string>(type: "text", nullable: true),
                     is_temporary_access = table.Column<bool>(type: "boolean", nullable: true),
                     temporary_access_expiration_time = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     createuser = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
@@ -169,10 +170,10 @@ namespace SecurityService_Core_Stores.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_users_status",
+                name: "IX_users_state",
                 schema: "public",
                 table: "users",
-                column: "status");
+                column: "state");
 
             migrationBuilder.CreateIndex(
                 name: "IX_users_user_name",
@@ -193,10 +194,10 @@ namespace SecurityService_Core_Stores.Migrations
             migrationBuilder.Sql(
                 @"INSERT INTO public.users (id,user_name,email,email_confirmed,password_hash,security_stamp,concurrency_stamp,phone_number,
                 phone_number_confirmed,two_factor_enabled,lockout_end,lockout_enabled,access_failed_count,user_role,fio,organization,inn,
-                address,status,is_temporary_access,temporary_access_expiration_time,createuser,changeuser,createdate,changedate) VALUES
+                address,state,status,is_temporary_access,temporary_access_expiration_time,createuser,changeuser,createdate,changedate) VALUES
                 ('fe475961-1fbb-490c-b5c9-dfcc69064265','SuperAdmin','super-admin@test.com',true,
                 decode('9EA9FAEFD707D6D88CDC6828EB3592DACBAD1F50E530F5425AB19AEE30E0AE30','hex'),NULL,NULL,'12345678901',true,true,NULL,false,
-                0,3,'Иванов Иван Иванович','ИП Иванов И.И.','1234567890','г. Иваново, ул. Ивана Грозного, д. 1, кв. 1',1,NULL,NULL,'SuperAdmin',
+                0,3,'Иванов Иван Иванович','ИП Иванов И.И.','1234567890','г. Иваново, ул. Ивана Грозного, д. 1, кв. 1',1,'Зарегистрированный пользователь',NULL,NULL,'SuperAdmin',
                 NULL,'2023-12-11 08:07:37.352',NULL);"
             );
 
