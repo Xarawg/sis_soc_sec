@@ -16,8 +16,8 @@
           (click)="createUser()"
           style="margin-right: 15px"
         >
-          <mat-icon>create</mat-icon>
-          Создать заявку
+          <mat-icon>person_add</mat-icon>
+          Создать пользователя
         </button>
       </div>
 
@@ -94,7 +94,7 @@
               class="Sign-Up-btn"
               (click)="lookAtUser(row)"
             >
-              Действия
+              Просмотр
             </button>
           </mat-cell>
         </ng-container>
@@ -117,7 +117,7 @@
             <mat-icon>person_add</mat-icon>
             Создать пользователя
           </button>
-          <!-- <span class="example-spacer"></span> -->
+          <span class="example-spacer"></span>
           <mat-paginator
             class="paginator"
             [pageSizeOptions]="[30, 50, 100]"

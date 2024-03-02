@@ -1,8 +1,36 @@
-@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import "~@angular/material/prebuilt-themes/deeppurple-amber.css";
+@import "./assets/fonts/Montserrat/style.css";
 
-body { 
-  font-family: Roboto, Arial, sans-serif;
+body {
+  --mat-toolbar-title-text-font: "Montserrat", Arial, sans-serif !important;
+  --mat-select-trigger-text-font: "Montserrat", Arial, sans-serif !important;
+  --mat-stepper-container-text-font: "Montserrat", Arial, sans-serif !important;
+  --mat-stepper-header-label-text-font: "Montserrat", Arial, sans-serif !important;
+  --mat-expansion-header-text-font: "Montserrat", Arial, sans-serif !important;
+  --mat-badge-text-font: "Montserrat", Arial, sans-serif !important;
+  --mat-expansion-container-text-font: "Montserrat", Arial, sans-serif !important;
+  --mat-datepicker-calendar-text-font: "Montserrat", Arial, sans-serif !important;
+  --mat-legacy-button-toggle-text-font: "Montserrat", Arial, sans-serif !important;
+  --mat-standard-button-toggle-text-font: "Montserrat", Arial, sans-serif !important;
+  --mat-bottom-sheet-container-text-font: "Montserrat", Arial, sans-serif !important;
+  --mat-table-header-headline-font: "Montserrat", Arial, sans-serif !important;
+  --mat-table-row-item-label-text-font: "Montserrat", Arial, sans-serif !important;
+  --mat-table-footer-supporting-text-font: "Montserrat", Arial, sans-serif !important;
+  --mat-paginator-container-text-font: "Montserrat", Arial, sans-serif !important;
+  --mat-menu-item-label-text-font: "Montserrat", Arial, sans-serif !important;
+  --mdc-filled-text-field-label-text-font: "Montserrat", Arial, sans-serif !important;
+  --mdc-outlined-text-field-label-text-font: "Montserrat", Arial, sans-serif !important;
+  --mat-form-field-container-text-font: "Montserrat", Arial, sans-serif !important;
+  --mat-form-field-subscript-text-font: "Montserrat", Arial, sans-serif !important;
+  --mat-optgroup-label-text-font: "Montserrat", Arial, sans-serif !important;
+  --mat-option-label-text-font: "Montserrat", Arial, sans-serif !important;
+  --mdc-typography-button-font-family: "Montserrat", Arial, sans-serif !important;
+  font-family: "Montserrat", Arial, sans-serif !important;
   margin: 0;
+}
+
+.mat-typography h2 {
+  font-family: "Montserrat", Arial, sans-serif !important;
 }
 
 .basic-container {

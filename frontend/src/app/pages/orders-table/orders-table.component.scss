@@ -64,6 +64,12 @@
 }
 
 @media screen and (max-width: 800px) {
+  .mat-mdc-header-row {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+  }
+
+
 
   .mat-mdc-header-row {
     flex-wrap: wrap;

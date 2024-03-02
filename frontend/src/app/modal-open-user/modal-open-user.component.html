@@ -11,7 +11,7 @@
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
-    <mat-select placeholder="{{userColumnNames[1]}}" formControlName="userRole">
+    <mat-select [errorStateMatcher]="matcher" placeholder="{{userColumnNames[1]}}" formControlName="userRole">
       <mat-option *ngFor="let role of roles" [value]="role">
         {{role.valueView}}
       </mat-option>
@@ -57,7 +57,7 @@
     <mat-label>{{ userColumnNames[6] }}</mat-label>
     <input matInput [errorStateMatcher]="matcher" placeholder="{{user.email}}" value="{{user.email}}"  formControlName="email">
     <mat-error *ngIf="form.controls['email'].hasError('required')">
-      Введите адрес организации. Длина не менее 10 и не более 256 символов.
+      Введите электронную почту. Длина не менее 11 и не более 20 символов.
     </mat-error>
   </mat-form-field>
 
@@ -68,17 +68,9 @@
       Введите номер телефона. Длина не менее 11 и не более 20 символов.
     </mat-error>
   </mat-form-field>
-
-  <!-- можно через ngTemplate, но сделал через ngIf. 
-    Либо селект при возможности выбора статуса, либо инпут, 
-    когда выбрать нельзя и надо только отрисовать. 
   
-  для корректного отображения статуса, при варианте оформления input был убран formControlName
-  хотя он не присутствует в форме. Поле ввода отключено флагом [disabled]="true".
-   
-  -->
   <mat-form-field *ngIf="user.userName == null" class="example-full-width">
-    <mat-select placeholder="{{userColumnNames[8]}}" formControlName="state">
+    <mat-select [errorStateMatcher]="matcher" placeholder="{{userColumnNames[8]}}" formControlName="state">
       <mat-option *ngFor="let status of statuses" [value]="status.value">
         {{status.valueView}}
       </mat-option>
@@ -92,7 +84,6 @@
     <mat-label>{{ userColumnNames[8] }}</mat-label>
     <input matInput [errorStateMatcher]="matcher" placeholder="{{ statusPlaceholder.valueView }}" value="{{ statusPlaceholder.valueView }}" [disabled]="true">
   </mat-form-field>
-  <!--  -->
 
   <mat-form-field class="example-full-width" *ngIf="user.userName == null || user.userName == ''">
     <mat-label>{{ userColumnNames[10] }}</mat-label>
