@@ -56,7 +56,7 @@ namespace SecurityService_Core_Stores.Stores
                 var userStatuses = await GetUserStatusesAsync();
                 if (userModel != null || adminModel != null)
                 {
-                    var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+                    var dateNow = DateTime.UtcNow;
                     var newUser = new UserDB()
                     {
                         Id = idUser,
@@ -117,7 +117,7 @@ namespace SecurityService_Core_Stores.Stores
                 var userHashDB = await UserHashes.Where(u => u.IdUser == user.Id).FirstOrDefaultAsync();
                 if (userDB != null && userHashDB != null)
                 {
-                    var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+                    var dateNow = DateTime.UtcNow;
                     userDB.AccessFailedCount = user.AccessFailedCount;
                     userDB.LockoutEnabled = user.LockoutEnabled;
                     userDB.AccessFailedAttemptDate = user.AccessFailedAttemptDate;
@@ -155,7 +155,7 @@ namespace SecurityService_Core_Stores.Stores
                 var userDB = await Users.FirstOrDefaultAsync(u => u.UserName == model.UserName);
                 var hashDB = await UserHashes.FirstOrDefaultAsync(u => u.UserName == model.UserName);
 
-                var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+                var dateNow = DateTime.UtcNow;
                 userDB.ChangeDate = dateNow;
                 userDB!.IsTemporaryAccess = true;
                 userDB!.TemporaryAccessExpirationTime = dateNow.AddSeconds(temporaryTime);
@@ -187,7 +187,7 @@ namespace SecurityService_Core_Stores.Stores
                 var userDB = await Users.FirstOrDefaultAsync(u => u.UserName == model.UserName);
                 var hashDB = await UserHashes.FirstOrDefaultAsync(u => u.UserName == model.UserName);
 
-                var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+                var dateNow = DateTime.UtcNow;
                 userDB.ChangeDate = dateNow;
                 userDB!.IsTemporaryAccess = false;
                 userDB!.TemporaryAccessExpirationTime = null;

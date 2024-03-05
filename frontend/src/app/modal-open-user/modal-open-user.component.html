@@ -96,11 +96,11 @@
 </form>
 
   <button mat-flat-button mat-dialog-close>Вернуться</button>
-  <button mat-flat-button type="button"  (click)="declineUser()" *ngIf="user.state === userStates.Newly">Отклонить</button>
-  <button mat-flat-button type="button" (click)="registerUser()" *ngIf="user.state === userStates.Newly">Зарегистрировать</button>
-  <button mat-flat-button type="button" (click)="createUser()" *ngIf="user.userName === null">Завести нового пользователя</button>
-  <button mat-flat-button type="button" (click)="blockUser()" *ngIf="user.state === userStates.Registered">Заблокировать</button>
-  <button mat-flat-button type="button" (click)="changeUserPassword(user)" *ngIf="user.state === userStates.Registered">Сгенерировать пользователю временный пароль</button>
+  <button mat-flat-button type="button"  (click)="declineUser()" *ngIf="user.state == userStates.Newly">Отклонить</button>
+  <button mat-flat-button type="button" (click)="registerUser()" *ngIf="user.state == userStates.Newly">Зарегистрировать</button>
+  <button mat-flat-button type="button" (click)="createUser()" *ngIf="user.userName == null">Завести нового пользователя</button>
+  <button mat-flat-button type="button" (click)="blockUser()" *ngIf="user.state == userStates.Registered">Заблокировать</button>
+  <button mat-flat-button type="button" (click)="changeUserPassword(user)" *ngIf="user.state == userStates.Registered">Сгенерировать пользователю временный пароль</button>
   <hr>
-  <button mat-flat-button type="button" (click)="changeUser(user)" *ngIf="user.state === userStates.Registered || user.state === userStates.Denied">Изменить</button>
+  <button mat-flat-button type="button" (click)="changeUser(user)" *ngIf="user.state == userStates.Registered || user.state == userStates.Denied">Изменить</button>
 </mat-dialog-content>

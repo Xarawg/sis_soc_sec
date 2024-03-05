@@ -29,7 +29,7 @@ namespace SecurityService_Core_Stores.Stores
             var statusesDictionary = await UserStatuses.AsNoTracking().ToDictionaryAsync(x => x.Id, x => x.UserStatusName);
             var user = await Users.FirstOrDefaultAsync(x => x.Id == idUser);
             if (user == null) throw new Exception("Пользователя не существует.");
-            var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+            var dateNow = DateTime.UtcNow;
             user.ChangeDate = dateNow;
             user.ChangeUser = userName;
             user.State = (int)UserStatus.Blocked;
@@ -44,7 +44,7 @@ namespace SecurityService_Core_Stores.Stores
             var statusesDictionary = await UserStatuses.AsNoTracking().ToDictionaryAsync(x => x.Id, x => x.UserStatusName);
             var user = await Users.FirstOrDefaultAsync(x => x.Id == idUser);
             if (user == null) throw new Exception("Пользователя не существует.");
-            var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+            var dateNow = DateTime.UtcNow;
             user.ChangeDate = dateNow;
             user.ChangeUser = userName;
             user.State = (int)UserStatus.Declined;
@@ -59,7 +59,7 @@ namespace SecurityService_Core_Stores.Stores
             var statusesDictionary = await UserStatuses.AsNoTracking().ToDictionaryAsync(x => x.Id, x => x.UserStatusName);
             var user = await Users.FirstOrDefaultAsync(x => x.Id == idUser);
             if (user == null) throw new Exception("Пользователя не существует.");
-            var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+            var dateNow = DateTime.UtcNow;
             user.CreateDate = dateNow;
             user.CreateUser = userName;
             user.State = (int)UserStatus.Registered;

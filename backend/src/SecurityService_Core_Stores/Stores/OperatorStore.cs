@@ -58,7 +58,7 @@ namespace SecurityService_Core_Stores.Stores
         /// <returns></returns>
         public async Task<bool> CreateOrderAsync(Guid idOrder, OperatorOrderInputModel model, string userName, List<DocscanDB> docs)
         {
-            var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+            var dateNow = DateTime.UtcNow;
             var newOrder = new OrderDB()
             {
                 Id = idOrder,
@@ -89,7 +89,7 @@ namespace SecurityService_Core_Stores.Stores
         {
             var order = await Orders.FirstOrDefaultAsync(x => x.Id == model.Id);
             if (order == null) throw new Exception("Заявки не существует.");
-            var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+            var dateNow = DateTime.UtcNow;
             order.CreateDate = dateNow;
             order.CreateUser = userName;
             order.SNILS = model.SNILS;
@@ -116,7 +116,7 @@ namespace SecurityService_Core_Stores.Stores
             if ((OrderStatus)order.State! != OrderStatus.New)
                 throw new Exception("Отменить можно только новую заявку.");
 
-            var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+            var dateNow = DateTime.UtcNow;
             order.ChangeDate = dateNow;
             order.State = (int)OrderStatus.Registered;
             order.ChangeUser = userName;
@@ -141,7 +141,7 @@ namespace SecurityService_Core_Stores.Stores
                     && (OrderStatus)order.State! != OrderStatus.Registered)
                 throw new Exception("Отменить можно только новую и зарегистрированную заявки.");
 
-            var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+            var dateNow = DateTime.UtcNow;
             order.ChangeDate = dateNow;
             order.State = -2;
             order.ChangeUser = userName;
@@ -165,7 +165,7 @@ namespace SecurityService_Core_Stores.Stores
             {
                 var order = await Orders.AsNoTracking().FirstOrDefaultAsync(x => x.Id == idOrder);
                 if (order == null) throw new Exception("Заявки не существует.");
-                var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+                var dateNow = DateTime.UtcNow;
                 order.Date = dateNow;
                 order.CreateDate = dateNow;
                 order.Id = Guid.NewGuid();

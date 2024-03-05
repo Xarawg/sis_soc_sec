@@ -380,7 +380,7 @@ namespace Security_Service_AspNetCore.Services
                 && user.AccessFailedAttemptDate != null)
             {
                 // проверяем кончилась ли блокировка
-                var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+                var dateNow = DateTime.UtcNow;
                 var dateWhenBlocked = user.AccessFailedAttemptDate.Value;
                 var blockTimeDiff = dateNow - dateWhenBlocked;
                 // разница текущего времени должна превышать дату блокировки на время блокировки
@@ -415,7 +415,7 @@ namespace Security_Service_AspNetCore.Services
             if (user.TemporaryAccessExpirationTime != null || user.IsTemporaryAccess == true)
             {
                 // проверяем кончилась ли блокировка
-                var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+                var dateNow = DateTime.UtcNow;
                 var dateWhenAccessWillBeFired = user.TemporaryAccessExpirationTime.Value;
                 var blockTimeDiff = dateNow - dateWhenAccessWillBeFired;
 
@@ -457,7 +457,7 @@ namespace Security_Service_AspNetCore.Services
             if (user.AccessFailedAttemptDate != null)
             {
                 // если последняя попытка входа была давно, то считаем эту провальную попытку первой
-                var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+                var dateNow = DateTime.UtcNow;
                 var dateWhenBlocked = user.AccessFailedAttemptDate.Value;
                 var blockTimeDiff = dateNow - dateWhenBlocked;
                 if (blockTimeDiff.TotalSeconds >= authOptions.BlockTime * 60)
@@ -480,7 +480,7 @@ namespace Security_Service_AspNetCore.Services
             {
                 user.LockoutEnabled = true;
             }
-            user.AccessFailedAttemptDate = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+            user.AccessFailedAttemptDate = DateTime.UtcNow;
             // обновляем данные о блокировке пользователя в БД
             await _userStore.UpdateUserAsync(user);
         }
