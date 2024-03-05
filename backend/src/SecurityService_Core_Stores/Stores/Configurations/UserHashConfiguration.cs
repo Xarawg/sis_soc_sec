@@ -16,7 +16,7 @@ namespace SecurityService_Core_Stores.Stores.Configurations
                 .HasColumnName("id");
 
             builder.Property(e => e.UserName)
-                .HasColumnName("login");
+                .HasColumnName("user_name");
 
             builder.HasIndex(e => e.UserName)
                 .IsUnique();
@@ -29,9 +29,6 @@ namespace SecurityService_Core_Stores.Stores.Configurations
 
             builder.Property(e => e.Salt)
                 .HasColumnName("salt");
-
-            builder.Property(e => e.Status)
-                .HasColumnName("status");
         }
     }
 }

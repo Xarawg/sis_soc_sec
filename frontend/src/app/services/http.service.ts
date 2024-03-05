@@ -13,6 +13,9 @@ import { OperatorGetDocscanModel } from '../interfaces/operatorGetDocscanModel';
 import { OperatorChangeOrderInputModel } from '../interfaces/operatorChangeOrderInputModel';
 import { OperatorProcessingOrderInputModel } from '../interfaces/operatorProcessingOrderInputModel';
 import { AdminChangeInputModel } from '../interfaces/adminChangeInputModel';
+import { AdministratorProcessingUserInputModel } from '../interfaces/AdministratorProcessingUserInputModel';
+import { ChangePasswordDTO } from '../interfaces/changePasswordDTO';
+import { UserChangePasswordModel } from '../interfaces/userChangePasswordModel';
 
 
 @Injectable({
@@ -30,7 +33,7 @@ export class HttpService {
   }
 
   /** Получение списка заявок */
-  getOrders() : any {
+  getOrders() {
     const model: operatorOrderGetModel = { 'limitRowCount': 1000, 'limitOffset': 0 };
     return this.http.post<Order[]>(`${environment.apiUrl}/operator/get-orders`, model);
   }
@@ -41,18 +44,13 @@ export class HttpService {
   }
 
   /** Регистрация пользователя админом */
-  registrationByAdmin(model: AdminRegistrationInputModel) {
-    return this.http.post<boolean>(`${environment.apiUrl}/administrator/register`, model);
+  createNewUserByAdmin(model: AdminRegistrationInputModel) {
+    return this.http.post<boolean>(`${environment.apiUrl}/administrator/create-new-user`, model);
   }
 
   /** Изменение пользователя админом */
   changeUserByAdmin(model: AdminChangeInputModel) {
     return this.http.post<boolean>(`${environment.apiUrl}/administrator/change-user`, model);
-  }
-
-  /** Изменение пароля пользователя админом */
-  changeUserPasswordByAdmin(model: UserAuth) {
-    return this.http.post<boolean>(`${environment.apiUrl}/administrator/change-user-password`, model);
   }
 
   /** Получение файла из заявки */
@@ -66,11 +64,7 @@ export class HttpService {
 
   /** Создание новой заявки оператором */
   createOrder(formData: FormData) {
-    if (!!formData) {
-      return this.http.post<any>(`${environment.apiUrl}/operator/create-order`, formData);
-    } else {
-      return null
-    }
+    return this.http.post<any>(`${environment.apiUrl}/operator/create-order`, formData);
   }
 
   /** Изменение заявки оператором */
@@ -81,5 +75,22 @@ export class HttpService {
   /** Изменение заявки оператором - один роут для всех видов простых изменений */
   processingOrder(model: OperatorProcessingOrderInputModel) {
     return this.http.post<boolean>(`${environment.apiUrl}/operator/processing-order`, model);
+  }
+
+  /** Изменение заявки оператором - один роут для всех видов простых изменений */
+  processingUser(model: AdministratorProcessingUserInputModel) {
+    return this.http.post<boolean>(`${environment.apiUrl}/administrator/processing-user`, model);
+  }
+
+  /** Генерация случайного пароля пользователю через панель администратора,
+   * но у пароля ограниченный срок жизни.
+   */
+  changeUserPasswordByAdmin(model: ChangePasswordDTO) {
+    return this.http.post<boolean>(`${environment.apiUrl}/administrator/change-user-password`, model);
+  }
+
+  /** Изменить свой пароль будучи авторизованным. */
+  changePassword(model: UserChangePasswordModel) {
+    return this.http.post<boolean>(`${environment.apiUrl}/user/change-password`, model);
   }
 }

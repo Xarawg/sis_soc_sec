@@ -80,10 +80,9 @@ namespace SecurityService_Core_Stores.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    login = table.Column<string>(type: "text", nullable: true),
+                    user_name = table.Column<string>(type: "text", nullable: true),
                     hash = table.Column<byte[]>(type: "bytea", nullable: true),
-                    salt = table.Column<string>(type: "text", nullable: true),
-                    status = table.Column<int>(type: "integer", nullable: true)
+                    salt = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -163,10 +162,10 @@ namespace SecurityService_Core_Stores.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_user_hashes_login",
+                name: "IX_user_hashes_user_name",
                 schema: "public",
                 table: "user_hashes",
-                column: "login",
+                column: "user_name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -186,9 +185,9 @@ namespace SecurityService_Core_Stores.Migrations
             @"CREATE EXTENSION IF NOT EXISTS ""uuid-ossp"";");
 
             migrationBuilder.Sql(
-                @"INSERT INTO public.user_hashes (id,login,hash,salt,status) VALUES
+                @"INSERT INTO public.user_hashes (id,user_name,hash,salt) VALUES
                 ('fe475961-1fbb-490c-b5c9-dfcc69064265','SuperAdmin',decode('9EA9FAEFD707D6D88CDC6828EB3592DACBAD1F50E530F5425AB19AEE30E0AE30','hex'),
-                'sQclp1f0M+SPBGHUFINy9bMDzQsdOGMvD4WotzyXSco=',1);"
+                'sQclp1f0M+SPBGHUFINy9bMDzQsdOGMvD4WotzyXSco=');"
             );
 
             migrationBuilder.Sql(

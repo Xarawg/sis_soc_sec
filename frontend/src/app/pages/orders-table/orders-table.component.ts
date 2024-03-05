@@ -4,11 +4,12 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { orderColumnsConstants } from 'src/app/constants/order.columns.constants';
-import { MyErrorStateMatcher } from 'src/app/errorStateMatcher/errorStateMatcher';
+import { PreliminaryErrorDetectionStateMatcher } from 'src/app/errorStateMatcher/preliminaryErrorDetectionStateMatcher';
 import { Order } from 'src/app/interfaces/order';
 import { ModalOpenOrderComponent } from 'src/app/modal-open-order/modal-open-order.component';
 import { HttpService } from 'src/app/services/http.service';
 import { ModalService } from 'src/app/services/modal.service';
+import { ModalComponent } from 'src/app/modal/modal.component';
 
 @Component({
   selector: 'orders-table',
@@ -34,7 +35,7 @@ export class OrderTableComponent implements OnInit {
    * Отмечает ошибки по кастомной логике. 
    * В текущем виде - подсвечивает поля ошибочными до того, как пользователь их дотронется.
    */
-  matcher = new MyErrorStateMatcher();
+  matcher = new PreliminaryErrorDetectionStateMatcher();
 
   /** общий массив данных */
   ordersData: Order[] = [];
@@ -62,14 +63,25 @@ export class OrderTableComponent implements OnInit {
   }
 
   private updateOrdersDataList(){
-    this.httpService.getOrders().subscribe( (data:any)=> {
-      const res = data.value;
-      if (!!data.value) {
-        this.dataSource = new MatTableDataSource(res);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort!;
-        this.ordersData = res;
-      }
+    const orders$ = this.httpService.getOrders(); 
+    orders$.subscribe({
+      next: (data:any) => {
+        const res = data.value;
+        if (!!data.value) {
+          this.dataSource = new MatTableDataSource(res);
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort!;
+          this.ordersData = res;
+        }
+      },
+      error: error => {
+        this.dialog.open(ModalComponent, {
+          width: '550',
+          data: {
+            modalText: error
+          }
+        });
+      },
     });
   }
 

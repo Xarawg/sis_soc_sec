@@ -2,13 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { userColumnsConstants } from 'src/app/constants/user.columns.constants';
 import { UserRoles } from 'src/app/enums/userRoles';
 import { UserStates } from 'src/app/enums/userStates';
-import { MyErrorStateMatcher } from 'src/app/errorStateMatcher/errorStateMatcher';
+import { PreliminaryErrorDetectionStateMatcher } from 'src/app/errorStateMatcher/preliminaryErrorDetectionStateMatcher';
 import { User } from 'src/app/interfaces/user';
 import { UserAuth } from 'src/app/interfaces/userAuth';
 import { UserRegistrationInputModel } from 'src/app/interfaces/userRegistrationInputModel';
 import { ModalComponent } from 'src/app/modal/modal.component';
+import { FormBuilderService } from 'src/app/services/form.builder.service';
 import { HttpService } from 'src/app/services/http.service';
 
 @Component({
@@ -16,36 +18,29 @@ import { HttpService } from 'src/app/services/http.service';
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
-export class AdminRegisterComponent implements OnInit {
+export class RegisterComponent implements OnInit {
   Roles: any = ['Admin', 'Author', 'Reader'];
   form: FormGroup;
+  
+  userColumnNames = userColumnsConstants.labelColumns;
   
   /**
    * Отмечает ошибки по кастомной логике. 
    * В текущем виде - подсвечивает поля ошибочными до того, как пользователь их дотронется.
    */
-  matcher = new MyErrorStateMatcher();
+  matcher = new PreliminaryErrorDetectionStateMatcher();
 
   constructor(
     private router: Router,
     private dialog: MatDialog,
     private formBuilder: FormBuilder,
     private httpService: HttpService,
-
+    private formBuilderService: FormBuilderService
   ) {
 
   }
   ngOnInit(): void {
-    this.form = this.formBuilder.group({
-      userName: ['', [Validators.required]],
-      fio: ['', [Validators.required]],
-      organization: ['', [Validators.required]],
-      inn: ['', [Validators.required]],
-      address: ['', [Validators.required]],
-      email: ['', [Validators.required]],
-      phoneNumber: ['', [Validators.required]],
-      password: new FormControl('')
-    });
+    this.form = this.formBuilderService.generateFormForNewUserRegister();
   }
 
   submit() {
@@ -60,27 +55,29 @@ export class AdminRegisterComponent implements OnInit {
         address: this.form.value.address,
         password: this.form.value.password
       }
-    this.httpService.registrationByUser(model).subscribe( (data:any)=> {
-      const result = data.value != null && data.value != undefined ? true : false;
-      if (result == true) {
-        this.dialog.open(ModalComponent, {
-          width: '550',
-          data: {
-            modalText: 'Регистрация прошла успешно.'
+
+      const registration$ = this.httpService.registrationByUser(model); 
+      registration$.subscribe({
+        next: (value : any) => {
+          if (value.success === true) {     
+            this.dialog.open(ModalComponent, {
+              width: '550',
+              data: {
+                modalText: 'Регистрация прошла успешно.'
+              }
+            });
+            this.router.navigateByUrl('/');
+          } else {
+            this.dialog.open(ModalComponent, {
+              width: '550',
+              data: {
+                modalText: value.error
+              }
+            });
           }
-        });
-        this.router.navigateByUrl('/admin-start');
-      } else {
-        this.dialog.open(ModalComponent, {
-          width: '550',
-          data: {
-            modalText: 'Произошла ошибка регистрации, такой пользователь уже зарегистрирован.'
-          }
-        });
-      }
-    });
-    }
-    else {
+        }
+      });
+    } else {
       this.dialog.open(ModalComponent, {
         width: '550',
         data: {

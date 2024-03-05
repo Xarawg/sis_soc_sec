@@ -6,18 +6,18 @@
     <mat-label>{{ userColumnNames[0] }}</mat-label>
     <input matInput [errorStateMatcher]="matcher" placeholder="{{user.userName}}" value="{{user.userName}}"  formControlName="userName">
     <mat-error *ngIf="form.controls['userName'].hasError('required')">
-      Введите логин. Длина не менее 6 и не более 100 символов.
+      Введите логин. Длина не менее 6 и не более 100 символов. Используйте только латинские символы.
     </mat-error>
   </mat-form-field>
-
+  
   <mat-form-field class="example-full-width">
-    <mat-select [errorStateMatcher]="matcher" placeholder="{{userColumnNames[1]}}" formControlName="userRole">
-      <mat-option *ngFor="let role of roles" [value]="role">
+    <mat-select [errorStateMatcher]="matcher" placeholder="{{ user.userRole }}" formControlName="userRole">
+      <mat-option *ngFor="let role of availableRolesToChange" [value]="role.valueView">
         {{role.valueView}}
       </mat-option>
     </mat-select>
     <mat-error *ngIf="form.controls['userRole'].hasError('required')">
-      Выберите роль.
+      Выберите роль пользователя.
     </mat-error>
   </mat-form-field>
 
@@ -40,9 +40,9 @@
   <mat-form-field class="example-full-width">
     <mat-label>{{ userColumnNames[4] }}</mat-label>
     <input matInput [errorStateMatcher]="matcher" placeholder="{{user.inn}}" value="{{user.inn}}"  formControlName="inn">
-    <mat-error *ngIf="form.controls['inn'].hasError('required')">
-      Введите ИНН организации. Длина 10 или 12 символов.
-    </mat-error>
+    <mat-error *ngIf="form.controls['inn'].hasError('inn')">
+      Введите ИНН организации. Длина 10 или 12 символов. Только цифры.
+    </mat-error>  
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
@@ -65,7 +65,7 @@
     <mat-label>{{ userColumnNames[7] }}</mat-label>
     <input matInput [errorStateMatcher]="matcher" placeholder="{{user.phoneNumber}}" value="{{user.phoneNumber}}"  formControlName="phoneNumber">
     <mat-error *ngIf="form.controls['phoneNumber'].hasError('required')">
-      Введите номер телефона. Длина не менее 11 и не более 20 символов.
+      Введите номер телефона. Длина не менее 11 и не более 100 символов.
     </mat-error>
   </mat-form-field>
   
@@ -87,23 +87,20 @@
 
   <mat-form-field class="example-full-width" *ngIf="user.userName == null || user.userName == ''">
     <mat-label>{{ userColumnNames[10] }}</mat-label>
-    <input matInput [errorStateMatcher]="matcher" placeholder="{{user.password}}" value="{{user.password}}"  formControlName="password">
+    <input matInput placeholder="{{user.password}}" value="{{user.password}}"  formControlName="password">
     <mat-error *ngIf="form.controls['password'].hasError('required')">
-      Введите пароль пользователя. Длина не менее 10 и не более 18 символов.
+      Введите пароль пользователя. Длина не менее 8 и не более 20 символов. 
+      Должен содержать как минимум одну букву в верхнем регистре, одну цифру и один специальный символ
     </mat-error>
   </mat-form-field>
 </form>
 
-<!-- Вновь заведённого пользователя можно отклонить и зарегистрировать.
-  Зарегистрированного можно изменить и заблокировать.
-  Отклонённого можно изменить. 
-  С заблокированным нельзя ничего сделать.
--->
-
   <button mat-flat-button mat-dialog-close>Вернуться</button>
-  <button mat-flat-button type="button"  (click)="declineUser()" *ngIf="user.state == 0">Отклонить</button>
-  <button mat-flat-button type="button" (click)="registerUser()" *ngIf="user.state == 0 || user.userName == null">Зарегистрировать</button>
-  <button mat-flat-button type="button" (click)="blockUser()" *ngIf="user.state == 1">Заблокировать</button>
+  <button mat-flat-button type="button"  (click)="declineUser()" *ngIf="user.state === userStates.Newly">Отклонить</button>
+  <button mat-flat-button type="button" (click)="registerUser()" *ngIf="user.state === userStates.Newly">Зарегистрировать</button>
+  <button mat-flat-button type="button" (click)="createUser()" *ngIf="user.userName === null">Завести нового пользователя</button>
+  <button mat-flat-button type="button" (click)="blockUser()" *ngIf="user.state === userStates.Registered">Заблокировать</button>
+  <button mat-flat-button type="button" (click)="changeUserPassword(user)" *ngIf="user.state === userStates.Registered">Сгенерировать пользователю временный пароль</button>
   <hr>
-  <button mat-flat-button type="button" (click)="changeUser(user.userName)" *ngIf="user.state == 0">Изменить</button>
+  <button mat-flat-button type="button" (click)="changeUser(user)" *ngIf="user.state === userStates.Registered || user.state === userStates.Denied">Изменить</button>
 </mat-dialog-content>

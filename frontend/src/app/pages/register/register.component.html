@@ -1,5 +1,5 @@
 <div class="body">
-  <form novalidate [formGroup]="form">
+  <form novalidate [formGroup]="form" style="height: calc(100% - 96px);max-height: unset">
     <div id="login-container" class="mat-elevation-z8">
   
         <h2 class="primary" style="text-align: center;">Регистрация нового пользователя</h2>
@@ -7,30 +7,23 @@
         <mat-form-field class="example-full-width">
           <input matInput [errorStateMatcher]="matcher" placeholder="Логин" formControlName="userName" required>
           <mat-error *ngIf="form.controls['userName'].hasError('required')">
-            Введите логин. Длина не менее 6 символов.
-          </mat-error>  
+            Введите логин. Длина не менее 6 и не более 100 символов. Используйте только латинские символы.
+          </mat-error>
         </mat-form-field>
   
         <mat-form-field class="example-full-width">
           <input matInput [errorStateMatcher]="matcher" placeholder="ФИО" formControlName="fio" required>
           <mat-error *ngIf="form.controls['fio'].hasError('required')">
-            Введите ФИО. Длина не менее 6 символов.
-          </mat-error>  
-        </mat-form-field>
-  
-        <mat-form-field class="example-full-width">
-          <input matInput [errorStateMatcher]="matcher" placeholder="Электронная почта" formControlName="email" required>
-          <mat-error *ngIf="form.controls['email'].hasError('required')">
-            Введите электронный адрес. Длина не менее 5 символов.
-          </mat-error>  
+            Введите ФИО пользователя. Длина не менее 6 и не более 100 символов.
+          </mat-error>
         </mat-form-field>
   
   
         <mat-form-field class="example-full-width">
           <input matInput [errorStateMatcher]="matcher" placeholder="Название организации" formControlName="organization" required>
           <mat-error *ngIf="form.controls['organization'].hasError('required')">
-            Введите название организации. Длина не менее 10 символов.
-          </mat-error>  
+            Введите наименование организации. Длина не менее 10 и не более 100 символов.
+          </mat-error>
         </mat-form-field>
   
         <mat-form-field class="example-full-width">
@@ -44,34 +37,112 @@
           <input matInput [errorStateMatcher]="matcher" placeholder="Адрес организации" formControlName="address" required>
           <mat-error *ngIf="form.controls['address'].hasError('required')">
             Введите адрес организации. Длина не менее 10 и не более 256 символов.
-          </mat-error>  
+          </mat-error>
+        </mat-form-field>
+  
+        <mat-form-field class="example-full-width">
+          <input matInput [errorStateMatcher]="matcher" placeholder="Электронная почта" formControlName="email" required>
+          <mat-error *ngIf="form.controls['email'].hasError('required')">
+            Введите электронную почту. Длина не менее 11 и не более 20 символов.
+          </mat-error>
         </mat-form-field>
   
         <mat-form-field class="example-full-width">
           <input matInput [errorStateMatcher]="matcher" placeholder="Номер телефона" formControlName="phoneNumber" required>
           <mat-error *ngIf="form.controls['phoneNumber'].hasError('required')">
-            Введите номер телефона. Длина не менее 11 символов.
-          </mat-error>  
+            Введите номер телефона. Длина не менее 11 и не более 100 символов.
+          </mat-error>
         </mat-form-field>
   
         <mat-form-field class="example-full-width">
           <input matInput [errorStateMatcher]="matcher" placeholder="Пароль" formControlName="password" required>
           <mat-error *ngIf="form.controls['password'].hasError('required')">
-            Введите пароль. Длина не менее 6 и не более 18 символов.
-          </mat-error>  
+            Введите пароль пользователя. Длина не менее 10 и не более 20 символов. 
+            Должен содержать как минимум одну букву в верхнем регистре, одну цифру и один специальный символ
+          </mat-error>
         </mat-form-field>
 
-        <div class="footer-sec">
+        <div class="footer-first">
           <button mat-raised-button type="button" color="primary" class="Login-btn" (click)="submit()">Зарегистрироваться</button>
         </div>
 
         <div class="footer-sec">
-          <br>
-          <br>
-          <hr>
           <button mat-button type="button" class="Sign-Up-btn" (click)="backToHome()">Вернуться на главную</button>
-          <br>
         </div>
       </div>
     </form>
   </div>
+
+
+<!-- 
+  <mat-dialog-content [formGroup]="form" style="height: calc(100% - 96px);max-height: unset">
+    <form ng-submit="submit()">
+  
+    <mat-form-field class="example-full-width">
+      <mat-label>{{ userColumnNames[0] }}</mat-label>
+      <input matInput [errorStateMatcher]="matcher" placeholder="{{form.controls['userName']}}" value="{{form.controls['userName']}}"  formControlName="userName">
+      <mat-error *ngIf="form.controls['userName'].hasError('required')">
+        Введите логин. Длина не менее 6 и не более 100 символов. Используйте только латинские символы.
+      </mat-error>
+    </mat-form-field>
+  
+    <mat-form-field class="example-full-width">
+      <mat-label>{{ userColumnNames[2] }}</mat-label>
+      <input matInput [errorStateMatcher]="matcher" placeholder="{{form.controls['fio']}}" value="{{form.controls['fio']}}"  formControlName="fio">
+      <mat-error *ngIf="form.controls['fio'].hasError('required')">
+        Введите ФИО пользователя. Длина не менее 6 и не более 100 символов.
+      </mat-error>
+    </mat-form-field>
+  
+    <mat-form-field class="example-full-width">
+      <mat-label>{{ userColumnNames[3] }}</mat-label>
+      <input matInput [errorStateMatcher]="matcher" placeholder="{{form.controls['organization']}}" value="{{form.controls['organization']}}"  formControlName="organization">
+      <mat-error *ngIf="form.controls['organization'].hasError('required')">
+        Введите наименование организации. Длина не менее 10 и не более 100 символов.
+      </mat-error>
+    </mat-form-field>
+  
+    <mat-form-field class="example-full-width">
+      <mat-label>{{ userColumnNames[4] }}</mat-label>
+      <input matInput [errorStateMatcher]="matcher" placeholder="{{form.controls['inn']}}" value="{{form.controls['inn']}}"  formControlName="inn">
+      <mat-error *ngIf="form.controls['inn'].hasError('required')">
+        Введите ИНН организации. Длина 10 или 12 символов. Только цифры.
+      </mat-error>  
+    </mat-form-field>
+  
+    <mat-form-field class="example-full-width">
+      <mat-label>{{ userColumnNames[5] }}</mat-label>
+      <input matInput [errorStateMatcher]="matcher" placeholder="{{form.controls['address']}}" value="{{form.controls['address']}}"  formControlName="address">
+      <mat-error *ngIf="form.controls['address'].hasError('required')">
+        Введите адрес организации. Длина не менее 10 и не более 256 символов.
+      </mat-error>
+    </mat-form-field>
+  
+    <mat-form-field class="example-full-width">
+      <mat-label>{{ userColumnNames[6] }}</mat-label>
+      <input matInput [errorStateMatcher]="matcher" placeholder="{{form.controls['email']}}" value="{{form.controls['email']}}"  formControlName="email">
+      <mat-error *ngIf="form.controls['email'].hasError('required')">
+        Введите электронную почту. Длина не менее 11 и не более 20 символов.
+      </mat-error>
+    </mat-form-field>
+  
+    <mat-form-field class="example-full-width">
+      <mat-label>{{ userColumnNames[7] }}</mat-label>
+      <input matInput [errorStateMatcher]="matcher" placeholder="{{form.controls['phoneNumber']}}" value="{{form.controls['phoneNumber']}}"  formControlName="phoneNumber">
+      <mat-error *ngIf="form.controls['phoneNumber'].hasError('required')">
+        Введите номер телефона. Длина не менее 11 и не более 100 символов.
+      </mat-error>
+    </mat-form-field>
+  
+    <mat-form-field class="example-full-width" *ngIf="!!form.controls['userName']">
+      <mat-label>{{ userColumnNames[10] }}</mat-label>
+      <input matInput [errorStateMatcher]="matcher" placeholder="{{form.controls['password']}}" value="{{form.controls['password']}}"  formControlName="password">
+      <mat-error *ngIf="form.controls['password'].hasError('required')">
+        Введите пароль пользователя. Длина не менее 10 и не более 20 символов. 
+        Должен содержать как минимум одну букву в верхнем регистре, одну цифру и один специальный символ
+      </mat-error>
+    </mat-form-field>
+  </form>
+  
+    <button mat-flat-button type="button" (click)="backToHome()">Вернуться на главную</button>
+  </mat-dialog-content> -->

@@ -2,22 +2,22 @@
 <mat-dialog-content [formGroup]="form" style="height: calc(100% - 96px);max-height: unset">
   <form ng-submit="submit()">
 
-  <mat-form-field class="example-full-width">
+  <mat-form-field class="example-full-width" *ngIf="!!order.id">
     <mat-label>{{ orderColumnNames[0] }}</mat-label>
     <input matInput [errorStateMatcher]="matcher" placeholder="{{order.id}}" value="{{order.id}}"  formControlName="id">
   </mat-form-field>
 
-  <mat-form-field class="example-full-width">
+  <mat-form-field class="example-full-width" *ngIf="!!order.date">
     <mat-label>{{ orderColumnNames[1] }}</mat-label>
     <input matInput [errorStateMatcher]="matcher" placeholder="{{order.date | date}}" value="{{order.date | date}}"  formControlName="date">
   </mat-form-field>
 
-  <mat-form-field class="example-full-width">
+  <mat-form-field class="example-full-width" *ngIf="!!order.state">
     <mat-label>{{ orderColumnNames[2] }}</mat-label>
     <input matInput [errorStateMatcher]="matcher" placeholder="{{order.state}}" value="{{order.state}}"  formControlName="state">
   </mat-form-field>
 
-  <mat-form-field class="example-full-width">
+  <mat-form-field class="example-full-width" *ngIf="!!order.status">
     <mat-label>{{ orderColumnNames[3] }}</mat-label>
     <input matInput [errorStateMatcher]="matcher" placeholder="{{order.status}}" value="{{order.status}}"  formControlName="status">
   </mat-form-field>
@@ -25,17 +25,18 @@
   <mat-form-field class="example-full-width">
     <mat-label>{{ orderColumnNames[4] }}</mat-label>
     <input matInput [errorStateMatcher]="matcher" placeholder="{{order.snils}}" value="{{order.snils}}"  formControlName="snils">
-    <mat-error *ngIf="form.controls['snils'].hasError('required')">
-      Введите СНИЛС. Введите в формате XXX-XXX-XXX XX.
+    <mat-error *ngIf="form.controls['snils'].errors?.['snils']">
+      Формат СНИЛС должен соответствовать XXX-XXX-XXX XX. 
+      <br>
+      Тестовый пример: 112-233-445 95
     </mat-error>
-    <!-- TODO: формат СНИЛС XXX-XXX-XXX XX -->
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
     <mat-label>{{ orderColumnNames[5] }}</mat-label>
     <input matInput [errorStateMatcher]="matcher" placeholder="{{order.fio}}" value="{{order.fio}}"  formControlName="fio">
     <mat-error *ngIf="form.controls['fio'].hasError('required')">
-      Введите ФИО.
+      Введите ФИО. От 6 до 100 символов.
     </mat-error>
   </mat-form-field>
 
@@ -43,20 +44,22 @@
     <mat-label>{{ orderColumnNames[6] }}</mat-label>
     <input matInput [errorStateMatcher]="matcher" placeholder="{{order.contactData}}" value="{{order.contactData}}"  formControlName="contactData">
     <mat-error *ngIf="form.controls['contactData'].hasError('required')">
-      Введите контактные данные.
+      Введите контактные данные. От 10 до 256 символов.
     </mat-error>
   </mat-form-field>
 
   <mat-form-field class="example-full-width">
-    <mat-label>{{ orderColumnNames[7] }}</mat-label>
-    <mat-select formControlName="type">
+    <mat-select [errorStateMatcher]="matcher" placeholder="{{ orderType ?? '' }}" formControlName="type" >
       <mat-option *ngFor="let type of types" [value]="type.value">
         {{type.valueView}}
       </mat-option>
     </mat-select>
+    <mat-error *ngIf="form.controls['type'].hasError('required')">
+      Выберите тип заявки.
+    </mat-error>
   </mat-form-field>
 
-  <mat-form-field class="example-full-width">
+  <mat-form-field class="example-full-width" *ngIf="!!order.body">
     <mat-label>{{ orderColumnNames[8] }}</mat-label>
     <input matInput [errorStateMatcher]="matcher" placeholder="{{order.body}}" value="{{order.body}}"  formControlName="body">
   </mat-form-field>
@@ -85,9 +88,12 @@
             />
 			<mat-error>Вес файла должен быть менее 5 МБ.</mat-error>
 		</mat-form-field>
+    <mat-error *ngIf="form.controls['documents'].hasError('required')">
+      Прикрепите документы.
+    </mat-error>
   </div>
 
-  <mat-form-field class="example-full-width">
+  <mat-form-field class="example-full-width" *ngIf="!!order.supportMeasures">
     <mat-label>{{ orderColumnNames[10] }}</mat-label>
     <input matInput [errorStateMatcher]="matcher" placeholder="{{order.supportMeasures}}" value="{{order.supportMeasures}}"  formControlName="supportMeasures">
   </mat-form-field>

@@ -50,10 +50,10 @@ namespace Security_Service_AspNetCore.Controllers
             try
             {
                 var userStatus = (UserStatus?)await _userService.GetUserStatusByLoginAsync(GetUserName());
-                if (userStatus != UserStatus.Registered) throw new Exception("Access denied."); // Учётная запись оператора не одобрена администратором
+                if (userStatus != UserStatus.Registered) throw new Exception("Учётная запись оператора не одобрена администратором.");
 
                 var userRole = (UserRole?)await _userService.GetUserRoleByLoginAsync(GetUserName());
-                if (userRole != UserRole.Operator && userRole != UserRole.SuperAdministrator) throw new Exception("Access denied");
+                if (userRole != UserRole.Operator && userRole != UserRole.SuperAdministrator) throw new Exception("Недостаточно прав.");
 
                 var result = await _operatorService.GetOrdersAsync(model);
 
@@ -76,10 +76,10 @@ namespace Security_Service_AspNetCore.Controllers
             try
             {
                 var userStatus = (UserStatus?)await _userService.GetUserStatusByLoginAsync(GetUserName());
-                if (userStatus != UserStatus.Registered) throw new Exception("Access denied."); // Учётная запись оператора не одобрена администратором
+                if (userStatus != UserStatus.Registered) throw new Exception("Учётная запись оператора не одобрена администратором.");
 
                 var userRole = (UserRole?)await _userService.GetUserRoleByLoginAsync(GetUserName());
-                if (userRole != UserRole.Operator && userRole != UserRole.SuperAdministrator) throw new Exception("Access denied");
+                if (userRole != UserRole.Operator && userRole != UserRole.SuperAdministrator) throw new Exception("Недостаточно прав");
 
                 var result = await _operatorService.GetDocscanAsync(model.IdDoc);
 
@@ -103,10 +103,10 @@ namespace Security_Service_AspNetCore.Controllers
             try
             {
                 var userStatus = (UserStatus?)await _userService.GetUserStatusByLoginAsync(GetUserName());
-                if (userStatus != UserStatus.Registered) throw new Exception("Access denied."); // Учётная запись оператора не одобрена администратором
+                if (userStatus != UserStatus.Registered) throw new Exception("Учётная запись оператора не одобрена администратором.");
 
                 var userRole = (UserRole?)await _userService.GetUserRoleByLoginAsync(GetUserName());
-                if (userRole != UserRole.Operator && userRole != UserRole.SuperAdministrator) throw new Exception("Access denied");
+                if (userRole != UserRole.Operator && userRole != UserRole.SuperAdministrator) throw new Exception("Недостаточно прав");
 
                 var result = await _operatorService.CreateOrderAsync(model, GetUserName());
 
@@ -130,10 +130,10 @@ namespace Security_Service_AspNetCore.Controllers
             try
             {
                 var userStatus = (UserStatus?)await _userService.GetUserStatusByLoginAsync(GetUserName());
-                if (userStatus != UserStatus.Registered) throw new Exception("Access denied."); // Учётная запись оператора не одобрена администратором
+                if (userStatus != UserStatus.Registered) throw new Exception("Учётная запись оператора не одобрена администратором.");
 
                 var userRole = (UserRole?)await _userService.GetUserRoleByLoginAsync(GetUserName());
-                if (userRole != UserRole.Operator && userRole != UserRole.SuperAdministrator) throw new Exception("Access denied");
+                if (userRole != UserRole.Operator && userRole != UserRole.SuperAdministrator) throw new Exception("Недостаточно прав");
 
                 var result = await _operatorService.ChangeOrderAsync(model, GetUserName());
 
@@ -157,12 +157,12 @@ namespace Security_Service_AspNetCore.Controllers
             try
             {
                 var userStatus = (UserStatus?)await _userService.GetUserStatusByLoginAsync(GetUserName());
-                if (userStatus != UserStatus.Registered) throw new Exception("Access denied."); // Учётная запись оператора не одобрена администратором
+                if (userStatus != UserStatus.Registered) throw new Exception("Учётная запись оператора не одобрена администратором.");
 
                 var userRole = (UserRole?)await _userService.GetUserRoleByLoginAsync(GetUserName());
-                if (userRole != UserRole.Operator && userRole != UserRole.SuperAdministrator) throw new Exception("Access denied");
+                if (userRole != UserRole.Operator && userRole != UserRole.SuperAdministrator) throw new Exception("Недостаточно прав");
 
-                if (!ACTIONS.Contains(model.Action)) throw new Exception("Access denied."); // Идентификатор действия находится в промежутке между 0 и 2.
+                if (!ACTIONS.Contains(model.Action)) throw new Exception("Идентификатор действия находится в промежутке между 0 и 2."); 
 
                 var result = await _operatorService.ProcessingOrderAsync(model, GetUserName());
 

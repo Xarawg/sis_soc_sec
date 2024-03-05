@@ -9,8 +9,15 @@ import { AdminRegistrationInputModel } from '../interfaces/adminRegistrationInpu
 import { HttpService } from '../services/http.service';
 import { Router } from '@angular/router';
 import { AdminChangeInputModel } from '../interfaces/adminChangeInputModel';
-import { MyErrorStateMatcher } from '../errorStateMatcher/errorStateMatcher';
+import { PreliminaryErrorDetectionStateMatcher } from '../errorStateMatcher/preliminaryErrorDetectionStateMatcher';
 import { ModalService } from '../services/modal.service';
+import { regExpConstants } from '../constants/regexp.patterns.constants';
+import { FormBuilderService } from '../services/form.builder.service';
+import { UserStates } from '../enums/userStates';
+import { UserRoles } from '../enums/userRoles';
+import { AdministratorProcessingUserInputModel } from '../interfaces/AdministratorProcessingUserInputModel';
+import { UserProcessingAction } from '../enums/userProcessingAction';
+import { ChangePasswordDTO } from '../interfaces/changePasswordDTO';
 
 
 @Component({
@@ -25,9 +32,21 @@ export class ModalOpenUserComponent implements OnInit {
 
   form: FormGroup;
   file_store: FileList;
-  statuses: any;
+
+  /**
+   * Список ролей, которые может назначить пользователь другому пользователю
+   */
+  availableRolesToChange: any;
+
   roles: any;
+  statuses: any;
   statusPlaceholder: any;
+  rolePlaceholder: any;
+
+  /**
+   * Enum состояний пользователя
+   */
+  userStates = UserStates;
 
   resultModal = new EventEmitter<boolean>();
   
@@ -35,7 +54,7 @@ export class ModalOpenUserComponent implements OnInit {
    * Отмечает ошибки по кастомной логике. 
    * В текущем виде - подсвечивает поля ошибочными до того, как пользователь их дотронется.
    */
-  matcher = new MyErrorStateMatcher();
+  matcher = new PreliminaryErrorDetectionStateMatcher();
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public user: User,
@@ -45,7 +64,7 @@ export class ModalOpenUserComponent implements OnInit {
     private httpService: HttpService,
     private modalService: ModalService,
     private dialog: MatDialog,
-    private router: Router,
+    private formBuilderService: FormBuilderService,
   ) {
 
   }
@@ -57,39 +76,49 @@ export class ModalOpenUserComponent implements OnInit {
       { value: 0, valueView: "Вновь заведенный пользователь" },
       { value: 1, valueView: "Зарегистрированный пользователь" }
     ];
+    this.roles = [
+      { value: 0, valueView: "Отсутствует" },
+      { value: 1, valueView: "Оператор" },
+      { value: 2, valueView: "Администратор" },
+      { value: 3, valueView: "Супер администратор" }
+    ];
+    this.availableRolesToChange = this.getAvailableRolesForChange();
     this.setStatusPlaceholder();
-    this.roles = this.getAvailableRolesForChange();
+    this.setRolePlaceholder();
+
+    // Генерация полей формы
     if (!!this.user && this.user.userName != null) {
-      this.form = this.formBuilder.group({
-        userName: new FormControl({ value: this.user.userName, disabled: true }),
-        userRole: [this.user.userRole, Validators.required],
-        fio: [this.user.fio, Validators.required],
-        organization: [this.user.organization, Validators.required],
-        inn: [this.user.inn, Validators.required],
-        address: [this.user.address, Validators.required],
-        email: [this.user.email, Validators.required],
-        phoneNumber: [this.user.phoneNumber, Validators.required],
-        state: new FormControl({ value: this.user.state, disabled: true })
-      });
+      this.generateFormForDisplayExistingUser();
     } else {
-      this.form = this.formBuilder.group({
-        userName: ['', Validators.required],
-        userRole: ['', Validators.required],
-        fio: ['', Validators.required],
-        organization: ['', Validators.required],
-        inn: ['', Validators.required],
-        address: ['', Validators.required],
-        email: ['', Validators.required],
-        phoneNumber: ['', Validators.required],
-        state: ['', Validators.required],
-        password: ['', Validators.required]
-      });
+      this.form = this.formBuilderService.generateFormForNewUserRegisterByAdmin();
     }
+  }
+
+  /**
+   * Генерация формы для отображения полей формы существующего пользователя.
+   */
+  generateFormForDisplayExistingUser(): void {
+    this.form = this.formBuilder.group({
+      userName: new FormControl({ value: this.user.userName, disabled: true }),
+      userRole: [this.user.userRole, Validators.required],
+      fio: [this.user.fio, Validators.required],
+      organization: [this.user.organization, Validators.required],
+      inn: [this.user.inn, Validators.required],
+      address: [this.user.address, Validators.required],
+      email: [this.user.email, Validators.required],
+      phoneNumber: [this.user.phoneNumber, Validators.required],
+      state: new FormControl({ value: this.user.state, disabled: true })
+    });
   }
 
   setStatusPlaceholder(): void {
     const res = this.statuses.filter((x: any) => x.value === this.user.state);
     this.statusPlaceholder = res[0];
+  }
+
+  setRolePlaceholder(): void {
+    const res = this.roles.filter((x: any) => x.value === this.authService.userValue.role);
+    this.rolePlaceholder = res[0];
   }
 
   /** Получаем строку со значением состояния */
@@ -104,7 +133,7 @@ export class ModalOpenUserComponent implements OnInit {
    */
   getAvailableRolesForChange(): any {
     switch (this.authService.userValue.role) {
-      case 3:
+      case UserRoles.SuperAdmin:
         return [
           { value: 0, valueView: "Отсутствует" },
           { value: 1, valueView: "Оператор" },
@@ -118,13 +147,7 @@ export class ModalOpenUserComponent implements OnInit {
     }
   }
 
-  declineUser(): void {
-    console.log('declineUser')
-    this.modalService.changed.next(null);
-    this.dialogRef.close();
-  }
-
-  registerUser() {
+  createUser() {
     if (this.form.valid) {
       const model: AdminRegistrationInputModel = {
         userName: this.form.value.userName,
@@ -138,28 +161,42 @@ export class ModalOpenUserComponent implements OnInit {
         address: this.form.value.address,
         password: this.form.value.password
       }
-      this.httpService.registrationByAdmin(model).subscribe((data: any) => {
-        const result = data.value != null && data.value != undefined ? true : false;
-        this.modalService.changed.next(result);
-        if (result == true) {
+
+      const registration$ = this.httpService.createNewUserByAdmin(model); 
+      registration$.subscribe({
+        next: (value : any) => {
+          if (value.success === true) {
+            // Сообщаем таблице, что данные обновились.
+            this.modalService.changed.next(value);
+            
+            this.dialog.open(ModalComponent, {
+              width: '550',
+              data: {
+                modalText: 'Регистрация прошла успешно.'
+              }
+            });
+
+            // Закрываем модальное окно, т.к. команда выполнена успешно.
+            this.dialogRef.close();
+          } else {
+            this.dialog.open(ModalComponent, {
+              width: '550',
+              data: {
+                modalText: value.error
+              }
+            });
+          }
+        },
+        error: (errorValue : any) => {
           this.dialog.open(ModalComponent, {
             width: '550',
             data: {
-              modalText: 'Регистрация прошла успешно.'
-            }
-          });
-          this.dialogRef.close();
-        } else {
-          this.dialog.open(ModalComponent, {
-            width: '550',
-            data: {
-              modalText: 'Произошла ошибка регистрации.'
+              modalText: errorValue
             }
           });
         }
       });
-    }
-    else {
+    } else {
       this.dialog.open(ModalComponent, {
         width: '550',
         data: {
@@ -172,41 +209,56 @@ export class ModalOpenUserComponent implements OnInit {
   /**
    * Сохранить изменение пользователя.
    */
-  changeUser(userName: any) {
+  changeUser(user: User) {
     if (this.form.valid) {
       const model: AdminChangeInputModel = {
-        userName: userName,
+        userName: user.userName,
         email: this.form.value.email,
         phoneNumber: this.form.value.phoneNumber,
         fio: this.form.value.fio,
         organization: this.form.value.organization,
         inn: this.form.value.inn,
-        role: this.form.value.userRole.value,
-        state: this.form.value.state,
+        role: 0,
+        state: user.state,
         address: this.form.value.address
       }
-      this.httpService.changeUserByAdmin(model).subscribe((data: any) => {
-        const result = data.value != null && data.value != undefined ? true : false;
-        this.modalService.changed.next(result);
-        if (result == true) {
+      model.role = this.roles.filter( (x : any) => x.valueView == this.form.value.userRole)[0].value;
+      
+      const change$ = this.httpService.changeUserByAdmin(model); 
+      change$.subscribe({
+        next: (value : any) => {
+          if (value.success === true) {
+            // Сообщаем таблице, что данные обновились.
+            this.modalService.changed.next(value);
+            
+            this.dialog.open(ModalComponent, {
+              width: '550',
+              data: {
+                modalText: 'Изменение пользователя прошло успешно.'
+              }
+            });
+
+            // Закрываем модальное окно, т.к. команда выполнена успешно.
+            this.dialogRef.close();
+          } else {
+            this.dialog.open(ModalComponent, {
+              width: '550',
+              data: {
+                modalText: value.error
+              }
+            });
+          }
+        },
+        error: (errorValue : any) => {
           this.dialog.open(ModalComponent, {
             width: '550',
             data: {
-              modalText: 'Изменение пользователя прошло успешно.'
-            }
-          });
-          this.dialogRef.close();
-        } else {
-          this.dialog.open(ModalComponent, {
-            width: '550',
-            data: {
-              modalText: 'Произошла ошибка изменения пользователя.'
+              modalText: errorValue
             }
           });
         }
       });
-    }
-    else {
+    } else {
       this.dialog.open(ModalComponent, {
         width: '550',
         data: {
@@ -217,14 +269,174 @@ export class ModalOpenUserComponent implements OnInit {
   }
 
   blockUser(): void {
-    console.log('blockUser')
-    this.modalService.changed.next(null);
-    this.dialogRef.close();
+    const model: AdministratorProcessingUserInputModel = {
+      id: this.user.id,
+      action: UserProcessingAction.Decline as number
+    }
+
+    const process$ = this.httpService.processingUser(model);
+    process$.subscribe({
+      next: (value : any) => {
+        if (value.success === true) {
+          // Сообщаем таблице, что данные обновились.
+          this.modalService.changed.next(value);
+
+          this.dialog.open(ModalComponent, {
+            width: '550',
+            data: {
+              modalText: 'Пользователь заблокирован успешно.'
+            }
+          });
+
+          // Закрываем модальное окно, т.к. команда выполнена успешно.
+          this.dialogRef.close();
+        } else {
+          this.dialog.open(ModalComponent, {
+            width: '550',
+            data: {
+              modalText: value.error
+            }
+          });
+        }
+      },
+      error: (errorValue : any) => {
+        this.dialog.open(ModalComponent, {
+          width: '550',
+          data: {
+            modalText: errorValue
+          }
+        });
+      }
+    });
+  }
+
+  declineUser(): void {
+    const model: AdministratorProcessingUserInputModel = {
+      id: this.user.id,
+      action: UserProcessingAction.Decline
+    }
+
+    const process$ = this.httpService.processingUser(model);
+    process$.subscribe({
+      next: (value : any) => {
+        if (value.success === true) {
+          // Сообщаем таблице, что данные обновились.
+          this.modalService.changed.next(value);
+
+          this.dialog.open(ModalComponent, {
+            width: '550',
+            data: {
+              modalText: 'Пользователь отменён успешно.'
+            }
+          });
+
+          // Закрываем модальное окно, т.к. команда выполнена успешно.
+          this.dialogRef.close();
+        } else {
+          this.dialog.open(ModalComponent, {
+            width: '550',
+            data: {
+              modalText: value.error
+            }
+          });
+        }
+      },
+      error: (errorValue : any) => {
+        this.dialog.open(ModalComponent, {
+          width: '550',
+          data: {
+            modalText: errorValue
+          }
+        });
+      }
+    });
+  }
+
+  registerUser(){
+    const model: AdministratorProcessingUserInputModel = {
+      id: this.user.id,
+      action: UserProcessingAction.Register
+    }
+
+    const process$ = this.httpService.processingUser(model);
+    process$.subscribe({
+      next: (value : any) => {
+        if (value.success === true) {
+          // Сообщаем таблице, что данные обновились.
+          this.modalService.changed.next(value);
+
+          this.dialog.open(ModalComponent, {
+            width: '550',
+            data: {
+              modalText: 'Пользователь зарегистрирован успешно.'
+            }
+          });
+
+          // Закрываем модальное окно, т.к. команда выполнена успешно.
+          this.dialogRef.close();
+        } else {
+          this.dialog.open(ModalComponent, {
+            width: '550',
+            data: {
+              modalText: value.error
+            }
+          });
+        }
+      },
+      error: (errorValue : any) => {
+        this.dialog.open(ModalComponent, {
+          width: '550',
+          data: {
+            modalText: errorValue
+          }
+        });
+      }
+    });
+  }
+
+  changeUserPassword(user: User){
+    const randomString = Math.random()                        // Сгенерируется случайное число, например: 0.123456
+                                      .toString(36)          // Конвертируется в кодировку base-36, например: "0.4fzyo82mvyr"
+                                                 .slice(-8);// Обрежутся последние 8 символов: "yo82mvyr"
+    const model: ChangePasswordDTO = {
+      userName: user.userName,
+      password: randomString
+    }
+
+    const process$ = this.httpService.changeUserPasswordByAdmin(model);
+    process$.subscribe({
+      next: (value : any) => {
+        if (value.success === true) {
+          this.dialog.open(ModalComponent, {
+            width: '550',
+            data: {
+              modalText: `Пароль успешно сгенерирован. Перепишите его: ${ randomString }`
+            }
+          });
+
+          // Закрываем модальное окно, т.к. команда выполнена успешно.
+          this.dialogRef.close();
+        } else {
+          this.dialog.open(ModalComponent, {
+            width: '550',
+            data: {
+              modalText: value.error
+            }
+          });
+        }
+      },
+      error: (errorValue : any) => {
+        this.dialog.open(ModalComponent, {
+          width: '550',
+          data: {
+            modalText: errorValue
+          }
+        });
+      }
+    });
   }
 
   submit() {
-    if (this.form.valid) {
-    }
   }
 
   cancel() {

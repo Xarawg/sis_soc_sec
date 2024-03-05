@@ -8,7 +8,7 @@ export interface AdminChangeInputModel {
     fio: string;
     organization: string;
     inn: string;
-    role: UserRoles;
-    state: UserStates;
+    role: number;
+    state: number;
     address: string;
 }

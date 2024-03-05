@@ -44,7 +44,7 @@ namespace Security_Service_AspNetCore.Controllers
         {
             try
             {
-                if (model.INN.Length != 10 && model.INN.Length != 12) throw new Exception("Access denied."); // ИНН у физических лиц составляет в длину 12 символов, у юридических - 10 символов.
+                if (model.INN.Length != 10 && model.INN.Length != 12) throw new Exception("ИНН у физических лиц составляет в длину 12 символов, у юридических - 10 символов."); 
                 var result = await _userService.RegisterAsync(model);
                 return Results.Json(Result<bool>.CreateSuccess(result), serializerOptions);
             }
@@ -72,7 +72,28 @@ namespace Security_Service_AspNetCore.Controllers
             }
             catch (Exception ex)
             {
-                return Results.Json(Result<string>.CreateFailure("Access denied."), serializerOptions);
+                return Results.Json(Result<string>.CreateFailure(ex.Message), serializerOptions);
+            }
+        }
+
+        /// <summary>
+        /// Изменение собственного пароля пользователем
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>Результат аутентификации</returns>
+        [HttpPost]
+        [Route("change-password")]
+        public async Task<IResult> ChangePassword([FromBody] UserChangePasswordModel model)
+        {
+            try
+            {
+                var result = await _userService.ChangePasswordAsync(new ChangePasswordDTO() { UserName = GetUserName(), Password = model.Password });
+
+                return Results.Json(Result<bool>.CreateSuccess(result), serializerOptions);
+            }
+            catch (Exception ex)
+            {
+                return Results.Json(Result<string>.CreateFailure(ex.Message), serializerOptions);
             }
         }
     }

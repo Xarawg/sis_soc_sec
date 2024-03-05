@@ -298,13 +298,9 @@ namespace SecurityService_Core_Stores.Migrations
                         .HasColumnType("text")
                         .HasColumnName("salt");
 
-                    b.Property<int?>("Status")
-                        .HasColumnType("integer")
-                        .HasColumnName("status");
-
                     b.Property<string>("UserName")
                         .HasColumnType("text")
-                        .HasColumnName("login");
+                        .HasColumnName("user_name");
 
                     b.HasKey("IdUser");
 

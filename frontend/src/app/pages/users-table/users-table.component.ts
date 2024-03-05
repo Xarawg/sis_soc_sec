@@ -11,6 +11,7 @@ import { User } from 'src/app/interfaces/user';
 import { ModalOpenUserComponent } from 'src/app/modal-open-user/modal-open-user.component';
 import { HttpService } from 'src/app/services/http.service';
 import { ModalService } from 'src/app/services/modal.service';
+import { ModalComponent } from 'src/app/modal/modal.component';
 
 @Component({
   selector: 'users-table',
@@ -62,13 +63,25 @@ export class UsersTableComponent implements OnInit, AfterViewInit {
   }
 
   private updateUserDataList(){
-    this.httpService.getUsers()
-    .subscribe( (data:any) => {
-      const res = data.value;
-      this.dataSource = new MatTableDataSource(res);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort!;
-      this.usersData = res;
+    const users$ = this.httpService.getUsers(); 
+    users$.subscribe({
+      next: (data:any) => {
+        const res = data.value;
+        if (!!data.value) {
+          this.dataSource = new MatTableDataSource(res);
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort!;
+          this.usersData = res;
+        }
+      },
+      error: (error:any) => {
+        this.dialog.open(ModalComponent, {
+          width: '550',
+          data: {
+            modalText: error
+          }
+        });
+      },
     });
   }
 

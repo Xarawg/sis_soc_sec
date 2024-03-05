@@ -4,11 +4,13 @@ using Microsoft.Extensions.Configuration;
 using SecurityService_AspNetCore.Services.Communication;
 using SecurityService_Core.Interfaces;
 using SecurityService_Core.Models.ControllerDTO.Administrator;
+using SecurityService_Core.Models.ControllerDTO.Operator;
 using SecurityService_Core.Models.ControllerDTO.User;
 using SecurityService_Core.Models.DB;
 using SecurityService_Core.Models.DTO;
 using SecurityService_Core.Models.Enums;
 using SecurityService_Core.Security.Auth;
+using SecurityService_Core_Stores.Stores;
 using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
@@ -22,6 +24,7 @@ namespace Security_Service_AspNetCore.Services
     {
         private readonly IMapper _mapper;
         private readonly IUserStore _userStore;
+        private readonly IAdministratorStore _adminStore;
         private readonly ITokenHandler _tokenHandler;
 
         private readonly AuthOptions authOptions = new();
@@ -40,11 +43,13 @@ namespace Security_Service_AspNetCore.Services
         /// </summary>
         /// <param name="mapper"></param>
         /// <param name="userStore"></param>
+        /// <param name="adminStore"></param>
         /// <param name="tokenHandler"></param>
         /// <param name="configuration"></param>
         public UserService(
             IMapper mapper
             , IUserStore userStore
+            , IAdministratorStore adminStore
             , ITokenHandler tokenHandler
             , IConfiguration configuration
             )
@@ -52,6 +57,7 @@ namespace Security_Service_AspNetCore.Services
             Configuration = configuration;
             _mapper = mapper;
             _userStore = userStore;
+            _adminStore = adminStore;
             _tokenHandler = tokenHandler;
             Configuration.GetSection("AuthOptions").Bind(authOptions);
         }
@@ -66,7 +72,7 @@ namespace Security_Service_AspNetCore.Services
 
                 // Проверка на существование пользователя с указанным логином
                 UserDB? existingUser = await CheckUserByLoginAsync(userName);
-                if (existingUser != null) throw new Exception("Access denied."); // Неудачная попытка регистрации. Такой пользователь уже зарегистрирован.
+                if (existingUser != null) throw new Exception("Неудачная попытка регистрации. Такой пользователь уже зарегистрирован.");
 
                 string salt = GetSalt();
                 byte[] hash = GetHash(userPassword, salt);
@@ -93,8 +99,8 @@ namespace Security_Service_AspNetCore.Services
             {
                 // Проверка на существование пользователя с указанным логином
                 UserDB? existingUser = await CheckUserByLoginAsync(model.UserName);
-                if (existingUser == null) throw new Exception("Access denied."); // Неудачная попытка изменения. Такого пользователя не существует.
-
+                if (existingUser == null) throw new Exception("Неудачная попытка изменения. Такого пользователя не существует.");
+                existingUser.UserRole = model.Role;
                 existingUser.State = model.State;
                 await _userStore.UpdateUserAsync(existingUser);
                 return true;
@@ -111,7 +117,7 @@ namespace Security_Service_AspNetCore.Services
             {
                 // Проверка на существование пользователя с указанным логином
                 UserDB? existingUser = await CheckUserByLoginAsync(model.UserName);
-                if (existingUser == null) throw new Exception("Access denied."); // Неудачная попытка изменения. Такого пользователя не существует.
+                if (existingUser == null) throw new Exception("Неудачная попытка изменения. Такого пользователя не существует."); 
 
                 string salt = GetSalt();
                 byte[] hash = GetHash(model.Password, salt);
@@ -138,7 +144,7 @@ namespace Security_Service_AspNetCore.Services
             {
                 // Проверка на существование пользователя с указанным логином
                 UserDB? existingUser = await CheckUserByLoginAsync(model.UserName);
-                if (existingUser == null) throw new Exception("Access denied."); // Неудачная попытка изменения. Такого пользователя не существует.
+                if (existingUser == null) throw new Exception("Неудачная попытка изменения. Такого пользователя не существует."); 
 
                 string salt = GetSalt();
                 byte[] hash = GetHash(model.Password, salt);
@@ -164,7 +170,7 @@ namespace Security_Service_AspNetCore.Services
             try
             {
                 var user = await CheckUserByLoginAsync(model.UserName);
-                if (user == null) throw new Exception("Пользователь не зарегистрирован.");
+                if (user == null) throw new Exception("Логин или пароль указаны неверно.");
 
                 var accessAllowed = await CheckPasswordAsync(model.UserName, model.Password);
 
@@ -182,7 +188,6 @@ namespace Security_Service_AspNetCore.Services
         {
             var users = await _userStore.GetUsersAsync();
             var userRoles = await _userStore.GetUserRolesAsync();
-            var userStatuses = await _userStore.GetUserStatusesAsync();
             if (users == null)
             {
                 throw new Exception("Пользователи не найдены");
@@ -191,7 +196,6 @@ namespace Security_Service_AspNetCore.Services
             result.ForEach(u =>
             {
                 u.UserRole = userRoles[int.Parse(u.UserRole)];
-                u.Status = userStatuses[u.State];
             });
 
             return result;
@@ -323,7 +327,13 @@ namespace Security_Service_AspNetCore.Services
             UserHashDB? userHash = await _userStore.GetUserHashAsync(userName);
             if (userHash == null || user == null)
             {
-                throw new Exception("Пользователь с таким логином не зарегистрирован.");
+                throw new Exception("Логин или пароль указаны неверно.");
+            }
+
+            bool isUserPasswordExpired = await CheckIsUserPasswordExpiredAsync(user);
+            if (isUserPasswordExpired)
+            {
+                throw new Exception("Временный пароль для доступа к вашей учётной записи истёк.");
             }
 
             var salt = userHash!.Salt;
@@ -343,18 +353,18 @@ namespace Security_Service_AspNetCore.Services
                 throw new Exception("Логин или пароль указаны неверно.");
             }
 
-            switch ((UserStatus)userHash.Status!)
+            bool isUserBlocked = await CheckIsUserBlockedAsync(user);
+            if (isUserBlocked)
+            {
+                throw new Exception("Ваша учетная запись заблокирована на " + (authOptions.BlockTime).ToString() + " мин.");
+            }
+
+            switch ((UserStatus)user.State)
             {
                 case UserStatus.Blocked:
                     throw new Exception("Пользователь с таким логином заблокирован."); // 
                 case UserStatus.Declined:
                     throw new Exception("Пользователь с таким логином отклонён администрацией."); // 
-            }
-
-            bool isUserBlocked = await CheckIsUserBlockedAsync(user);
-            if (isUserBlocked)
-            {
-                throw new Exception("Ваша учетная запись заблокирована на " + (authOptions.BlockTime).ToString() + " мин.");
             }
 
             return true;
@@ -386,9 +396,39 @@ namespace Security_Service_AspNetCore.Services
                 }
             }
             // если время блокировки null, значит блокировка вечная
-            else if (user.LockoutEnabled ?? false)
+            else if (user.LockoutEnabled ?? false && user.AccessFailedAttemptDate == null)
             {
                 return true;
+            }
+            // если блокировка не включена, а дата последней попытки входа с ошибкой не нулевая
+            // тогда пропускаем пользователя
+            return false;
+        }
+
+        /// <summary>
+        /// Проверка истечения срока действия пароля для входа в аккаунт
+        /// </summary>
+        private async Task<bool> CheckIsUserPasswordExpiredAsync(UserDB user)
+        {
+            // Если переменная со временным доступом к аккаунту нулевая, значит аккаунт без ограничений доступа
+            // И если включен флаг IsTemporaryAccess
+            if (user.TemporaryAccessExpirationTime != null || user.IsTemporaryAccess == true)
+            {
+                // проверяем кончилась ли блокировка
+                var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+                var dateWhenAccessWillBeFired = user.TemporaryAccessExpirationTime.Value;
+                var blockTimeDiff = dateNow - dateWhenAccessWillBeFired;
+
+                // разница текущего времени должна быть меньше даты истечения срока годности пароля на время блокировки
+                if (blockTimeDiff.TotalSeconds < authOptions.BlockTime * 60)
+                {
+                    return false;
+                }
+                // Если разница больше - значит пользователь опоздал с аутентификацией.
+                else
+                {
+                    return true;
+                }
             }
             return false;
         }

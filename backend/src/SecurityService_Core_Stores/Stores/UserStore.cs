@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using SecurityService_Core.Interfaces;
 using SecurityService_Core.Models.ControllerDTO.Administrator;
 using SecurityService_Core.Models.ControllerDTO.User;
@@ -52,8 +53,10 @@ namespace SecurityService_Core_Stores.Stores
         {
             try
             {
+                var userStatuses = await GetUserStatusesAsync();
                 if (userModel != null || adminModel != null)
                 {
+                    var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
                     var newUser = new UserDB()
                     {
                         Id = idUser,
@@ -72,9 +75,11 @@ namespace SecurityService_Core_Stores.Stores
                         INN = userModel != null ? userModel.INN : adminModel.INN,
                         Address = userModel != null ? userModel.Address : adminModel.Address,
                         State = adminModel != null ? adminModel.State : (int)UserStatus.New,
-                        CreateDate = DateTime.UtcNow,
+                        CreateDate = dateNow,
                         CreateUser = userName != null ? userName : ""
                     };
+
+                    newUser.Status = userStatuses[newUser.State];
 
                     await Users.AddAsync(newUser);
 
@@ -83,7 +88,6 @@ namespace SecurityService_Core_Stores.Stores
                         IdUser = idUser,
                         Hash = hash,
                         Salt = salt,
-                        Status = adminModel != null ? adminModel.State : (int)UserStatus.New,
                         UserName = newUser.UserName,
                     };
                     await UserHashes.AddAsync(newHash);
@@ -113,13 +117,15 @@ namespace SecurityService_Core_Stores.Stores
                 var userHashDB = await UserHashes.Where(u => u.IdUser == user.Id).FirstOrDefaultAsync();
                 if (userDB != null && userHashDB != null)
                 {
+                    var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
                     userDB.AccessFailedCount = user.AccessFailedCount;
                     userDB.LockoutEnabled = user.LockoutEnabled;
                     userDB.AccessFailedAttemptDate = user.AccessFailedAttemptDate;
+                    userDB.UserRole = user.UserRole;
+                    userDB.ChangeDate = dateNow;
+                    userDB.ChangeUser = user.ChangeUser;
                     Users.Update(userDB);
-
-                    userHashDB.Status = user.State;
-                    UserHashes.Update(userHashDB);
+                    
                     await _customerContext.SaveChangesAsync();
                 }
                 else
@@ -149,8 +155,10 @@ namespace SecurityService_Core_Stores.Stores
                 var userDB = await Users.FirstOrDefaultAsync(u => u.UserName == model.UserName);
                 var hashDB = await UserHashes.FirstOrDefaultAsync(u => u.UserName == model.UserName);
 
+                var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+                userDB.ChangeDate = dateNow;
                 userDB!.IsTemporaryAccess = true;
-                userDB!.TemporaryAccessExpirationTime = DateTime.UtcNow.AddSeconds(temporaryTime);
+                userDB!.TemporaryAccessExpirationTime = dateNow.AddSeconds(temporaryTime);
                 Users.Update(userDB);
 
                 hashDB!.Hash = hash;
@@ -179,8 +187,12 @@ namespace SecurityService_Core_Stores.Stores
                 var userDB = await Users.FirstOrDefaultAsync(u => u.UserName == model.UserName);
                 var hashDB = await UserHashes.FirstOrDefaultAsync(u => u.UserName == model.UserName);
 
+                var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+                userDB.ChangeDate = dateNow;
                 userDB!.IsTemporaryAccess = false;
                 userDB!.TemporaryAccessExpirationTime = null;
+                userDB!.AccessFailedAttemptDate = null;
+                userDB!.AccessFailedCount = 0;
                 Users.Update(userDB);
 
                 hashDB!.Hash = hash;

@@ -1,9 +1,10 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { first } from 'rxjs';
-import { MyErrorStateMatcher } from 'src/app/errorStateMatcher/errorStateMatcher';
+import { PreliminaryErrorDetectionStateMatcher } from 'src/app/errorStateMatcher/preliminaryErrorDetectionStateMatcher';
 import { UserAuth } from 'src/app/interfaces/userAuth';
 import { ModalComponent } from 'src/app/modal/modal.component';
 import { AuthService } from 'src/app/services/auth.service';
@@ -25,7 +26,7 @@ export class AdminStartComponent implements OnInit {
    * Отмечает ошибки по кастомной логике. 
    * В текущем виде - подсвечивает поля ошибочными до того, как пользователь их дотронется.
    */
-  matcher = new MyErrorStateMatcher();
+  matcher = new PreliminaryErrorDetectionStateMatcher();
 
   constructor(
     private authService: AuthService,
@@ -44,22 +45,31 @@ export class AdminStartComponent implements OnInit {
   }
 
   public onLogin(): void {
-    const auth = this.loginForm.value;
-    const result = this.authService.login(auth)
-      .subscribe(
-        (result) => {
+    const model = this.loginForm.value;
+    const auth$ = this.authService.login(model); 
+    auth$.subscribe({
+      next: (value : any) => {
+        if (value.success === true) {
           const returnUrl = '/users-table';
           this.router.navigateByUrl(returnUrl);
-        },
-        (error) => {
+        } else {
           this.dialog.open(ModalComponent, {
             width: '550',
             data: {
-              modalText: 'Данные введены некорректно.'
+              modalText: value.error
             }
           });
         }
-      );
+      },
+      error: (errorValue : HttpErrorResponse) => {
+        this.dialog.open(ModalComponent, {
+          width: '550',
+          data: {
+            modalText: errorValue
+          }
+        });
+      }
+    });
   }
 
   register() {

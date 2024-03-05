@@ -27,7 +27,7 @@ namespace SecurityService_Core.Models.ControllerDTO.User
         [MinLength(10), MaxLength(256)]
         public string Address { get; set; }
         [Required]
-        [MinLength(6), MaxLength(18)]
+        [MinLength(8), MaxLength(20)]
         public string Password { get; set; }
     }
 }

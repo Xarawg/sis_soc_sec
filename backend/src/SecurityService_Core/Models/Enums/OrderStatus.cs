@@ -1,7 +1,7 @@
 ﻿namespace SecurityService_Core.Models.Enums
 {
     /// <summary>
-    /// Статус пользователя
+    /// Статус заявки
     /// </summary>
     public enum OrderStatus
     {

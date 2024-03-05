@@ -12,7 +12,7 @@ using SecurityService_Core_Stores;
 namespace SecurityService_Core_Stores.Migrations
 {
     [DbContext(typeof(CustomerContext))]
-    [Migration("20240302080208_InitialCreate")]
+    [Migration("20240304152853_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -301,13 +301,9 @@ namespace SecurityService_Core_Stores.Migrations
                         .HasColumnType("text")
                         .HasColumnName("salt");
 
-                    b.Property<int?>("Status")
-                        .HasColumnType("integer")
-                        .HasColumnName("status");
-
                     b.Property<string>("UserName")
                         .HasColumnType("text")
-                        .HasColumnName("login");
+                        .HasColumnName("user_name");
 
                     b.HasKey("IdUser");
 

@@ -2,6 +2,7 @@
 using SecurityService_Core.Interfaces;
 using SecurityService_Core.Models.ControllerDTO.Operator;
 using SecurityService_Core.Models.DB;
+using SecurityService_Core.Models.DTO;
 using SecurityService_Core.Models.Enums;
 
 namespace SecurityService_Core_Stores.Stores
@@ -57,11 +58,12 @@ namespace SecurityService_Core_Stores.Stores
         /// <returns></returns>
         public async Task<bool> CreateOrderAsync(Guid idOrder, OperatorOrderInputModel model, string userName, List<DocscanDB> docs)
         {
+            var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
             var newOrder = new OrderDB()
             {
                 Id = idOrder,
-                Date = DateTime.UtcNow,
-                CreateDate = DateTime.UtcNow,
+                Date = dateNow,
+                CreateDate = dateNow,
                 CreateUser = userName,
                 State = (int)OrderStatus.New,
                 Status = "",
@@ -85,12 +87,16 @@ namespace SecurityService_Core_Stores.Stores
         /// <returns></returns>
         public async Task<bool> ChangeOrderAsync(OperatorChangeOrderInputModel model, string userName)
         {
-            var order = await Orders.Where(x => x.Id == model.Id).FirstOrDefaultAsync();
+            var order = await Orders.FirstOrDefaultAsync(x => x.Id == model.Id);
             if (order == null) throw new Exception("Заявки не существует.");
+            var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+            order.CreateDate = dateNow;
+            order.CreateUser = userName;
             order.SNILS = model.SNILS;
             order.FIO = model.FIO;
             order.ContactData = model.ContactData;
             order.Type = model.Type;
+
             Orders.Update(order);
             await _customerContext.SaveChangesAsync();
 
@@ -105,13 +111,14 @@ namespace SecurityService_Core_Stores.Stores
         /// <returns></returns>
         public async Task<bool> SendOrderAsync(Guid idOrder, string userName)
         {
-            var order = await Orders.Where(x => x.Id == idOrder).FirstOrDefaultAsync();
+            var order = await Orders.FirstOrDefaultAsync(x => x.Id == idOrder);
             if (order == null) throw new Exception("Заявки не существует.");
             if ((OrderStatus)order.State! != OrderStatus.New)
                 throw new Exception("Отменить можно только новую заявку.");
 
-            order.State = 1;
-            order.ChangeDate = DateTime.UtcNow;
+            var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+            order.ChangeDate = dateNow;
+            order.State = (int)OrderStatus.Registered;
             order.ChangeUser = userName;
 
             Orders.Update(order);
@@ -128,15 +135,17 @@ namespace SecurityService_Core_Stores.Stores
         /// <returns></returns>
         public async Task<bool> DeclineOrderAsync(Guid idOrder, string userName)
         {
-            var order = await Orders.Where(x => x.Id == idOrder).FirstOrDefaultAsync();
+            var order = await Orders.FirstOrDefaultAsync(x => x.Id == idOrder);
             if (order == null) throw new Exception("Заявки не существует.");
             if ((OrderStatus)order.State! != OrderStatus.New
                     && (OrderStatus)order.State! != OrderStatus.Registered)
                 throw new Exception("Отменить можно только новую и зарегистрированную заявки.");
 
+            var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+            order.ChangeDate = dateNow;
             order.State = -2;
-            order.ChangeDate = DateTime.UtcNow;
             order.ChangeUser = userName;
+            order.State = (int)OrderStatus.Declined;
 
             Orders.Update(order);
             await _customerContext.SaveChangesAsync();
@@ -152,16 +161,39 @@ namespace SecurityService_Core_Stores.Stores
         /// <returns></returns>
         public async Task<bool> DoubleOrderAsync(Guid idOrder, string userName)
         {
-            var order = await Orders.AsNoTracking().Where(x => x.Id == idOrder).FirstOrDefaultAsync();
-            if (order == null) throw new Exception("Заявки не существует.");
-            order.Id = Guid.NewGuid();
-            order.CreateDate = DateTime.UtcNow;
-            order.CreateUser = userName;
+            try
+            {
+                var order = await Orders.AsNoTracking().FirstOrDefaultAsync(x => x.Id == idOrder);
+                if (order == null) throw new Exception("Заявки не существует.");
+                var dateNow = TimeZoneInfo.ConvertTime(DateTime.Now, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time"));
+                order.Date = dateNow;
+                order.CreateDate = dateNow;
+                order.Id = Guid.NewGuid();
+                order.CreateUser = userName;
+                order.State = (int)OrderStatus.New;
 
-            await Orders.AddAsync(order);
-            await _customerContext.SaveChangesAsync();
+                var statuses = await GetOrderStatusesAsync();
+                order.Status = statuses.FirstOrDefault(x => x.Key == (int)OrderStatus.New).Value;
 
-            return true;
+                await Orders.AddAsync(order);
+
+                var docs = await Docscans.AsNoTracking().Where(x => x.IdOrder == idOrder).ToListAsync();
+                foreach (var doc in docs)
+                {
+                    doc.Id = Guid.NewGuid();
+                    doc.IdOrder = order.Id;
+                    doc.CreateDate = dateNow;
+                    doc.CreateUser = userName;
+                }
+                await Docscans.AddRangeAsync(docs);
+
+                await _customerContext.SaveChangesAsync();
+
+                return true;
+            } catch (Exception ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
         }
 
     }

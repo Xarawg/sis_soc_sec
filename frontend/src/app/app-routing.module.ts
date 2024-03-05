@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { OperatorStartComponent } from './pages/operator-start/operator.start.component';
 import { OrderTableComponent } from './pages/orders-table/orders-table.component';
 import { UsersTableComponent } from './pages/users-table/users-table.component';
-import { AdminRegisterComponent } from './pages/register/register.component';
+import { RegisterComponent } from './pages/register/register.component';
 import { AdminStartComponent } from './pages/admin-start/admin.start.component';
 import { HomeComponent } from './pages/home/home.component';
 import { AuthGuard } from './guards/auth.guard';
@@ -20,7 +20,7 @@ const routes: Routes = [
     data: { roles: [UserRoles.SuperAdmin, UserRoles.Operator]}
    },
   { path: 'admin-start', component: AdminStartComponent },
-  { path: 'register', component: AdminRegisterComponent },
+  { path: 'register', component: RegisterComponent },
   { 
     path: 'users-table', 
     component: UsersTableComponent, 

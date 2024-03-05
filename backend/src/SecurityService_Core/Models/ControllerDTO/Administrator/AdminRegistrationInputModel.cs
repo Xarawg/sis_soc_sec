@@ -12,7 +12,7 @@ namespace SecurityService_Core.Models.ControllerDTO.Administrator
         [EmailAddress]
         public string Email { get; set; }
         [Required]
-        [Length(11, 20)]
+        [Length(4, 100)]
         [Phone]
         public string PhoneNumber { get; set; }
         [Required]
@@ -31,7 +31,7 @@ namespace SecurityService_Core.Models.ControllerDTO.Administrator
         [MinLength(10), MaxLength(256)]
         public string Address { get; set; }
         [Required]
-        [MinLength(6), MaxLength(18)]
+        [MinLength(8), MaxLength(20)]
         public string Password { get; set; }
     }
 }
